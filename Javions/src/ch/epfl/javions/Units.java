@@ -3,8 +3,8 @@
 // this class contains CONSTANTS that will be used throughout the project, they can't be changed or instantiated
 public final class Units {
     private Units(){}
-    public static final double CENTI = 10^-2;
-    public static final double KILO = 10^3;
+    public static final double CENTI = 1e-2;
+    public static final double KILO = 1e-3;
 
     public static class Angle{
         public static final double RADIAN = 1;

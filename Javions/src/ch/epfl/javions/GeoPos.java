@@ -11,4 +11,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
         if (latitudeT32 > Math.scalb(1, 30)) return false;
         return true;
     }
+
+
 }
