@@ -1,6 +1,7 @@
 package ch.epfl.javions;
 
 public final class Units {
+    private Units(){}
     public static final double CENTI = 10^-2;
     public static final double KILO = 10^3;
 
@@ -14,8 +15,8 @@ public final class Units {
 
     public static class Length{
         public static final double METER = 1;
-        public static final double CENTIMETER = 10^-2;
-        public static final double KILOMETER = 10^3;
+        public static final double CENTIMETER = CENTI*METER;
+        public static final double KILOMETER = KILO*METER;
         public static final double INCH = 2.54*CENTIMETER;
         public static final double FOOT = 12*INCH;
         public static final double NAUTICAL_MILE = 1852;
@@ -30,8 +31,20 @@ public final class Units {
     }
 
     public static class Speed{
-        public static final double KNOT = 1/1.944;
-        public static final double KILOMETER_PER_HOUR = 1/3.6;
+        public static final double KNOT = 1.944;
+        public static final double KILOMETER_PER_HOUR = 3.6;
         private Speed(){}
+    }
+
+    public static double convert(double value,double fromUnit,double toUnit){
+        return (value *toUnit)/fromUnit;
+    }
+
+    public static double convertFrom(double value, double fromUnit){
+        return value/fromUnit;
+    }
+
+    public static double convertTo(double value, double toUnit){
+        return value*toUnit;
     }
 }
