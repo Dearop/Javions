@@ -1,5 +1,6 @@
 ﻿package ch.epfl.javions;
 
+// this class contains CONSTANTS that will be used throughout the project, they can't be changed or instantiated
 public final class Units {
     private Units(){}
     public static final double CENTI = 10^-2;
