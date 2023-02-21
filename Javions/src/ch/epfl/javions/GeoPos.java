@@ -63,5 +63,5 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
         return "("+convert(longitudeT32, Angle.T32, Angle.DEGREE)+"°, "+convert(latitudeT32, Angle.T32, Angle.DEGREE)+"°)";
     }
 
-    GeoPos one = new GeoPos(987654321, 123456789);
+    //GeoPos one = new GeoPos(987654321, 123456789);
 }
