@@ -15,8 +15,9 @@ public class Bits {
     public int extractUInt(long value, int start, int size){
         if (size < 0) throw new IllegalArgumentException();
         else if (size > 32) throw new IllegalArgumentException();
-        //Todo there is no way that this is correct, for example you have size = 5 and start = 10
+        //@Todo there is no way that this is correct, for example you have size = 5 and start = 10
         //that would give an exception... i propose that it is (start >= 0) && (start + size < 64)
+        // I agree
         else if ((start >= 0) && (start + size < 64)) throw new IndexOutOfBoundsException();
 
         String sValue = Long.toString(value);
@@ -30,6 +31,9 @@ public class Bits {
 
 
     /**
+     * In this function, we test if this index is what we want and throw an Exception is it isn't
+     * If the number on the index(parameter)-ed value of value is equal to 1 we return true
+     * otherwise we return false.
      *
      * @param value
      * @param index
