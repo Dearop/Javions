@@ -15,9 +15,9 @@ public class Bits {
     public int extractUInt(long value, int start, int size){
         if (size < 0) throw new IllegalArgumentException();
         else if (size > 32) throw new IllegalArgumentException();
-        //Todo there is no way that this is correct, for example you have size = 5 an d start = 10
+        //Todo there is no way that this is correct, for example you have size = 5 and start = 10
         //that would give an exception... i propose that it is (start >= 0) && (start + size < 64)
-        else if (0 <= size-start && size-start < 64) throw new IndexOutOfBoundsException();
+        else if ((start >= 0) && (start + size < 64)) throw new IndexOutOfBoundsException();
 
         String sValue = Long.toString(value);
         String isolatedValue = "";
