@@ -21,8 +21,6 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @param latitudeT32 is the latitude written in 32 bits
      */
     public GeoPos { // constructeur compact
-        //TODO is this function necessary?? I think so but I am not sure (3.7) (It would check longitude)
-        // if(!isValidLatitudeT32(longitudeT32)) throw new IllegalArgumentException();
         if(!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException(); //checks if latitude is inbound
 
     }
@@ -62,6 +60,4 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
     public String toString() {
         return "("+convert(longitudeT32, Angle.T32, Angle.DEGREE)+"°, "+convert(latitudeT32, Angle.T32, Angle.DEGREE)+"°)";
     }
-
-    //GeoPos one = new GeoPos(987654321, 123456789);
 }

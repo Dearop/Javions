@@ -2,7 +2,7 @@ package ch.epfl.javions;
 
 
 /**
- * @author Paul Quesnot #TODO Sciper
+ * @author Paul Quesnot (347572)
  */
 public final class Preconditions {
     private Preconditions() {
