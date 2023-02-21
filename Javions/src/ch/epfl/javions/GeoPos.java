@@ -58,5 +58,10 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
         return convert(latitudeT32, Angle.T32, Angle.RADIAN);
     }
 
-    //TODO toString function in (3.7)
+    @Override
+    public String toString() {
+        return "("+convert(longitudeT32, Angle.T32, Angle.DEGREE)+"°, "+convert(latitudeT32, Angle.T32, Angle.DEGREE)+"°)";
+    }
+
+    GeoPos one = new GeoPos(987654321, 123456789);
 }
