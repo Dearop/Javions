@@ -28,11 +28,24 @@ public class Bits {
         return Integer.parseInt(isolatedValue,2);
     }
 
-    public static boolean testBit(long value, int index){
 
+    /**
+     *
+     * @param value
+     * @param index
+     * @return
+     */
+    public static boolean testBit(long value, int index){
+        if (index <= 0 ^ index > 64) throw new IndexOutOfBoundsException();
+        String sValue = Long.toString(value);
+        if (sValue.charAt(index) == 1) return true;
         /**
          * I don't understand this method do they want us to give a return true iff the given value at the given index
          * is equal to one??? but give a OutOfBoundsException if it is between 0-63 ?? /TODO (3.9)
+         *
+         * Basically they want you to throw the Exception if index is not in [0,64[,
+         * if the number at the index of value is equal to one, then you return true, if it isn't
+         * then the function sends back false.
          */
         return false;
     }
