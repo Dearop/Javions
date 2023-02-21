@@ -9,7 +9,7 @@ import static ch.epfl.javions.Units.*;
  * @param longitudeT32
  * @param latitudeT32
  * @author Henri Antal (339444)
- * @author Paul Quesnot (TODO Nr.)
+ * @author Paul Quesnot (347572)
  */
 public record GeoPos(int longitudeT32, int latitudeT32) {
 
