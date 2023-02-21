@@ -6,7 +6,7 @@ public class Bits {
     /**
      * In this function we extract a number out of a given value. The value is given as a binary Number.
      * In the first three lines we look at the exceptions. The size can't be bigger than 31 or smaller than 0.
-     * Also the difference b
+     *
      * @param value
      * @param start
      * @param size
@@ -22,7 +22,7 @@ public class Bits {
         String sValue = Long.toString(value);
         String isolatedValue = "";
         for(int i = start; i < start+size; ++i){
-            isolatedValue += sValue.charAt(i);
+            isolatedValue += sValue.charAt(sValue.length()-i);
         }
 
         return Integer.parseInt(isolatedValue,2);
@@ -38,7 +38,7 @@ public class Bits {
     public static boolean testBit(long value, int index){
         if (index <= 0 ^ index > 64) throw new IndexOutOfBoundsException();
         String sValue = Long.toString(value);
-        if (sValue.charAt(index) == 1) return true;
+        if (sValue.charAt(sValue.length()-index) == 1) return true;
         /**
          * I don't understand this method do they want us to give a return true iff the given value at the given index
          * is equal to one??? but give a OutOfBoundsException if it is between 0-63 ?? /TODO (3.9)
@@ -46,6 +46,9 @@ public class Bits {
          * Basically they want you to throw the Exception if index is not in [0,64[,
          * if the number at the index of value is equal to one, then you return true, if it isn't
          * then the function sends back false.
+         *
+         * QUICK DISCLAIMER, IT'S WRITTEN UNDERNEATH THAT BITS START ON THE RIGHT, NOT THE LEFT LIKE STRINGS DO
+         * This is why I added sValue.length()
          */
         return false;
     }
