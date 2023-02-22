@@ -20,14 +20,14 @@ public class Bits {
      */
     public static int extractUInt(long value, int start, int size) {
 
-        if (size < 0 || size > 32) throw new IllegalArgumentException();
+        if (size <= 0 || size >= 32) throw new IllegalArgumentException();
         else if (start < 0 || start + size > 63) throw new IndexOutOfBoundsException();
 
-        int extractedValue = (int) value >>> (start);
-        int changedValueSize = (int) (Math.pow(2, size) - 1);  //if size for example is 5 we get 31 which would be written
+        long extractedValue =  value >>> (start);
+        long changedValueSize = (long) (Math.pow(2, size) - 1);  //if size for example is 5 we get 31 which would be written
         // as ..011111
         extractedValue &= changedValueSize;
-        return extractedValue;
+        return (int)extractedValue;
     }
 
 
