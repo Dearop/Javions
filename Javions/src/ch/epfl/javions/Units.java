@@ -1,4 +1,4 @@
-﻿package ch.epfl.javions;
+package ch.epfl.javions;
 
 /**
  * this class contains CONSTANTS that will be used throughout the project, they can't be changed or instantiated
@@ -23,7 +23,7 @@ public final class Units {
         public static final double RADIAN = 1;
         public static final double TURN = 2 * Math.PI;
         public static final double DEGREE = TURN / 360;
-        public static final double T32 = TURN / Math.scalb(2, 32);
+        public static final double T32 = TURN / Math.scalb(1, 32);
 
         private Angle() {
         }

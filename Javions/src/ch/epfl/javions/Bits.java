@@ -1,5 +1,9 @@
 package ch.epfl.javions;
 
+/**
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public class Bits {
     private Bits() {
     }
@@ -14,7 +18,7 @@ public class Bits {
      * @throws IllegalArgumentException if size is strictly smaller than 0 or start + size is bigger or equal to 64
      * @return
      */
-    public int extractUInt(long value, int start, int size) {
+    public static int extractUInt(long value, int start, int size) {
 
         if (size < 0 || size > 32) throw new IllegalArgumentException();
         else if (start < 0 || start + size > 63) throw new IndexOutOfBoundsException();
@@ -40,7 +44,7 @@ public class Bits {
     public static boolean testBit(long value, int index) {
         if (index < 0 || index > 63) throw new IndexOutOfBoundsException();
         int extractedValue = (int) value >>> index;
-        if ((extractedValue %= 2) == 1) return true;
+        if((extractedValue &= 1) == 1) return true;
         return false;
     }
 }
