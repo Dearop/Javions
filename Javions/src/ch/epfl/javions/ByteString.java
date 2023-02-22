@@ -37,5 +37,6 @@ public final class ByteString {
     public long bytesInRange(int fromIndex, int toIndex){
         if(toIndex-fromIndex < 0 || toIndex-fromIndex > finalBytes.length) throw new IndexOutOfBoundsException();
         if(toIndex-fromIndex >= 4) throw new IllegalArgumentException();
+
     }
 }
