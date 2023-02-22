@@ -22,7 +22,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @throws IllegalArgumentException if the given latitude is not valid
      */
     public GeoPos { // constructeur compact
-        if(!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException(); //checks if latitude is inbound
+        if(!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException();
 
     }
 
@@ -36,9 +36,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
-        if (latitudeT32 < Math.scalb(-1, 30)) return false; //changed the minus here (before it was (-1, -30)
-        if (latitudeT32 > Math.scalb(1, 30)) return false;
-        return true;
+        return !(latitudeT32 < -Math.pow(2, 30)) && !(latitudeT32 > Math.pow(2, 30));
     }
 
     /**

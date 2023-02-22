@@ -61,8 +61,8 @@ public final class Units {
      * meters per second
      */
     public static class Speed {
-        public static final double KNOT = 1.944;
-        public static final double KILOMETER_PER_HOUR = 3.6;
+        public static final double KNOT = 1/1.944;
+        public static final double KILOMETER_PER_HOUR = 1/3.6;
 
         private Speed() {
         }
