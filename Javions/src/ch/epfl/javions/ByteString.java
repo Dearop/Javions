@@ -8,17 +8,24 @@ import java.util.HexFormat;
  */
 public final class ByteString {
     private final byte[] finalBytes;
-    public byte[] bytes;
+
+    /**
+     * This constructor takes the table of bytes feeded in and makes all the values positive before
+     * cloning the table and storing it in the final byte table
+     * @param bytes
+     */
     public ByteString(byte[] bytes){
-        this.bytes = bytes;
-        finalBytes = bytes.clone();
+        byte[] nonSigne = new byte[bytes.length];
+        for(int i = 0; i < bytes.length; ++i){
+            nonSigne[i] = (byte) Math.abs(bytes[i]);
+        }
+        finalBytes = nonSigne.clone();
     }
     public static ByteString ofHexadecimalString(String hexString){
 
         if(hexString.length() % 2 == 1) throw new IllegalArgumentException();
-        if(!hexString.matches("^[A-F0-9]+$")){
-            throw new NumberFormatException();
-        }
+        if(!hexString.matches("^[A-F0-9]+$")){throw new NumberFormatException();}
+
         HexFormat hf = HexFormat.of().withUpperCase();
         byte[] bytes = hf.parseHex(hexString);
         ByteString output = new ByteString(bytes);
@@ -30,7 +37,7 @@ public final class ByteString {
     }
 
     public int byteAt(int index){
-        if (index <= 0 ^ index > 7) throw new IndexOutOfBoundsException();
+        if (index <= 0 || index > 7) throw new IndexOutOfBoundsException();
         return finalBytes[index];
     }
 
@@ -39,4 +46,6 @@ public final class ByteString {
         if(toIndex-fromIndex >= 4) throw new IllegalArgumentException();
         return 0;
     }
+
+    public boolean equals()
 }
