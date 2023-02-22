@@ -19,6 +19,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      *
      * @param longitudeT32 is the longitude written in 32 bits
      * @param latitudeT32 is the latitude written in 32 bits
+     * @throws IllegalArgumentException if the given latitude is not valid
      */
     public GeoPos { // constructeur compact
         if(!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException(); //checks if latitude is inbound
@@ -56,6 +57,11 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
         return convert(latitudeT32, Angle.T32, Angle.RADIAN);
     }
 
+    /**
+     * this function gives back a String that shows the given coordinates of an object in degrees
+     * @return String in the form of (82.784228855744°, 10.34802851267159°) where the numbers are translated from
+     * an Object.
+     */
     @Override
     public String toString() {
         return "("+convert(longitudeT32, Angle.T32, Angle.DEGREE)+"°, "+convert(latitudeT32, Angle.T32, Angle.DEGREE)+"°)";
