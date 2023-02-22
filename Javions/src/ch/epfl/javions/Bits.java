@@ -18,15 +18,14 @@ public class Bits {
         //@Todo there is no way that this is correct, for example you have size = 5 and start = 10
         //that would give an exception... i propose that it is (start >= 0) && (start + size < 64)
         // I agree
-        else if ((start >= 0) && (start + size < 64)) throw new IndexOutOfBoundsException();
-
-        String sValue = Long.toString(value);
-        String isolatedValue = "";
-        for(int i = start; i < start+size; ++i){
-            isolatedValue += sValue.charAt(sValue.length()-i);
+        else if (!(start >= 0) || !(start + size < 64)) throw new IndexOutOfBoundsException();
+        int extractedValue = (int) value >>>(start);
+        int changedValueSize = 0;
+        for(int i = 0; i < size; ++i){
+            changedValueSize += Math.pow(2,i);
         }
-
-        return Integer.parseInt(isolatedValue,2);
+        extractedValue &= changedValueSize;
+        return extractedValue;
     }
 
 
