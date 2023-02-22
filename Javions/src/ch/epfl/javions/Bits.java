@@ -10,13 +10,13 @@ public class Bits {
      * @param value
      * @param start
      * @param size
+     * @throws IllegalArgumentException if size is strictly smaller than 0 or start + size is bigger or equal to 64
      * @return
      */
     public int extractUInt(long value, int start, int size){
 
-        if (size < 0) throw new IllegalArgumentException();
-        else if (size > 32) throw new IllegalArgumentException();
-        else if (!(start >= 0) || !(start + size < 64)) throw new IndexOutOfBoundsException();
+        if (size < 0 || size > 32) throw new IllegalArgumentException();
+        else if (start < 0 || start + size > 63) throw new IndexOutOfBoundsException();
 
         int extractedValue = (int) value >>>(start);
         int changedValueSize = 0;
@@ -35,6 +35,7 @@ public class Bits {
      *
      * @param value
      * @param index
+     * @throws IndexOutOfBoundsException if index is smaller than 0 or index is strictly bigger than 63
      * @return
      */
     public static boolean testBit(long value, int index){

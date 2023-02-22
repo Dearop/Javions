@@ -1,5 +1,11 @@
 package ch.epfl.javions;
 
+import java.util.HexFormat;
+
+/**
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public final class ByteString {
     private final byte[] finalBytes;
     public byte[] bytes;
@@ -8,16 +14,15 @@ public final class ByteString {
         finalBytes = bytes.clone();
     }
     public static ByteString ofHexadecimalString(String hexString){
-        //what about the case when there is length == 0?
-        // @TODO we do this later too complicated
 
         if(hexString.length() % 2 == 1) throw new IllegalArgumentException();
-        for(int i = 0; i < hexString.length(); ++i){
-            switch(hexString.charAt(i)) {
-                case 1,2,3,4,5,6,7,8,9,0 :
-            }
+        if(!hexString.matches("^[A-F0-9]+$")){
+            throw new NumberFormatException();
         }
-        return "";
+        HexFormat hf = HexFormat.of().withUpperCase();
+        byte[] bytes = hf.parseHex(hexString);
+        ByteString output = new ByteString(bytes);
+        return output;
     }
 
     public int size(){
@@ -30,6 +35,7 @@ public final class ByteString {
     }
 
     public long bytesInRange(int fromIndex, int toIndex){
-
+        if(toIndex-fromIndex < 0 || toIndex-fromIndex > finalBytes.length) throw new IndexOutOfBoundsException();
+        if(toIndex-fromIndex >= 4) throw new IllegalArgumentException();
     }
 }
