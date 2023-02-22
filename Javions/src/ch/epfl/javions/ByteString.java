@@ -18,12 +18,12 @@ public final class ByteString {
     public ByteString(byte[] bytes){
         byte[] nonSigne = new byte[bytes.length];
         for(int i = 0; i < bytes.length; ++i){
-            nonSigne[i] = (byte) Math.abs(bytes[i]);
+            nonSigne[i] = bytes[i];
         } /**
          TODO i think this is wrong how can one just use abs(of each value in bytes because they are positive
          anyways (0-9,A-F) but if index 7 is 1 then java makes it negative so we need to change that, here is a
          link for it: https://stackoverflow.com/questions/4266756/can-we-make-unsigned-byte-in-java use this in
-         byteAt, i think this would fix it, also our max would then be 256 and not 127
+         byteAt, i think this would fix it, also our max would then be 256 and not 127... it fixed problem 3/11!!
         */
         finalBytes = nonSigne.clone();
     }
@@ -43,11 +43,11 @@ public final class ByteString {
     }
 
     public int byteAt(int index){
-        // changed index <= 0 because index 0 can be inside the byte
-        if (index < 0 || index > 7) throw new IndexOutOfBoundsException();
-        if (finalBytes[7] == 1){
-            //Todo how do i change the whole value of finalBytes, also 0xFF is from link above
-            //finalBytes &= 0xFF;
+        // changed index <= 0 because index 0 can be inside the byte TODO i changed 7 to 255 not 100% sure if that is correct
+        if (index < 0 || index > 255) throw new IndexOutOfBoundsException("Out of bound for Index "+index);
+        int negativeValues;
+        if(finalBytes[index] < 0){
+            return negativeValues = (finalBytes[index] & 0xFF) ;
         }
         return finalBytes[index];
     }
