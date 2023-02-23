@@ -23,7 +23,7 @@ public final class ByteString {
      */
     public static ByteString ofHexadecimalString(String hexString){
         if(hexString.length() % 2 == 1) throw new IllegalArgumentException();
-        if(!hexString.matches("^[A-F0-9]+$")){throw new NumberFormatException();}
+        if(!hexString.matches("^[a-fA-F0-9]+$")){throw new NumberFormatException();}
         byte[] bytes = HexFormat.of().withUpperCase().parseHex(hexString);
         return new ByteString(bytes);
     }
@@ -66,7 +66,7 @@ public final class ByteString {
         return false;
     }
 
-    public int hashcode(){
+    public int hashCode(){
         return Arrays.hashCode(bytes);
     }
 

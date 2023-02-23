@@ -2,6 +2,8 @@ package ch.epfl.javions;
 
 /**
  * this class contains CONSTANTS that will be used throughout the project, they can't be changed or instantiated
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
  */
 public final class Units {
     private Units() {
