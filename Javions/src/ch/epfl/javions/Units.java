@@ -10,7 +10,7 @@ public final class Units {
     }
 
     /**
-     * Constant for the CENTI conversion, so 100*CENTI = 1 because CENTI = 0.01
+     * Constant for the CENTI conversion, so 100*CENTI = 1
      */
     public static final double CENTI = 1e-2;
     /**
@@ -19,7 +19,7 @@ public final class Units {
     public static final double KILO = 1e3;
 
     /**
-     * Class that uses all the constants that are needed for doing the angle conversions
+     * Class that contains all the constants that are needed for doing the angle conversions(base unit is the radian)
      */
     public static class Angle {
         public static final double RADIAN = 1;
@@ -32,7 +32,7 @@ public final class Units {
     }
 
     /**
-     * Class that uses all the constants that are needed for doing the length conversions
+     * Class that contains all the constants that are needed for doing the length conversions(base unit is the meter)
      */
     public static class Length {
         public static final double METER = 1;
@@ -47,7 +47,7 @@ public final class Units {
     }
 
     /**
-     * Class that uses all the constants that are needed for doing the time conversions
+     * Class that contains all the constants that are needed for doing the time conversions (base unit is the second)
      */
     public static class Time {
         public static final double SECOND = 1;
@@ -59,7 +59,7 @@ public final class Units {
     }
 
     /**
-     * Class that uses all the constants that are needed for doing the speed conversions, the base speed is
+     * Class that contains all the constants that are needed for doing the speed conversions, the base speed is
      * meters per second
      */
     public static class Speed {
@@ -72,39 +72,39 @@ public final class Units {
 
 
     /**
-     * this function converts from one unit system to another unit system
+     * this function converts from one unit to another unit
      * for example convert(2, FOOT, CENTI) gives you the value 60.96 so we change from 2 foot to 60.96cm
      *
-     * @param value    a
-     * @param fromUnit b
-     * @param toUnit   c
-     * @return
+     * @param value    double representing a value in fromUnit
+     * @param fromUnit double representing the value of a unit in the base units of the appropriate unit system
+     *                 and the unit in which value is expressed
+     * @param toUnit   double representing the value of a unit in the base units of the appropriate unit system
+     *                 and the unit in which we want value to be expressed
+     * @return the value in the unit toUnit
      */
     public static double convert(double value, double fromUnit, double toUnit) {
         return value * (fromUnit / toUnit);
     }
 
-    // this function gives you the calculation from the given unit to the base unit
-
     /**
-     * This function takes a value from one unit system and converts it to the base system.
+     * This function takes a value from one unit system and converts it to the base unit in the appropriate unit system.
      *
-     * @param value    a
-     * @param fromUnit b
-     * @return The value in the base, for example meters, radians, etc.
+     * @param value   double representing a value in fromUnit
+     * @param fromUnit double representing the value of a unit in the base units of the appropriate unit system
+     *                 and the unit in which value is expressed
+     * @return  double representing the value of value in the base units of the appropriate unit system.
      */
     public static double convertFrom(double value, double fromUnit) {
         return value * fromUnit;
     }
 
-    // this function gives you the calculation from the base unit to the input unit that we want to reach.
-
     /**
      * This function takes a value from a base unit and then converts it to the new unit.
      *
-     * @param value  a
-     * @param toUnit b
-     * @return The value will be returned in the given unit system, for example from meters to foot
+     * @param value  double representing a value in the base units of the appropriate unit system
+     * @param toUnit double representing the value of a unit in the base units of the appropriate unit system
+     *               and the unit in which we want value to be expressed
+     * @return double representing the value in the toUnit unit
      */
     public static double convertTo(double value, double toUnit) {
         return value / toUnit;

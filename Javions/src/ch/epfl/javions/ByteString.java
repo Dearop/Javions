@@ -4,7 +4,10 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
-/**
+/**This is an immutable class representing a sequence of unsigned bytes. Instances of this class are very similar to
+ * a byte[] array, with the two differences being that ByteString is immutable, so it is not possible to change the
+ * bytes that an instance contains once it has been created, and the bytes are interpreted as unsigned.
+ *
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
@@ -15,13 +18,15 @@ public final class ByteString {
         this.bytes = bytes.clone();
     }
 
-    /**
+    /**This method returns a ByteString representing the sequence of bytes corresponding to the input hexadecimal
+     * string. It throws an IllegalArgumentException if the input string has an odd length, or a NumberFormatException
+     * if it contains a character that is not a valid hexadecimal digit.
+     *
      * @param hexString the hexadecimal string to convert
      * @return the ByteString array
      * @throws IllegalArgumentException if the input string has an odd length
      * @throws NumberFormatException if the input string contains a non-hexadecimal character
      */
-
     public static ByteString ofHexadecimalString(String hexString){
         if(hexString.length() % 2 == 1) throw new IllegalArgumentException();
         if(!hexString.matches("^[a-fA-F0-9]+$")){throw new NumberFormatException();}
@@ -29,14 +34,17 @@ public final class ByteString {
         return new ByteString(bytes);
     }
 
-    /**
+    /**This method returns the size of the ByteString in bytes.
+     *
      * @return int representing the number of bytes in the ByteString
      */
     public int size() {
         return bytes.length;
     }
 
-    /**
+    /**This method returns the byte at the specified index, interpreted as an unsigned value.
+     * It throws an IndexOutOfBoundsException if the index is out of range.
+     *
      * @param index int representing the index of the byte to retrieve
      * @return int representing the byte at the specified index, interpreted as an unsigned value
      * @throws IndexOutOfBoundsException if the index is negative or greater than the size of the ByteString
@@ -47,7 +55,11 @@ public final class ByteString {
         return byteAtIndex & 0xFF;
     }
 
-    /**
+    /**This method returns the bytes between the fromIndex (inclusive) and toIndex (exclusive) as a long value.
+     * The byte at toIndex is the least significant byte of the result. It throws an IndexOutOfBoundsException if the
+     * range described by fromIndex and toIndex is not entirely within the bounds of the ByteString, and an
+     * IllegalArgumentException if the range is greater than or equal to the size of a long.
+     *
      * @param fromIndex int representing the starting index of the range (inclusive)
      * @param toIndex int representing the ending index of the range (exclusive)
      * @return long value representing the bytes between fromIndex and toIndex
@@ -58,7 +70,7 @@ public final class ByteString {
      */
     public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, this.bytes.length);
-        // went to go and look at the Long class; there's a constant for how many bytes are in a long
+
         if (toIndex - fromIndex >= Long.BYTES) {
             throw new IllegalArgumentException();
         }
@@ -71,7 +83,9 @@ public final class ByteString {
     }
 
 
-    /**
+    /**This method returns true if and only if the value passed to it is an instance of ByteString and
+     * its bytes are identical to those of the receiver.
+     *
      * @param that0 object to compare against the bytes attribute
      * @return boolean indicating whether that0 is equal to the attribute or not
      */
@@ -80,15 +94,19 @@ public final class ByteString {
         return false;
     }
 
-    /**
-     * @return the hashcode of the table of bytes
+    /**This method returns the hash code of the ByteString instance. The hash code is calculated using the
+     * Arrays.hashCode(byte[]) method applied to the byte array containing the bytes of the ByteString.
+     *
+     * @return int value representing the hash code of the ByteString
      */
     public int hashCode() {
         return Arrays.hashCode(bytes);
     }
 
-    /**
-     * @return the String of bytes in hexdecimal
+    /**This method returns a string representation of the bytes in the ByteString in hexadecimal format.
+     * Each byte is represented by exactly two characters.
+     *
+     * @return String value representing the bytes in the ByteString in hexadecimal format
      */
     public String toString() {
         return HexFormat.of().withUpperCase().formatHex(bytes);

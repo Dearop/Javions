@@ -12,6 +12,7 @@ public class WebMercator {
 
     /**
      * Returns the coordinates of points given the zoomLevel as well as the longitude
+     *
      * @param zoomLevel the zoomLevel on the map
      * @param longitude longitude given in degrees
      * @return coordinates in the cartesian coordinate system.
@@ -22,6 +23,7 @@ public class WebMercator {
 
     /**
      * Returns the coordinates of points given the zoomLevel as well as the latitude
+     *
      * @param zoomLevel the zoomLevel on the map
      * @param latitude latitude given in degrees
      * @return coordinates in the cartesian coordinate system.

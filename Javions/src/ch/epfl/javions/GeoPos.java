@@ -3,8 +3,8 @@ package ch.epfl.javions;
 
 import static ch.epfl.javions.Units.*;
 
-/**
- * This record represents GeoPos
+/**This is a public class representing geographic coordinates, i.e. a longitude/latitude pair.
+ * These coordinates are expressed in t32 and stored as 32-bit integers (type int).
  *
  * @param longitudeT32
  * @param latitudeT32
@@ -23,42 +23,38 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      */
     public GeoPos { // constructeur compact
         if(!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException();
-
     }
 
-    /**
-     * Checks if a given latitude is possible :
-     * by checking the lower bound, if the latitude is lower than the lower bound, it is not valid
-     * by checking the upper bound, if the latitude is higher than the lower bound, it is not valid
-     * if the two are false than the latitude must be valid
+    /**Checks if the value passed, interpreted as a latitude expressed in t32, is valid.
+     * A value is considered valid if it is between -2^30 (inclusive) and 2^30 (inclusive),
+     * This corresponds to a range of -90° to +90° in degrees.
      *
-     * @param latitudeT32
-     * @return
+     * @param latitudeT32 value of the latitude to check expressed in T32
+     * @return true if the value checks out with our boundaries, false otherwise
      */
     public static boolean isValidLatitudeT32(int latitudeT32) {
-        return !(latitudeT32 < -Math.pow(2, 30)) && !(latitudeT32 > Math.pow(2, 30));
+        return (latitudeT32 >= -Math.pow(2, 30)) && (latitudeT32 <= Math.pow(2, 30));
     }
 
     /**
-     * This function lets you convert the longitude from the 32 bits information into radians
-     * @return double Radians
+     * @return longitude in radians
      */
     public double longitude(){
         return convert(longitudeT32, Angle.T32, Angle.RADIAN);
     }
 
     /**
-     * This function lets you convert the latitude from the 32 bits information into radians
-     * @return double Radians
+     * @return latitude in radians
      */
     public double latitude(){
         return convert(latitudeT32, Angle.T32, Angle.RADIAN);
     }
 
     /**
-     * this function gives back a String that shows the given coordinates of an object in degrees
-     * @return String in the form of (82.784228855744°, 10.34802851267159°) where the numbers are translated from
-     * an Object.
+     * Returns a text representation of the position, with the longitude and latitude given in degrees
+     * and separated by a comma.
+     *
+     * @return string representation of the GeoPos object, with the longitude and latitude in degrees
      */
     @Override
     public String toString() {
