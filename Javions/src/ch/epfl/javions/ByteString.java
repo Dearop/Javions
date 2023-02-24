@@ -72,11 +72,11 @@ public final class ByteString {
         Objects.checkFromToIndex(fromIndex, toIndex, this.bytes.length);
 
         if (toIndex - fromIndex >= Long.BYTES) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException( );
         }
         long result = 0;
         for (int i = fromIndex; i < toIndex; ++i) {
-            result <<= 8;
+            result <<= Byte.SIZE;
             result |= (this.bytes[i] & 0xFF);
         }
         return result;

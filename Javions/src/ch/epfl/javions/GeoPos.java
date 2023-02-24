@@ -21,7 +21,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @param latitudeT32 is the latitude written in 32 bits
      * @throws IllegalArgumentException if the given latitude is not valid
      */
-    public GeoPos { // constructeur compact
+    public GeoPos {
         if(!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException();
     }
 
