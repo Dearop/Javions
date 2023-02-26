@@ -17,7 +17,7 @@ public final class Crc24 {
             int[] table = {0, generator};
             byte usedByte = bytes[o];
             for(int i = 7; i >= 0; --i){
-                crc = (((crc << 1) | ((usedByte >> i)& 1)) ^ table[valMinusOne(crc, indexFinder(crc))]);
+                crc = (((crc << 8) | ((usedByte >> i)& 1)) ^ table[valMinusOne(crc, indexFinder(crc))]);
             }
         }
         return crc;

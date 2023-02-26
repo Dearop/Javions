@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class WakeTurbulenceCategoryTest {
     @Test
     public void WakeTurbulenceCategoryIdentifiesUnknown(){
-        assertEquals(WakeTurbulenceCategory.UNKNOWN, WakeTurbulenceCategory.WakeTurbulenceCategoryof("HELLO"));
-        assertEquals(WakeTurbulenceCategory.UNKNOWN, WakeTurbulenceCategory.WakeTurbulenceCategoryof(""));
+        assertEquals(WakeTurbulenceCategory.UNKNOWN, WakeTurbulenceCategory.of("HELLO"));
+        assertEquals(WakeTurbulenceCategory.UNKNOWN, WakeTurbulenceCategory.of(""));
     }
 }

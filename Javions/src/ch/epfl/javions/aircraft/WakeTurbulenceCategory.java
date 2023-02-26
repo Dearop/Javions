@@ -8,7 +8,7 @@ public enum WakeTurbulenceCategory {
       * @param s
      * @return
      */
-    public static WakeTurbulenceCategory WakeTurbulenceCategoryof(String s){
+    public static WakeTurbulenceCategory of(String s){
         if (s.equals("L")) return LIGHT;
         if (s.equals("M")) return MEDIUM;
         if (s.equals("H")) return HEAVY;
