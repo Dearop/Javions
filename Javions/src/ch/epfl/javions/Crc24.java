@@ -9,7 +9,7 @@ public final class Crc24 {
     private static final int N24 = 24;
     private final int generator;
     public Crc24(int generator){
-        this.generator = generator & (int)Math.pow(2,24)-1;
+        this.generator = Bits.extractUInt(generator, 0, 24);
     }
 
     public int crc(byte[] bytes){
@@ -18,10 +18,9 @@ public final class Crc24 {
     private static int crc_bitwise(int generator, byte[] bytes){
         int crc = 0;
         for(int o = 0; o < bytes.length; o++){
-            int table []= {0, generator};
+            int[] table = {0, generator};
             byte usedByte = bytes[o];
             for(int i = 7; i >= 0; --i){
-                int N = indexFinder(crc);
                 crc = (((crc << 1) | ((usedByte >> i)& 1)) ^ table[valMinusOne(crc, indexFinder(crc))]);
             }
         }
@@ -30,7 +29,7 @@ public final class Crc24 {
     }
 
     private static int indexFinder(int crc){
-        if(crc == 0|| crc == 1) return 0;
+        if(crc == 0|| crc == 1) throw new IllegalArgumentException();
         int index = 0;
         while(crc != 1){
             crc >>= 1;
