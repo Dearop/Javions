@@ -10,6 +10,6 @@ public record CallSign(String string) {
      */
     public CallSign{
         pattern = Pattern.compile("^[A-Z0-9 ]{0,8}+$");
-        if (string.isEmpty() || pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if (string.isEmpty() || !pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 }

@@ -6,7 +6,7 @@ public record AircraftDescription(String string) {
     private static Pattern pattern;
     public AircraftDescription{
         pattern = Pattern.compile("^[ABDGHLPRSTV-][0123468][EJPT-]+$");
-        if(pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if(!pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 
 

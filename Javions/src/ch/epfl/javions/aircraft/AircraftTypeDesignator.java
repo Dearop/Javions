@@ -6,6 +6,6 @@ public record AircraftTypeDesignator(String string) {
     private static Pattern pattern;
     public AircraftTypeDesignator{
         pattern = Pattern.compile("^[A-Z0-9]{2,4}+$");
-        if(pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if(!pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 }

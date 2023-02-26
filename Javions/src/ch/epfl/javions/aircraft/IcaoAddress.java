@@ -10,7 +10,7 @@ public record IcaoAddress(String string) {
      */
     public IcaoAddress{
         pattern = Pattern.compile("^[0-9A-F]{6}+$");
-        if (string.isEmpty() || pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if (string.isEmpty() || !pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 
 
