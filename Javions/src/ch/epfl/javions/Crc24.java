@@ -2,11 +2,7 @@ package ch.epfl.javions;
 
 public final class Crc24 {
 
-    /**
-     * Given by the consignes, GENERATOR = FFF409 (base 16)
-     */
-    public final static int GENERATOR = 16774153;
-    private static final int N24 = 24;
+    public final static int GENERATOR = 0xFFF409;
     private final int generator;
     public Crc24(int generator){
         this.generator = Bits.extractUInt(generator, 0, 24);
@@ -29,7 +25,8 @@ public final class Crc24 {
     }
 
     private static int indexFinder(int crc){
-        if(crc == 0|| crc == 1) throw new IllegalArgumentException();
+        //todo dangerous
+        if(crc == 0|| crc == 1) throw new IllegalArgumentException(crc +" crc");
         int index = 0;
         while(crc != 1){
             crc >>= 1;
