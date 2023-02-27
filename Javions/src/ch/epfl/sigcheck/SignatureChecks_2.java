@@ -77,8 +77,8 @@ final class SignatureChecks_2 {
     }
 
     void checkAircraftDatabase() throws Exception {
-        v15 = new ch.epfl.javions.aircraft.AircraftDatabase(v05);
-        v14 = v15.get(v10);
+//        v15 = new ch.epfl.javions.aircraft.AircraftDatabase(v05);
+//        v14 = v15.get(v10);
     }
 
     ch.epfl.javions.Crc24 v01;

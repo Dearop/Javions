@@ -13,20 +13,22 @@ public final class Crc24 {
     }
     private static int crc_bitwise(int generator, byte[] bytes){
         int crc = 0;
+        int[] table = {0, generator};
+        //traitement du message
         for(int o = 0; o < bytes.length; o++){
-            int[] table = {0, generator};
             byte usedByte = bytes[o];
-            for(int i = 7; i >= 0; --i){
-                crc = (((crc << 8) | ((usedByte >> i)& 1)) ^ table[valMinusOne(crc, indexFinder(crc))]);
-            }
+            crc = ((crc << 8) | usedByte) ^ table[(crc >> countBits(crc)-1)];
         }
         return crc;
 
     }
 
+    private static int countBits(int number) {
+
+        return (int)(Math.log(2)/Math.log(number))+1;
+    }
+
     private static int indexFinder(int crc){
-        //todo dangerous
-        if(crc == 0|| crc == 1) throw new IllegalArgumentException(crc +" crc");
         int index = 0;
         while(crc != 1){
             crc >>= 1;
