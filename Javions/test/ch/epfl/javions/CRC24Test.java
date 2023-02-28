@@ -13,12 +13,10 @@ public class CRC24Test {
         int c = Integer.parseInt(cS, 16); // == 0x035DB8
 
         byte[] mAndC = HexFormat.of().parseHex(mS + cS);
-        assertEquals(0, crc24.crc_bitwise(Crc24.GENERATOR,mAndC));
+        assertEquals(0, crc24.crc(mAndC));
 
         byte[] mOnly = HexFormat.of().parseHex(mS);
-        assertEquals(c, crc24.crc_bitwise(Crc24.GENERATOR,mOnly));
-
-
+        assertEquals(c, crc24.crc(mOnly));
     }
 
 
