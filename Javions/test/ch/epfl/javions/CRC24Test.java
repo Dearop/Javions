@@ -8,15 +8,15 @@ public class CRC24Test {
     @Test
     void Crc24ValueTests(){
         Crc24 crc24 = new Crc24(Crc24.GENERATOR);
-        String mS1 = "8D392AE499107FB5C00439";
-        String cS1 = "035DB8";
-        int c = Integer.parseInt(cS1, 16); // == 0x035DB8
+        String mS = "8D392AE499107FB5C00439";
+        String cS = "035DB8";
+        int c = Integer.parseInt(cS, 16); // == 0x035DB8
 
-        byte[] mOnly = HexFormat.of().parseHex(mS1);
-        assertEquals(c, crc24.crc_bitwise(Crc24.GENERATOR, mOnly));
-
-        byte[] mAndC = HexFormat.of().parseHex(mS1 + cS1);
+        byte[] mAndC = HexFormat.of().parseHex(mS + cS);
         assertEquals(0, crc24.crc_bitwise(Crc24.GENERATOR,mAndC));
+
+        byte[] mOnly = HexFormat.of().parseHex(mS);
+        assertEquals(c, crc24.crc_bitwise(Crc24.GENERATOR,mOnly));
 
 
     }

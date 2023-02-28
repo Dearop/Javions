@@ -18,21 +18,18 @@ public final class Crc24 {
     }
     public static int crc_bitwise(int generator, byte[] bytes){
         int crc = 0;
-        byte[] zeroes = new byte[3];
         int[] table = {0,generator};
-        //traitement du message
-        for(int o = 0; o < bytes.length; o++){
+        for(int o = 0; o < bytes.length; ++o){
             byte usedByte = bytes[o];
-            for (int j = 8; j > 0; --j) {
+            for (int j = 7; j >= 0; --j) {
                 int bit = Bits.extractUInt(usedByte, j, 1);
                 crc = ((crc << 1) | bit) ^ table[Bits.extractUInt(crc, 23, 1)];
             }
-            System.out.print(2);
         }
         for (int i = 0; i < 24; ++i){
             crc = (crc << 1) ^ table[Bits.extractUInt(crc, 23, 1)];
         }
-        return crc;
+        return Bits.extractUInt(crc,0,24);
     }
 
     private static int indexFinder(int crc){
