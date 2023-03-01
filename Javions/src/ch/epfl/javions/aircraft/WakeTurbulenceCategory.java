@@ -1,5 +1,10 @@
 package ch.epfl.javions.aircraft;
 
+/**
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
+
 public enum WakeTurbulenceCategory {
     LIGHT, MEDIUM, HEAVY, UNKNOWN;
 

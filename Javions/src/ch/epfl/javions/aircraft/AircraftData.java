@@ -5,6 +5,18 @@ import org.junit.jupiter.api.function.Executable;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ *
+ * @param registration
+ * @param typeDesignator
+ * @param model
+ * @param description
+ * @param wakeTurbulenceCategory
+ *
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ *
+ */
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator, String model,
                            AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) implements Executable {
     /** The constructor of AircraftData throws NullPointerException if any of it's attriubutes are null

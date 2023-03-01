@@ -1,45 +1,67 @@
 package ch.epfl.javions;
 
+/**
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public final class Crc24 {
-
     public final static int GENERATOR = 0xFFF409;
     private final int generator;
-    private int[] crc_b = new int[256];
+    private static int[] crc_b = new int[256];
+    private static final int mask = 16777215;
 
-    public Crc24(int generator) {
-        this.generator = Bits.extractUInt(generator, 0, 24);
-        for (int i = 0; i < 256; ++i) {
-            this.crc_b[i] = crc_bitwise(generator, new byte[]{(byte) i});
-        }
-
+    /**
+     *
+     * @param generator
+     */
+    public Crc24(int generator){
+        this.generator = generator & mask;
+        crc_b = buildTable(this.generator);
     }
 
-    public int crc(byte[] bytes) {
+    /**
+     *
+     * @param bytes
+     * @return
+     */
+    public int crc(byte[] bytes){
         int crc = 0;
-        byte[] zeros = new byte[3];
-        for(int i = 0; i < bytes.length; ++i){
-            crc = ((crc << 8)| bytes[bytes.length-1]) ^ crc_b[crc_b.length-1];
-
+        for(byte o : bytes){
+                crc = ((crc << 8) | Byte.toUnsignedInt(o)) ^ crc_b[Bits.extractUInt(crc,16,8)];
         }
-        for(int j = 0; j < zeros.length; ++j ){
-            crc = ((crc << 8)| zeros[zeros.length-1]) ^ crc_b[crc_b.length-1];
+        for(int j = 0; j < 3; ++j){
+            crc = (crc << 8) ^ crc_b[Bits.extractUInt(crc,16,8)];
         }
-        return Bits.extractUInt(crc, 0, 24);
+        return crc & mask;
     }
 
-    public static int crc_bitwise(int generator, byte[] bytes) {
+    /**
+     *
+     * @param generator
+     * @param bytes
+     * @return
+     */
+    public static int crc_bitwise(int generator, byte[] bytes){
+        int[] table = {0,generator & mask};
         int crc = 0;
-        int[] table = {0, generator};
-        for (int o = 0; o < bytes.length; ++o) {
-            byte usedByte = bytes[o];
-            for (int j = 7; j >= 0; --j) {
-                int bit = Bits.extractUInt(usedByte, j, 1);
-                crc = ((crc << 1) | bit) ^ table[Bits.extractUInt(crc, 23, 1)];
+        for(byte b : bytes){
+            for(int i = 7; i >= 0; --i){
+                crc = ((crc << 1) | Bits.extractUInt(b,i,1)) ^ table[Bits.extractUInt(crc,23,1)];
             }
         }
-        for (int i = 0; i < 24; ++i) {
-            crc = (crc << 1) ^ table[Bits.extractUInt(crc, 23, 1)];
+        for (int i = 0; i < 3; i++) {
+            for (int j = 7; j >= 0; --j){
+                crc = (crc << 1) ^ table[Bits.extractUInt(crc,23,1)];
+            }
         }
-        return Bits.extractUInt(crc, 0, 24);
+        return crc & mask;
+    }
+
+    private static int[] buildTable(int generator){
+        int[] table = new int[256];
+        for(int i = 0; i < 256; ++i){
+            table[i] = crc_bitwise(generator, new byte[] {(byte) i});
+        }
+        return table;
     }
 }

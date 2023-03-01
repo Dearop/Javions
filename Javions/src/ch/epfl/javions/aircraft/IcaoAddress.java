@@ -2,10 +2,16 @@ package ch.epfl.javions.aircraft;
 
 import java.util.regex.Pattern;
 
+/**
+ * @param string
+ *
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public record IcaoAddress(String string) {
     private static Pattern pattern;
     /**
-     * If this doesn't work take away $ sign and accent circonflexe
+     *
      * @param string
      */
     public IcaoAddress{

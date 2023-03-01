@@ -5,14 +5,17 @@ import java.util.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ *  @author Henri Antal (339444)
+ *  @author Paul Quesnot (347572)
+ */
 public final class AircraftDatabase {
     private String fileName;
     public AircraftDatabase(String fileName){
         if(fileName == null) throw new NullPointerException();
         this.fileName = fileName;
     }
-
-    public AircraftData get(IcaoAddress address) throws IOException {
+/*    public AircraftData get(IcaoAddress address) throws IOException {
         String aircraft = getClass().getResource("/aircraft.zip").getFile();
         try (ZipFile zipFileUsed = new ZipFile(aircraft);
              InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry("14.csv"));
@@ -21,12 +24,15 @@ public final class AircraftDatabase {
             String stringLineFiltered = "";
             while ((stringLineFiltered = buffer.readLine()) != null)
                 System.out.println(stringLineFiltered);
+            while(!address.equals(stringLineFiltered)){
+                buffer.readLine();// like thisthis?
+            }
         } // up to here code works duh
-
         // in here you need to go through the stringLineFiltered and find the address given
         //if(address == a certain icaoaddress)
 
-        return // has to be the address file called by icao;
+        return ;// has to be the address file called by icao;
     }
 
+ */
 }
