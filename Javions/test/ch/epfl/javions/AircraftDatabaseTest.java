@@ -19,6 +19,6 @@ public class AircraftDatabaseTest {
         } catch (IOException e) {
             System.out.println("here");
         }
-        assertEquals("DE HAVILLAND DHC-6 Twin Otter", address.returnString());
+        assertEquals("DE HAVILLAND DHC-6 Twin Otter", modelGetter());
     }
 }

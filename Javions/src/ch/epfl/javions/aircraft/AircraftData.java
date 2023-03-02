@@ -42,4 +42,5 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
     public void execute() throws Throwable {
 
     }
+
 }
