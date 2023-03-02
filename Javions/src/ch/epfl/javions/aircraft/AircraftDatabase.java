@@ -25,7 +25,6 @@ public final class AircraftDatabase {
     //TODO delete??
     //TODO is this Class working?? Henri doesn't know, Henri stupid
     private String testName;
-    private WakeTurbulenceCategory WTCTest;
 
     /**
      * Stores the specified file name.
@@ -49,9 +48,9 @@ public final class AircraftDatabase {
      * @throws IOException If there is an input/output error.
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-
         String aircraft = getClass().getResource("/aircraft.zip").getFile();
         aircraft = URLDecoder.decode(aircraft, UTF_8);
+ //       String stringLineFiltered = getStringLineFiltered(aircraft);
         String stringLineFiltered = "";
         AircraftRegistration registration;
         AircraftTypeDesignator designator;
@@ -71,6 +70,8 @@ public final class AircraftDatabase {
             throw new RuntimeException(e + " zipFileError");
         }
 
+        // up to here code works duh
+
         if (addressString.length() != 6) {
             addressString = addressString.substring(19,25);
         }
@@ -87,28 +88,15 @@ public final class AircraftDatabase {
                 testName = model;
                 description = new AircraftDescription(lines.get(i)[4]);
                 wakeTurbulenceCategory = WakeTurbulenceCategory.of(lines.get(i)[5]);
-                WTCTest = wakeTurbulenceCategory;
                 return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
             }
         }
 
-        return null; // If the address doesn't get found in the ZipFile then null gets returned.
+        return null; // has to be the address file called by icao;
     }
 
-    /**
-     * This method was written to test the class
-     * @return String created in the get method above that stores the name of the aircraft.
-     */
     public String returnModelString() {
         return this.testName;
-    }
-
-    /**
-     * This method was written to test the class
-     * @return WakeTurbulenceCategory created in the get method above.
-     */
-    public WakeTurbulenceCategory returnWTCValue(){
-        return this.WTCTest;
     }
 
 

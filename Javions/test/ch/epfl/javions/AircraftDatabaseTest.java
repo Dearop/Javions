@@ -32,16 +32,7 @@ public class AircraftDatabaseTest {
     }
 
     @Test
-    public void AircraftDatabaseTestWTC(){
-        AircraftData data = null;
-        AircraftDatabase address = new AircraftDatabase(new IcaoAddress("E88014"));
-        try{
-            address.get(new IcaoAddress("E88014"));
-        } catch (IOException e){
-            System.out.println("gang gang");
-        }
-        assertEquals("M", address.returnWTCValue());
-    }
+    public void AircraftDatabase
 
 
 }

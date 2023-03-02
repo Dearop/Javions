@@ -10,6 +10,7 @@ import java.util.stream.Stream;
  * model, description, and wake turbulence category.
  * The class has a compact constructor that takes all of the attributes as arguments and throws a
  * NullPointerException if any of them are null. This is done using the requireNonNull() method from the Objects class.
+ *
  * @param registration           The registration number of the aircraft.
  * @param typeDesignator         The type designator of the aircraft.
  * @param model                  The model of the aircraft.
@@ -19,8 +20,7 @@ import java.util.stream.Stream;
  * @author Paul Quesnot (347572)
  */
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator, String model,
-                           AircraftDescription description,
-                           WakeTurbulenceCategory wakeTurbulenceCategory) implements Executable {
+                           AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) implements Executable {
     /**
      * The constructor of AircraftData throws NullPointerException if any of it's attriubutes are null
      *
@@ -40,7 +40,5 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
 
     @Override
     public void execute() throws Throwable {
-
     }
-
 }
