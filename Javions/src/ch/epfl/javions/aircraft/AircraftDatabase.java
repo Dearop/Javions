@@ -1,6 +1,9 @@
 package ch.epfl.javions.aircraft;
 
 import java.io.*;
+import java.net.URLDecoder;
+import java.sql.SQLOutput;
+import java.util.ArrayList;
 import java.util.zip.ZipFile;
 
 
@@ -21,7 +24,7 @@ public final class AircraftDatabase {
     private IcaoAddress fileName;
     //TODO delete??
     //TODO is this Class working?? Henri doesn't know, Henri stupid
-    private String modelhehe;
+    private String testName;
 
     /**
      * Stores the specified file name.
@@ -45,46 +48,55 @@ public final class AircraftDatabase {
      * @throws IOException If there is an input/output error.
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        String aircraft = getClass().getResource("/Javions/Javions/resources/aircraft.zip").getFile();
-        String stringLineFiltered = getStringLineFiltered(aircraft);
+        String aircraft = getClass().getResource("/aircraft.zip").getFile();
+        aircraft = URLDecoder.decode(aircraft, UTF_8);
+ //       String stringLineFiltered = getStringLineFiltered(aircraft);
+        String stringLineFiltered = "";
         AircraftRegistration registration;
         AircraftTypeDesignator designator;
         String model;
         AircraftDescription description;
         WakeTurbulenceCategory wakeTurbulenceCategory;
+        String addressString = String.valueOf(address);
+        ArrayList <String[]> lines = new ArrayList<>();
+
+        try (ZipFile zipFileUsed = new ZipFile(aircraft);
+             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry("14.csv"));
+             Reader reader = new InputStreamReader(stream, UTF_8);
+             BufferedReader buffer = new BufferedReader(reader)) {
+            while ((stringLineFiltered = buffer.readLine()) != null)
+                lines.add(stringLineFiltered.split(",|\\r?\\n"));
+        } catch (IOException e) {
+            throw new RuntimeException(e + " zipFileError");
+        }
 
         // up to here code works duh
-        String addressString = String.valueOf(address);
 
         if (addressString.length() != 6) {
-            return null;
+            addressString = addressString.substring(19,25);
         }
 
         // splits the string into an array for every line and comma
-        String[] lines = stringLineFiltered.split(System.getProperty("line.separator" + ","));
 
         // +6 because there are always 5 commas and one line.separator till the next ICAO
-        for (int i = 0; i < lines.length; i = i + 6) {
-            if (lines[i].startsWith(addressString)) {
+        for (int i = 0; i < lines.size(); ++i) {
+            if (lines.get(i)[0].startsWith(addressString)) {
 
-                registration = new AircraftRegistration(lines[i + 1]);
-                designator = new AircraftTypeDesignator(lines[i + 2]);
-                model = lines[i + 3];
-
-                modelhehe = model;
-
-                description = new AircraftDescription(lines[i + 4]);
-                wakeTurbulenceCategory = WakeTurbulenceCategory.of(lines[i + 5]);
+                registration = new AircraftRegistration(lines.get(i)[1]);
+                designator = new AircraftTypeDesignator(lines.get(i)[2]);
+                model = lines.get(i)[3];
+                testName = model;
+                description = new AircraftDescription(lines.get(i)[4]);
+                wakeTurbulenceCategory = WakeTurbulenceCategory.of(lines.get(i)[5]);
                 return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
             }
-
         }
 
         return null; // has to be the address file called by icao;
     }
 
-    public String returnString() {
-        return this.modelhehe;
+    public String returnModelString() {
+        return this.testName;
     }
 
 
