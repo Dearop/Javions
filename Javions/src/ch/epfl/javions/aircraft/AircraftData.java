@@ -4,7 +4,7 @@ import java.util.Objects;
 /**
  * The AircraftData class represents the fixed data for an aircraft, including its registration, type designator,
  * model, description, and wake turbulence category.
- * The class has a compact constructor that takes all of the attributes as arguments and throws a
+ * The class has a compact constructor that takes all the attributes as arguments and throws a
  * NullPointerException if any of them are null. This is done using the requireNonNull() method from the Objects class.
  *
  * @param registration           The registration number of the aircraft.
@@ -18,7 +18,7 @@ import java.util.Objects;
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator, String model,
                            AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) {
     /**
-     * The constructor of AircraftData throws NullPointerException if any of it's attriubutes are null
+     * The constructor of AircraftData throws NullPointerException if any of its attributes are null
      *
      * @param registration
      * @param typeDesignator
@@ -32,8 +32,5 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
         Objects.requireNonNull(model);
         Objects.requireNonNull(description);
         Objects.requireNonNull(wakeTurbulenceCategory);
-    }
-
-    public void execute() throws Throwable {
     }
 }

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class AircraftDataTest {
     @Test
-    public void AircraftDateThrowsNullWithNull(){
+    public void AircraftDataThrowsNullWithNull(){
         assertThrows(NullPointerException.class, () ->new AircraftData(null, new AircraftTypeDesignator("A2"),
                 "A320", new AircraftDescription("A0J"), WakeTurbulenceCategory.LIGHT));
         assertThrows(NullPointerException.class, () ->new AircraftData(new AircraftRegistration("HELLO"),

@@ -1,7 +1,4 @@
 package ch.epfl.javions.aircraft;
-
-import org.junit.jupiter.api.function.Executable;
-
 import java.util.regex.Pattern;
 
 /**
@@ -22,7 +19,9 @@ public record AircraftTypeDesignator(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftTypeDesignator{
-        pattern = Pattern.compile("[A-Z0-9]{2,4}");
-        if(!pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if(string != null){
+            pattern = Pattern.compile("[A-Z0-9]{2,4}");
+            if(!pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        }
     }
 }

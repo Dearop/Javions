@@ -9,5 +9,7 @@ public class AircraftTypeDesignatorTest {
     @Test
     public void  AircraftTypeDesignatorTestStringWithNothing(){
         assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator("F/5"));
+        assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator("FSFNAF5"));
+        assertThrows(IllegalArgumentException.class, () -> new AircraftTypeDesignator("a"));
     }
 }
