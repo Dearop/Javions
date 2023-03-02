@@ -22,9 +22,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class AircraftDatabase {
     private IcaoAddress fileName;
-    //TODO delete??
-    //TODO is this Class working?? Henri doesn't know, Henri stupid
     private String testName;
+    private WakeTurbulenceCategory WTCTest;
+
 
     /**
      * Stores the specified file name.
@@ -50,7 +50,6 @@ public final class AircraftDatabase {
     public AircraftData get(IcaoAddress address) throws IOException {
         String aircraft = getClass().getResource("/aircraft.zip").getFile();
         aircraft = URLDecoder.decode(aircraft, UTF_8);
- //       String stringLineFiltered = getStringLineFiltered(aircraft);
         String stringLineFiltered = "";
         AircraftRegistration registration;
         AircraftTypeDesignator designator;
@@ -60,6 +59,9 @@ public final class AircraftDatabase {
         String addressString = String.valueOf(address);
         ArrayList <String[]> lines = new ArrayList<>();
 
+        /**
+         * This try/catch gets the zip file that includes all the data that we have about the different aircrafts
+         */
         try (ZipFile zipFileUsed = new ZipFile(aircraft);
              InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry("14.csv"));
              Reader reader = new InputStreamReader(stream, UTF_8);
@@ -70,15 +72,20 @@ public final class AircraftDatabase {
             throw new RuntimeException(e + " zipFileError");
         }
 
-        // up to here code works duh
-
+        /**
+         * This if statement shortens the length of addressString to only the address itself.
+         * This is necessary because the valueOf() function that gets initialized when addressString is created,
+         * has the following form: "IcaoAddress[string=XXXXXX]"
+         */
         if (addressString.length() != 6) {
             addressString = addressString.substring(19,25);
         }
 
-        // splits the string into an array for every line and comma
-
-        // +6 because there are always 5 commas and one line.separator till the next ICAO
+        /**
+         * In this for-loop we first search through every ICAO-address until we find the one we are looking for.
+         * Once that address gets found we then return the values that are found in the same array in the form of
+         * AircraftData.
+         */
         for (int i = 0; i < lines.size(); ++i) {
             if (lines.get(i)[0].startsWith(addressString)) {
 
@@ -88,16 +95,30 @@ public final class AircraftDatabase {
                 testName = model;
                 description = new AircraftDescription(lines.get(i)[4]);
                 wakeTurbulenceCategory = WakeTurbulenceCategory.of(lines.get(i)[5]);
+                WTCTest = wakeTurbulenceCategory;
                 return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
             }
         }
 
-        return null; // has to be the address file called by icao;
+        return null; // If the address doesn't get found in the ZipFile then null gets returned.
     }
 
+    /**
+     * This method was written to test the class
+     * @return String created in the get method above that stores the name of the aircraft.
+     */
     public String returnModelString() {
         return this.testName;
     }
+
+    /**
+     * This method was written to test the class
+     * @return WakeTurbulenceCategory created in the get method above.
+     */
+    public WakeTurbulenceCategory returnWTCValue(){
+        return this.WTCTest;
+    }
+
 
 
     /**

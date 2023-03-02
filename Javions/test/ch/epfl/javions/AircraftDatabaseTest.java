@@ -9,9 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AircraftDatabaseTest {
-    //Todo make this test working, best way is to get it from Ricardo he has working test - how to convice to share - free blowie
-    // TODO: 02.03.23 Make more tests for next time
-    @Test //this works for all the input values
+    @Test
     public void AircraftDatabaseTest1(){
         AircraftData data = null;
         AircraftDatabase address = new AircraftDatabase(new IcaoAddress("E88014"));
@@ -23,7 +21,7 @@ public class AircraftDatabaseTest {
         assertEquals("BEECH 200 Super King Air", address.returnModelString());
     }
 
-    @Test // this test works as well.
+    @Test
     public void AircraftDatabaseTestElementDoesNotExist() throws IOException {
         AircraftData data = null;
         AircraftDatabase address = new AircraftDatabase(new IcaoAddress("C0A415"));
@@ -31,5 +29,15 @@ public class AircraftDatabaseTest {
 
     }
 
-
+    @Test
+    public void AircraftDatabaseTestWTC(){
+        AircraftData data = null;
+        AircraftDatabase address = new AircraftDatabase(new IcaoAddress("E88014"));
+        try{
+            address.get(new IcaoAddress("E88014"));
+        } catch (IOException e){
+            System.out.println("gang gang");
+        }
+        assertEquals(WakeTurbulenceCategory.of("M"), address.returnWTCValue());
+    }
 }
