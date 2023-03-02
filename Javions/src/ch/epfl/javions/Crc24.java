@@ -20,7 +20,7 @@ public final class Crc24 {
     }
 
     /**
-     *
+     * TODO write all the comments
      * @param bytes
      * @return
      */

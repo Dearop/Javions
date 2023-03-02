@@ -19,7 +19,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class AircraftDatabase {
     private IcaoAddress fileName;
-    //TODO delete
+    //TODO delete??
+    //TODO is this Class working?? Henri doesn't know, Henri stupid
     private String modelhehe;
 
     /**

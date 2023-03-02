@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AircraftDatabaseTest {
-
+    //Todo make this test working, best way is to get it from Ricardo he has working test - how to convice to share - free blowie
     @Test
     public void AircraftDatabaseTest(){
         AircraftData data = null;
