@@ -20,7 +20,7 @@ public record IcaoAddress(String string) {
      * or does not match the expected format (i.e. six hexadecimal digits)
      */
     public IcaoAddress {
-        pattern = Pattern.compile("^[0-9A-F]{6}+$");
+        pattern = Pattern.compile("[0-9A-F]{6}");
         if (string.isEmpty() || !pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 }

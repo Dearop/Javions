@@ -19,7 +19,7 @@ public record AircraftRegistration(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftRegistration{
-        pattern = Pattern.compile("^[A-Z0-9 .?/_+-]+$");
+        pattern = Pattern.compile("[A-Z0-9 .?/_+-]");
         if (string.isEmpty() || !pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 }

@@ -2,7 +2,6 @@ package ch.epfl.javions.aircraft;
 
 import java.io.*;
 import java.net.URLDecoder;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.zip.ZipFile;
 
@@ -21,7 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author Paul Quesnot (347572)
  */
 public final class AircraftDatabase {
-    private IcaoAddress fileName;
+    private String fileName;
     private String testName;
     private WakeTurbulenceCategory WTCTest;
 
@@ -33,7 +32,7 @@ public final class AircraftDatabase {
      * @param fileName The name of the file containing the aircraft information.
      * @throws NullPointerException If the file name is null.
      */
-    public AircraftDatabase(IcaoAddress fileName) {
+    public AircraftDatabase(String fileName) {
         if (fileName == null) throw new NullPointerException();
         this.fileName = fileName;
     }
@@ -118,32 +117,4 @@ public final class AircraftDatabase {
     public WakeTurbulenceCategory returnWTCValue(){
         return this.WTCTest;
     }
-
-
-
-    /**
-     * This method takes the name of a zip file containing a CSV file named "14.csv".
-     * It then opens the zip file, retrieves the input stream for the CSV file, and reads each line of the file.
-     * The lines are printed to the console as they are read, and the last non-null line is returned.
-     * If there is an input/output error while reading the file, a RuntimeException is thrown with an error message
-     * indicating that there was an error with the zip file.
-     * @param aircraft The name of the zip file containing the CSV file.
-     * @return The buffered string of the zip file.
-     * @throws RuntimeException If there is an input/output error with the zip file.
-     */
-    private static String getStringLineFiltered(String aircraft) {
-
-        try (ZipFile zipFileUsed = new ZipFile(aircraft);
-             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry("14.csv"));
-             Reader reader = new InputStreamReader(stream, UTF_8);
-             BufferedReader buffer = new BufferedReader(reader)) {
-            String stringLineFiltered = "";
-            while ((stringLineFiltered = buffer.readLine()) != null)
-                System.out.println(stringLineFiltered);
-            return stringLineFiltered;
-        } catch (IOException e) {
-            throw new RuntimeException(e + " zipFileError");
-        }
-    }
-
 }

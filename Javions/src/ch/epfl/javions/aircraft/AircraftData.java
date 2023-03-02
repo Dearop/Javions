@@ -1,9 +1,5 @@
 package ch.epfl.javions.aircraft;
-
-import org.junit.jupiter.api.function.Executable;
-
 import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * The AircraftData class represents the fixed data for an aircraft, including its registration, type designator,
@@ -20,7 +16,7 @@ import java.util.stream.Stream;
  * @author Paul Quesnot (347572)
  */
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator, String model,
-                           AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) implements Executable {
+                           AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) {
     /**
      * The constructor of AircraftData throws NullPointerException if any of it's attriubutes are null
      *
@@ -38,7 +34,6 @@ public record AircraftData(AircraftRegistration registration, AircraftTypeDesign
         Objects.requireNonNull(wakeTurbulenceCategory);
     }
 
-    @Override
     public void execute() throws Throwable {
     }
 }

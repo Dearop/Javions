@@ -19,9 +19,8 @@ public record AircraftDescription(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftDescription{
-        pattern = Pattern.compile("^[ABDGHLPRSTV-][0123468][EJPT-]+$");
+        pattern = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
         if(!pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
-
 
 }

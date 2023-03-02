@@ -68,7 +68,7 @@ public final class Crc24 {
 
     /**
      * The method uses the crc_bitwise method to calculate the CRC24 value for each possible byte value (0-255),
-     * using the given generator.The resulting CRC24 values are stored in the lookup table,
+     * using the given generator§.The resulting CRC24 values are stored in the lookup table,
      * which can then be used in the calculation of CRC24 values for input data arrays.
      *
      * @param generator integer value that specifies the 24 least significant bits of the generator to be
