@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public final class AircraftDatabase {
+public final class AircraftDatabase{
     private String fileName;
     private String testName;
     private WakeTurbulenceCategory WTCTest;
