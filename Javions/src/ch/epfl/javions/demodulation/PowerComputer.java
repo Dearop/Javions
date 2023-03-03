@@ -2,6 +2,7 @@ package ch.epfl.javions.demodulation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public final class PowerComputer {
     private int batchSize;
@@ -17,8 +18,16 @@ public final class PowerComputer {
 
     public int readBatch(int[] batch) throws IOException{
         int numberOfBatches = decoder.readBatch(output);
-        for(int i = 7; i < batchSize; i+=2){
+        byte[] bytes = stream.readAllBytes();
+        int[] powerSignal = new int[(bytes.length-8)/2];
 
+
+        for(int i = 0; i < powerSignal.length ; ++i){
+            int j = (i*2) + 7;
+            powerSignal[i] = (int) (Math.pow(bytes[j-6]-bytes[j-4]+bytes[j-2], 2)
+                    + Math.pow(bytes[j-7] - bytes[j-5] + bytes[j-3] -bytes[j-1], 2));
         }
+
+        return 1212121212;
     }
 }
