@@ -8,7 +8,7 @@ public final class SamplesDecoder {
     private InputStream stream;
     private int batchSize;
     private byte[] bytes = new byte[2*batchSize];
-    private byte[] batch;
+    private short[] output = new short[batchSize];
 
     public SamplesDecoder(InputStream stream, int batchSize) {
         if (batchSize <= 0) throw new IllegalArgumentException();
@@ -22,10 +22,10 @@ public final class SamplesDecoder {
         if(stream.readAllBytes().length <= batchSize) return (int) Math.floor(batchSize/2);
         bytes = stream.readNBytes(batchSize);
         for(int i = 0; i < bytes.length/2; i+=2){
-            short lowerWeight = bytes[i];
-            short higherWeight = (short) Bits.extractUInt(bytes[i+1], 4, 4);
+            short lowerWeight = (short) (bytes[i]-2048);
+            short higherWeight = (short) (Bits.extractUInt(bytes[i+1], 4, 4)-2048);
             higherWeight <<= 8;
-            batch[i/2] = (short) (higherWeight | lowerWeight);
+            this.output[i/2] = (short) (higherWeight | lowerWeight);
         }
         return batchSize;
     }
