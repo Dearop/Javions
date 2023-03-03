@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author Paul Quesnot (347572)
  */
 public record AircraftDescription(String string) {
-    private static Pattern pattern;
+    private static final Pattern pattern = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
 
     /**
      * Checks if the given input string matches the AircraftDescription format.
@@ -19,8 +19,8 @@ public record AircraftDescription(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftDescription{
-        pattern = Pattern.compile("[ABDGHLPRSTV-][0123468][EJPT-]");
-        if(!pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if(string != null && !pattern.matcher(string).matches())
+            throw new IllegalArgumentException();
     }
 
 }

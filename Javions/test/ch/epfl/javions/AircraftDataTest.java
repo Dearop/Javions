@@ -9,15 +9,15 @@ public class AircraftDataTest {
         assertThrows(NullPointerException.class, () ->new AircraftData(null,
                 new AircraftTypeDesignator("A2"), "A320", new AircraftDescription("A0J"),
                 WakeTurbulenceCategory.LIGHT));
-        assertThrows(NullPointerException.class, () ->new AircraftData(new AircraftRegistration("HELLO"),
+        assertThrows(NullPointerException.class, () ->new AircraftData(new AircraftRegistration("H"),
                 null, "A320", new AircraftDescription("A0J"),
                 WakeTurbulenceCategory.LIGHT));
-        assertThrows(NullPointerException.class, () -> new AircraftData(new AircraftRegistration("HELLO"),
+        assertThrows(NullPointerException.class, () -> new AircraftData(new AircraftRegistration("H"),
                 new AircraftTypeDesignator("A2"), null, new AircraftDescription("A0J"),
                 WakeTurbulenceCategory.LIGHT));
-        assertThrows(NullPointerException.class, () -> new AircraftData(new AircraftRegistration("HELLO"),
+        assertThrows(NullPointerException.class, () -> new AircraftData(new AircraftRegistration("H"),
                 new AircraftTypeDesignator("A2"), "A320", null, WakeTurbulenceCategory.LIGHT));
-        assertThrows(NullPointerException.class, () -> new AircraftData(new AircraftRegistration("HELLO"),
+        assertThrows(NullPointerException.class, () -> new AircraftData(new AircraftRegistration("H"),
                 new AircraftTypeDesignator("A2"), "A320", new AircraftDescription("A0J"),
                 null));
     }

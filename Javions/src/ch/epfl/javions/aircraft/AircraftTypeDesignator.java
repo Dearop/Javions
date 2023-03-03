@@ -9,18 +9,16 @@ import java.util.regex.Pattern;
  * @author Paul Quesnot (347572)
  */
 public record AircraftTypeDesignator(String string) {
-    private static Pattern pattern;
+    private static final Pattern pattern = Pattern.compile("[A-Z0-9]{2,4}");
 
     /**
      *  Checks if the given input string matches the AircraftTypeDesignator format.
      *
      * @param string the string representing the aircraft type designator
-     *
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftTypeDesignator{
-        pattern = Pattern.compile("[A-Z0-9]{2,4}");
-        if(!pattern.matcher(string).matches() && !string.isEmpty() && (string != null)) {
+        if(string != null && !pattern.matcher(string).matches()) {
             throw new IllegalArgumentException();
         }
     }
