@@ -18,8 +18,17 @@ public class SamplesDecoderTest {
     }
 
     @Test
+    public void SamplesDecoderDoesWhatsExpected() throws IOException {
+
+        String samples = getClass().getResource("/samples.bin").getFile();
+        InputStream stream = new FileInputStream(samples);
+
+        SamplesDecoder decoder = new SamplesDecoder(stream, 10);
+        short[] batch = new short[10];
+        assertEquals(10, decoder.readBatch(batch));
 
 
     }
+
 
 }
