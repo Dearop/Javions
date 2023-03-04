@@ -18,7 +18,7 @@ public class SamplesDecoderTest {
 
     @Test
     public void SamplesDecoderDoesWhatsExpected() throws IOException {
-        File file = new File("/samples.bin");
+        File file = new File("samples.bin");
         FileInputStream stream = new FileInputStream(file);
         SamplesDecoder decoder = new SamplesDecoder(stream, 10);
         short[] batch = new short[10];
