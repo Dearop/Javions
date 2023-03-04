@@ -7,7 +7,7 @@ import java.io.InputStream;
 
 public final class SamplesDecoder {
     private InputStream stream;
-    private static int batchSize;
+    private int batchSize;
     private byte[] bytes;
     public short[] batch;
 
@@ -22,11 +22,11 @@ public final class SamplesDecoder {
 
     public int readBatch(short[] batch) throws IOException{
         Preconditions.checkArgument(batch.length == batchSize);
-        if(stream.readAllBytes().length <= batchSize) return (int) Math.floor(stream.readAllBytes().length/2);
+        if(stream.available() <= batchSize) return (int) Math.floor(stream.available() /2);
         int streamSize = stream.readNBytes(bytes, 0,batchSize);
         for(int i = 0; i < bytes.length/2; i+=2){
-            short lowerWeight = (short) (bytes[i]-2048);
-            short higherWeight = (short) (Bits.extractUInt(bytes[i+1], 4, 4)-2048);
+            short lowerWeight = bytes[i];
+            short higherWeight = (short) Bits.extractUInt(bytes[i+1], 4, 4);
             higherWeight <<= 8;
             batch[i/2] = (short) (higherWeight | lowerWeight);
         }

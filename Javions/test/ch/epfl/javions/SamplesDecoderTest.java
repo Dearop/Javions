@@ -28,7 +28,6 @@ public class SamplesDecoderTest {
 
         SamplesDecoder decoder = new SamplesDecoder(stream, 2402);
         short[] batch = new short[2402];
-        System.out.println(decoder.readBatch(batch));
         assertEquals(1201, decoder.readBatch(batch));
     }
 

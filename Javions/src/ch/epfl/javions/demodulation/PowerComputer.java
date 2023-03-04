@@ -1,5 +1,7 @@
 package ch.epfl.javions.demodulation;
 
+import ch.epfl.javions.Preconditions;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,7 +32,7 @@ public final class PowerComputer {
      * @throws IOException
      */
     public int readBatch(int[] batch) throws IOException{
-        if(batch.length != batchSize) throw new IllegalArgumentException();
+        Preconditions.checkArgument(batch.length != batchSize);
         this.numberOfBatches = decoder.readBatch(table);
         for (int i = 1; i < batchSize; i+=2) {
             powerCalculationTable[i%8] = decoder.batch[i];
