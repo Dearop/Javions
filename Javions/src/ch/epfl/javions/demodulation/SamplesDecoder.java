@@ -6,9 +6,9 @@ import java.io.InputStream;
 
 public final class SamplesDecoder {
     private InputStream stream;
-    private int batchSize;
+    private static int batchSize;
     private byte[] bytes = new byte[2*batchSize];
-    private short[] output = new short[batchSize];
+    public static short[] batch = new short[batchSize];
 
     public SamplesDecoder(InputStream stream, int batchSize) {
         if (batchSize <= 0) throw new IllegalArgumentException();
@@ -25,8 +25,9 @@ public final class SamplesDecoder {
             short lowerWeight = (short) (bytes[i]-2048);
             short higherWeight = (short) (Bits.extractUInt(bytes[i+1], 4, 4)-2048);
             higherWeight <<= 8;
-            this.output[i/2] = (short) (higherWeight | lowerWeight);
+            batch[i/2] = (short) (higherWeight | lowerWeight);
         }
+        SamplesDecoder.batch = batch.clone();
         return batchSize;
     }
 }

@@ -18,14 +18,12 @@ public final class PowerComputer {
 
     public int readBatch(int[] batch) throws IOException{
         int numberOfBatches = decoder.readBatch(output);
-        byte[] bytes = stream.readAllBytes();
-        int[] powerSignal = new int[(bytes.length-8)/2];
-
-
+        int[] powerSignal = new int[numberOfBatches];
         for(int i = 0; i < powerSignal.length ; ++i){
             int j = (i*2) + 7;
-            powerSignal[i] = (int) (Math.pow(bytes[j-6]-bytes[j-4]+bytes[j-2], 2)
-                    + Math.pow(bytes[j-7] - bytes[j-5] + bytes[j-3] -bytes[j-1], 2));
+            powerSignal[i] = (int) (Math.pow(SamplesDecoder.batch[j-6]-SamplesDecoder.batch[j-4]+
+                    SamplesDecoder.batch[j-2], 2) + Math.pow(SamplesDecoder.batch[j-7] - SamplesDecoder.batch[j-5] +
+                    SamplesDecoder.batch[j-3] -SamplesDecoder.batch[j-1], 2));
         }
 
         return 1212121212;
