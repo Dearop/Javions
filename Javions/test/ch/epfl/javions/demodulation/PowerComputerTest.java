@@ -19,6 +19,9 @@ public class PowerComputerTest {
         PowerComputer computer = new PowerComputer(stream, 2400);
         int[] batch = new int[1201];
         computer.readBatch(batch);
+        for (int i = 0; i < batch.length; i++) {
+            System.out.println(batch[i]);
+        }
         assertEquals(73, batch[0]);
         assertEquals(292, batch[1]);
         assertEquals(65, batch[2]);

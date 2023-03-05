@@ -35,14 +35,14 @@ public final class PowerComputer {
      */
     public int readBatch(int[] batch) throws IOException{
         Preconditions.checkArgument(batch.length != batchSize);
-        for (int i = 1; i < batchSize; i+=2) {
+        for (int i = 1; i < batch.length; i+=2) {
             powerCalculationTable[i%8] = decoder.batch[i];
             powerCalculationTable[(i-1)%8] = decoder.batch[i-1];
-            batch[i] =(int) (Math.pow(-powerCalculationTable[i%8]+powerCalculationTable[8-Math.abs((i%8)-2)]-
-                             powerCalculationTable[8-Math.abs((i%8)-4)]+powerCalculationTable[8-Math.abs((i%8)-6)],2)+
-                    Math.pow(((powerCalculationTable[8 - Math.abs((i % 8) - 7)] - powerCalculationTable[8 -
-                            Math.abs((i % 8) - 5)]) + powerCalculationTable[8 - Math.abs((i % 8) - 3)]) -
-                            powerCalculationTable[8 - Math.abs((i % 8) - 1)],2));
+            batch[i] =(int) (Math.pow(-powerCalculationTable[i%8]+powerCalculationTable[7-Math.abs((i%8)-2)]-
+                             powerCalculationTable[7-Math.abs((i%8)-4)]+powerCalculationTable[7-Math.abs((i%8)-6)],2)+
+                    Math.pow(powerCalculationTable[7 - Math.abs((i % 8) - 7)] - powerCalculationTable[7 -
+                            Math.abs((i % 8) - 5)] + powerCalculationTable[7 - Math.abs((i % 8) - 3)] -
+                            powerCalculationTable[7 - Math.abs((i % 8) - 1)],2));
         }
         output = batch.clone();
         int counter = 0;

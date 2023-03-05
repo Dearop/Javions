@@ -31,6 +31,6 @@ public final class SamplesDecoder {
             batch[i/2] = (short) (higherWeight | lowerWeight);
         }
         this.batch = batch.clone();
-        return streamSize/2;
+        return batchSize/2;
     }
 }
