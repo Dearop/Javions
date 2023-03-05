@@ -40,8 +40,9 @@ public final class PowerComputer {
             powerCalculationTable[(i-1)%8] = decoder.batch[i-1];
             batch[i] =(int) (Math.pow(-powerCalculationTable[i%8]+powerCalculationTable[8-Math.abs((i%8)-2)]-
                              powerCalculationTable[8-Math.abs((i%8)-4)]+powerCalculationTable[8-Math.abs((i%8)-6)],2)+
-                    Math.pow(powerCalculationTable[8-Math.abs((i%8)-7)]-powerCalculationTable[8-Math.abs((i%8)-5)]+
-                            powerCalculationTable[8-Math.abs((i%8)-3)]-powerCalculationTable[8-Math.abs((i%8)-1)],2));
+                    Math.pow(((powerCalculationTable[8 - Math.abs((i % 8) - 7)] - powerCalculationTable[8 -
+                            Math.abs((i % 8) - 5)]) + powerCalculationTable[8 - Math.abs((i % 8) - 3)]) -
+                            powerCalculationTable[8 - Math.abs((i % 8) - 1)],2));
         }
         output = batch.clone();
         int counter = 0;
