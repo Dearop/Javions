@@ -16,8 +16,8 @@ public final class SamplesDecoder {
         if(stream == null) throw new NullPointerException();
         this.stream = stream;
         this.batchSize = batchSize;
-        bytes = new byte[2*batchSize];
-        batch = new short[batchSize];
+        bytes = new byte[batchSize];
+        batch = new short[batchSize/2];
     }
 
     public int readBatch(short[] batch) throws IOException{

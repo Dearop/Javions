@@ -4,6 +4,7 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 public final class PowerComputer {
     private final int batchSize;
@@ -14,17 +15,19 @@ public final class PowerComputer {
      * Table that contains the batch of computed powers
      */
     public int[] output;
-
+    private short[] intermediary;
     /**
      *
      * @param stream
      * @param batchSize
      */
-    public PowerComputer(InputStream stream, int batchSize){
+    public PowerComputer(InputStream stream, int batchSize) throws IOException {
         if(batchSize % 8 != 0) throw new IllegalArgumentException();
         this.batchSize = batchSize;
         this.stream = stream;
         this.decoder = new SamplesDecoder(stream, 2*batchSize);
+        intermediary = new short[2*batchSize];
+        decoder.readBatch(intermediary);
     }
 
     /**
@@ -33,22 +36,30 @@ public final class PowerComputer {
      * @return
      * @throws IOException
      */
-    public int readBatch(int[] batch) throws IOException{
+    public int readBatch(int[] batch){
         Preconditions.checkArgument(batch.length != batchSize);
-        for (int i = 1; i < batch.length; i+=2) {
-            powerCalculationTable[i%8] = decoder.batch[i];
-            powerCalculationTable[(i-1)%8] = decoder.batch[i-1];
-            batch[i] =(int) (Math.pow(-powerCalculationTable[i%8]+powerCalculationTable[7-Math.abs((i%8)-2)]-
-                             powerCalculationTable[7-Math.abs((i%8)-4)]+powerCalculationTable[7-Math.abs((i%8)-6)],2)+
-                    Math.pow(powerCalculationTable[7 - Math.abs((i % 8) - 7)] - powerCalculationTable[7 -
-                            Math.abs((i % 8) - 5)] + powerCalculationTable[7 - Math.abs((i % 8) - 3)] -
-                            powerCalculationTable[7 - Math.abs((i % 8) - 1)],2));
+
+        int counter = 0;
+        for (int i = 0; i < batch.length; i+=2) {
+            powerCalculationTable[7] = powerCalculationTable[5];
+            powerCalculationTable[6] = powerCalculationTable[4];
+            powerCalculationTable[5] = powerCalculationTable[3];
+            powerCalculationTable[4] = powerCalculationTable[2];
+            powerCalculationTable[3] = powerCalculationTable[1];
+            powerCalculationTable[2] = powerCalculationTable[0];
+
+            powerCalculationTable[0] = decoder.batch[i+1];
+            powerCalculationTable[1] = decoder.batch[i];
+
+
+            batch[counter] =  (int) (Math.pow(powerCalculationTable[1]-powerCalculationTable[3]+
+                                    powerCalculationTable[5]-powerCalculationTable[7], 2) //even
+                                    +
+                                    Math.pow(powerCalculationTable[0] - powerCalculationTable[2] + powerCalculationTable[4] -
+                                    powerCalculationTable[6],2)); //odd
+            counter++;
         }
         output = batch.clone();
-        int counter = 0;
-        while(counter < output.length){
-            if(output[counter] != 0) ++counter;
-        }
         return batchSize;
     }
 }
