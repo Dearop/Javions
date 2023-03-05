@@ -1,4 +1,4 @@
-package ch.epfl.javions;
+package ch.epfl.javions.aircraft;
 import ch.epfl.javions.aircraft.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

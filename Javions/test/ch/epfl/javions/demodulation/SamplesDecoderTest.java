@@ -1,4 +1,4 @@
-package ch.epfl.javions;
+package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.demodulation.SamplesDecoder;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.io.*;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -21,7 +20,6 @@ public class SamplesDecoderTest {
 
     @Test
     public void SamplesDecoderDoesWhatsExpected() throws IOException {
-
         String samples = getClass().getResource("/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
@@ -37,15 +35,19 @@ public class SamplesDecoderTest {
         stream2 = URLDecoder.decode(stream2, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(stream2);
         SamplesDecoder test = new SamplesDecoder(stream, 2402);
-        //  PowerComputer test2 = new PowerComputer(stream , 9608);
 
         short[] batch = new short[2402];
         test.readBatch(batch);
-        //  int [] batch2 = new int[9608];
-        // int a = test2.readBatch(batch2);
-        for (int i = 0; i < 10; ++i) {
-            System.out.println(batch[i]);
-        }
+        assertEquals(batch[0],-3);
+        assertEquals(batch[1], 8);
+        assertEquals(batch[2], -9);
+        assertEquals(batch[3], -8);
+        assertEquals(batch[4], -5);
+        assertEquals(batch[5], -8);
+        assertEquals(batch[6], -12);
+        assertEquals(batch[7], -16);
+        assertEquals(batch[8], -23);
+        assertEquals(batch[9], -9);
 
     }
 }

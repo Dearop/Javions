@@ -10,9 +10,11 @@ public final class PowerComputer {
     private final InputStream stream;
     private final SamplesDecoder decoder;
     private final short[] powerCalculationTable = new short[8];
-    private short[] table = new short[this.numberOfBatches];
-    private int numberOfBatches;
+    /**
+     * Table that contains the batch of computed powers
+     */
     public int[] output;
+
     /**
      *
      * @param stream
@@ -22,7 +24,7 @@ public final class PowerComputer {
         if(batchSize % 8 != 0) throw new IllegalArgumentException();
         this.batchSize = batchSize;
         this.stream = stream;
-        this.decoder = new SamplesDecoder(stream, batchSize);
+        this.decoder = new SamplesDecoder(stream, 2*batchSize);
     }
 
     /**
@@ -33,7 +35,6 @@ public final class PowerComputer {
      */
     public int readBatch(int[] batch) throws IOException{
         Preconditions.checkArgument(batch.length != batchSize);
-        this.numberOfBatches = decoder.readBatch(table);
         for (int i = 1; i < batchSize; i+=2) {
             powerCalculationTable[i%8] = decoder.batch[i];
             powerCalculationTable[(i-1)%8] = decoder.batch[i-1];
@@ -47,6 +48,6 @@ public final class PowerComputer {
         while(counter < output.length){
             if(output[counter] != 0) ++counter;
         }
-        return counter;
+        return batchSize;
     }
 }
