@@ -9,7 +9,7 @@ public final class PowerWindow {
     private int positionCounter;
     private int[] window;
     private int[] batch;
-    InputStream stream;
+    private InputStream stream;
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if(windowSize <= 0 || windowSize > Math.pow(2, 16))
             throw new IllegalArgumentException("windowSize out of bound, size : "+windowSize);
