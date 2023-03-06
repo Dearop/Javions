@@ -10,8 +10,9 @@ public class CallsignTest {
     @Test
     public void callsignTest(){
         assertThrows(IllegalArgumentException.class , () -> new CallSign("a"));
-        assertThrows(IllegalArgumentException.class , () -> new CallSign(""));
+        assertThrows(IllegalArgumentException.class , () -> new CallSign(null));
         assertThrows(IllegalArgumentException.class , () -> new CallSign("A/"));
         assertThrows(IllegalArgumentException.class , () -> new CallSign("A2UIBFVFB4436543"));
+        new CallSign("");
     }
 }

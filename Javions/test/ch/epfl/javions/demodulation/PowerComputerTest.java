@@ -36,4 +36,21 @@ public class PowerComputerTest {
         assertEquals(36818, computer.output[8]);
         assertEquals(23825, computer.output[9]);
     }
+
+    public void PowerGraphTest() throws IOException {
+        String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+
+        PowerComputer computer = new PowerComputer(stream, 2400);
+        int[] batch = new int[1201];
+
+        // first is 8pow2 + 3pow2
+        computer.readBatch(batch);
+        int[] firstValues = new int[160];
+        for (int i = 0; i < firstValues.length; i++) {
+            firstValues[i] = computer.output[i];
+        }
+
+    }
 }
