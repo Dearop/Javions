@@ -10,6 +10,7 @@ public final class PowerWindow {
     private int[] window;
     private int[] batch;
     private InputStream stream;
+
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if(windowSize <= 0 || windowSize > Math.pow(2, 16))
             throw new IllegalArgumentException("windowSize out of bound, size : "+windowSize);
@@ -18,7 +19,6 @@ public final class PowerWindow {
         batch = new int[windowSize];
         this.computer = new PowerComputer(stream, windowSize);
         this.stream = stream;
-
     }
 
     public int size(){
@@ -45,12 +45,13 @@ public final class PowerWindow {
 
     public void advanceBy(int offset) throws IOException{
         computer.readBatch(batch);
+        int internalPositionCounter = this.positionCounter;
         positionCounter += offset;
         for (int i = offset; i < windowSize; i++) {
             window[i-offset] = window[i];
         }
         for(int i = 0; i < offset; ++i){
-            window[i+windowSize-offset-1] = computer.output[i];
+            window[i+windowSize-offset-1] = computer.output[internalPositionCounter+i];
         }
     }
 }
