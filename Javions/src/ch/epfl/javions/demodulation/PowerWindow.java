@@ -30,8 +30,12 @@ public final class PowerWindow {
     }
 
     public boolean isFull(){
-        if(positionCounter >= computer.output.length) return true;
-        return false;
+        return positionCounter >= computer.output.length;
+    }
+
+    public int get(int i){
+        if(i<0 || i >= windowSize) throw new IllegalArgumentException();
+        return window[i];
     }
 
     public void advance() throws IOException{
