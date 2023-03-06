@@ -9,6 +9,10 @@ public final class PowerWindow {
     private int positionCounter;
     private int[] window;
     private int[] batch;
+    public int[] batchOne;
+    public int[] batchTwo;
+    boolean batchOneActive;
+    private int tableCounter;
     private InputStream stream;
 
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
@@ -17,8 +21,16 @@ public final class PowerWindow {
         this.windowSize = windowSize;
         window = new int[windowSize];
         batch = new int[windowSize];
+        // TODO: 3/6/2023 How big should the batchSize be, are batchsize and windowsize are the same
         this.computer = new PowerComputer(stream, windowSize);
+        computer.readBatch(batch);
         this.stream = stream;
+        batchOneActive = true;
+        batchOne = new int[windowSize];
+        batchTwo = new int[windowSize];
+        for (int i = 0; i < windowSize; i++) {
+            batchOne[i] = computer.output[i];
+        }
     }
 
     public int size(){
@@ -39,16 +51,29 @@ public final class PowerWindow {
     }
 
     public void advance() throws IOException{
-        computer.readBatch(batch);
         ++positionCounter;
+
+        if(batchOneActive){
+            // TODO: 3/6/2023 not correct
+            if(positionCounter % windowSize == windowSize-1){
+                batchOneActive = false;
+            }
+            batchOne[tableCounter] = computer.output[positionCounter];
+        }
+
         for (int i = 1; i < windowSize; i++) {
             window[i-1] = window[i];
         }
-        window[windowSize-1] = computer.output[positionCounter];
+
+        batchTwo[tableCounter] = computer.output[positionCounter];
+        if (tableCounter < windowSize) ++tableCounter;
+        if (tableCounter == windowSize-1) {
+
+        }
     }
 
     public void advanceBy(int offset) throws IOException{
-        computer.readBatch(batch);
+        if(offset <= 0) throw new IllegalArgumentException();
         int internalPositionCounter = this.positionCounter;
         positionCounter += offset;
         for (int i = offset; i < windowSize; i++) {

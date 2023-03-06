@@ -17,8 +17,7 @@ final class SignatureChecks_3 {
         v05 = new ch.epfl.javions.demodulation.PowerComputer(v02, v03);
         v03 = v05.readBatch(v06);
     }
-     // TODO: 3/4/2023 remove comments once PowerWindow is done
-   /** void checkPowerWindow() throws Exception {
+   void checkPowerWindow() throws Exception {
         v07 = new ch.epfl.javions.demodulation.PowerWindow(v02, v03);
         v07.advance();
         v07.advanceBy(v03);
@@ -26,7 +25,7 @@ final class SignatureChecks_3 {
         v08 = v07.isFull();
         v09 = v07.position();
         v03 = v07.size();
-    }*/
+    }
 
     ch.epfl.javions.demodulation.SamplesDecoder v01;
     java.io.InputStream v02;
@@ -34,8 +33,7 @@ final class SignatureChecks_3 {
     short[] v04;
     ch.epfl.javions.demodulation.PowerComputer v05;
     int[] v06;
-    // TODO: 3/4/2023 remove comment once PowerWindow works
-    //ch.epfl.javions.demodulation.PowerWindow v07;
+    ch.epfl.javions.demodulation.PowerWindow v07;
     boolean v08;
     long v09;
 }
