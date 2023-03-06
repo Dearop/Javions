@@ -7,6 +7,7 @@ public final class PowerWindow {
     private PowerComputer computer;
     private int windowSize;
     private int positionCounter;
+    private final int batchSize = (int) Math.pow(2,16);
     private int[] window;
     private int[] batch;
     public int[] batchOne;
@@ -16,13 +17,12 @@ public final class PowerWindow {
     private InputStream stream;
 
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
-        if(windowSize <= 0 || windowSize > Math.pow(2, 16))
+        if(windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : "+windowSize);
         this.windowSize = windowSize;
         window = new int[windowSize];
-        batch = new int[windowSize];
-        // TODO: 3/6/2023 How big should the batchSize be, are batchsize and windowsize are the same
-        this.computer = new PowerComputer(stream, windowSize);
+        batch = new int[batchSize];
+        this.computer = new PowerComputer(stream, batchSize);
         computer.readBatch(batch);
         this.stream = stream;
         batchOneActive = true;
@@ -52,7 +52,6 @@ public final class PowerWindow {
 
     public void advance() throws IOException{
         ++positionCounter;
-
         if(batchOneActive){
             // TODO: 3/6/2023 not correct
             if(positionCounter % windowSize == windowSize-1){
