@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author Paul Quesnot (347572)
  */
 public record AircraftRegistration(String string) {
-    private static Pattern pattern;
+    private final static Pattern pattern = Pattern.compile("^[A-Z0-9 .?/_+-]+$");;
 
     /**
      * Checks if the given input string matches the AircraftRegistration format.
@@ -19,7 +19,6 @@ public record AircraftRegistration(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftRegistration{
-        pattern = Pattern.compile("[A-Z0-9 .?/_+-]");
         if (string.isEmpty() || !pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 }

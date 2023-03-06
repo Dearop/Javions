@@ -1,9 +1,8 @@
 package ch.epfl.javions.aircraft;
-import ch.epfl.javions.aircraft.*;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AircraftDataTest {
+public class MyAircraftDataTest {
     @Test
     public void AircraftDataThrowsNullExceptionWithNull(){
         assertThrows(NullPointerException.class, () ->new AircraftData(null,
