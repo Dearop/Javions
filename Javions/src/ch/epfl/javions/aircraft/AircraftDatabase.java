@@ -20,7 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author Paul Quesnot (347572)
  */
 public final class AircraftDatabase{
-    private String fileName;
+    private final String fileName;
     private String testName;
     private WakeTurbulenceCategory WTCTest;
 
@@ -47,61 +47,24 @@ public final class AircraftDatabase{
      * @throws IOException If there is an input/output error.
      */
     public AircraftData get(IcaoAddress address) throws IOException {
-        String aircraft = getClass().getResource("/aircraft.zip").getFile();
-        aircraft = URLDecoder.decode(aircraft, UTF_8);
         String stringLineFiltered = "";
-        AircraftRegistration registration;
-        AircraftTypeDesignator designator;
-        String model;
-        AircraftDescription description;
-        WakeTurbulenceCategory wakeTurbulenceCategory;
-        String addressString = String.valueOf(address);
-        ArrayList <String[]> lines = new ArrayList<>();
 
         /**
-         * This try/catch gets the zip file that includes all the data that we have about the different aircrafts
+         * This try/catch gets the zip file that includes all the data that we have about the different aircraft
          */
-        try (ZipFile zipFileUsed = new ZipFile(aircraft);
-             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry("14.csv"));
+        try (ZipFile zipFileUsed = new ZipFile(fileName);
+             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry(address.getLastChar() + ".csv"));
              Reader reader = new InputStreamReader(stream, UTF_8);
              BufferedReader buffer = new BufferedReader(reader)) {
-            while ((stringLineFiltered = buffer.readLine()) != null)
-                lines.add(stringLineFiltered.split(",|\\r?\\n"));
-        } catch (IOException e) {
-            throw new RuntimeException(e + " zipFileError");
-        }
-
-        /**
-         * This if statement shortens the length of addressString to only the address itself.
-         * This is necessary because the valueOf() function that gets initialized when addressString is created,
-         * has the following form: "IcaoAddress[string=XXXXXX]"
-         */
-        if (addressString.length() != 6) {
-            addressString = addressString.substring(19,25);
-        }
-
-        /**
-         * In this for-loop we first search through every ICAO-address until we find the one we are looking for.
-         * Once that address gets found we then return the values that are found in the same array in the form of
-         * AircraftData.
-         */
-        for (int i = 0; i < lines.size(); ++i) {
-            if (lines.get(i)[0].startsWith(addressString)) {
-
-                registration = new AircraftRegistration(lines.get(i)[1]);
-                designator = new AircraftTypeDesignator(lines.get(i)[2]);
-                model = lines.get(i)[3];
-                testName = model;
-                description = new AircraftDescription(lines.get(i)[4]);
-                wakeTurbulenceCategory = WakeTurbulenceCategory.of(lines.get(i)[5]);
-                WTCTest = wakeTurbulenceCategory;
-                return new AircraftData(registration, designator, model, description, wakeTurbulenceCategory);
+            while ((stringLineFiltered = buffer.readLine()) != null) {
+                String[] lines = stringLineFiltered.split(",", -1);
+                if(address.string().equals(lines[0]))
+                    return new AircraftData(new AircraftRegistration(lines[1]), new AircraftTypeDesignator(lines[2]),
+                            lines[3], new AircraftDescription(lines[4]), WakeTurbulenceCategory.of(lines[5]));
             }
         }
-
-        return null; // If the address doesn't get found in the ZipFile then null gets returned.
+        return null;
     }
-
     /**
      * This method was written to test the class
      * @return String created in the get method above that stores the name of the aircraft.

@@ -4,12 +4,8 @@ import ch.epfl.javions.aircraft.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,7 +67,7 @@ class AircraftDatabaseTest {
         assertEquals(WakeTurbulenceCategory.MEDIUM, aircraftData.wakeTurbulenceCategory());
     }
 
-    //    @Test
+    @Test
     void aircraftDatabaseGetWorksWithEmptyColumns() throws IOException {
         var aircraftDatabase = getDatabase();
         var aircraftData = aircraftDatabase.get(new IcaoAddress("AAAAAA"));
