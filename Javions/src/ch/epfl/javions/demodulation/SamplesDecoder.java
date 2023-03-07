@@ -26,7 +26,9 @@ public final class SamplesDecoder {
 
     public int readBatch(short[] batch) throws IOException{
         Preconditions.checkArgument(batch.length == batchSize);
+        System.out.println("1");
         if(stream.available() <= batchSize) return (int) Math.floor(stream.available()/2);
+        System.out.println("2");
         int streamSize = stream.readNBytes(bytes, 0,batchSize);
         for(int i = 0; i < bytes.length/2; i+=2){
             short lowerWeight = bytes[i];

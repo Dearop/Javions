@@ -34,6 +34,10 @@ public final class PowerWindow {
         batchOneActive = true;
         for (int i = 0; i < batchSize; i++)
             batchOne[i] = computer.output[i];
+
+        for (int i = 0; i < windowSize; i++) {
+            window[i] = batchOne[i];
+        }
     }
 
     /**
@@ -61,18 +65,19 @@ public final class PowerWindow {
 
     public int get(int i) {
         if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
-        if (i + (positionCounter % batchSize) > batchSize) {
-            /**
-             * then take value from non-active batch
-             * example for following code why it is written the way it is:
-             * positioncounter = 198, batchsize = 100, i = 6
-             * we want position 4 from batch that is not active
-             */
-            if (batchOneActive) return batchTwo[(i + positionCounter) % batchSize];
-            else return batchOne[(i + positionCounter) % batchSize];
-        } else { // here we want the information from the batch that is active because the get i stays inside the batch.
-            return window[i];
-        }
+//        if (i + (positionCounter % batchSize) > batchSize) {
+//            /**
+//             * then take value from non-active batch
+//             * example for following code why it is written the way it is:
+//             * positioncounter = 198, batchsize = 100, i = 6
+//             * we want position 4 from batch that is not active
+//             */
+//            if (batchOneActive) return batchTwo[(i + positionCounter) % batchSize];
+//            else return batchOne[(i + positionCounter) % batchSize];
+//        } else { // here we want the information from the batch that is active because the get i stays inside the batch.
+//            return window[i];
+//        }
+        return window[i];
     }
 
     /**
