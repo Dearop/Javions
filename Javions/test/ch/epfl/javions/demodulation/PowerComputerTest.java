@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PowerComputerTest {
     @Test
@@ -18,7 +19,7 @@ public class PowerComputerTest {
         InputStream stream = new FileInputStream(samples);
 
         PowerComputer computer = new PowerComputer(stream, 2400);
-        int[] batch = new int[1201];
+        int[] batch = new int[2400];
 
         // first is 8pow2 + 3pow2
         computer.readBatch(batch);
@@ -37,20 +38,10 @@ public class PowerComputerTest {
         assertEquals(23825, computer.output[9]);
     }
 
-    public void PowerGraphTest() throws IOException {
-        String samples = getClass().getResource("/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
-        InputStream stream = new FileInputStream(samples);
-
-        PowerComputer computer = new PowerComputer(stream, 2400);
-        int[] batch = new int[1201];
-
-        // first is 8pow2 + 3pow2
-        computer.readBatch(batch);
-        int[] firstValues = new int[160];
-        for (int i = 0; i < firstValues.length; i++) {
-            firstValues[i] = computer.output[i];
-        }
-
+    void PowerComputerTakesNotMultipleof8(){
+        InputStream stream = null;
+        assertThrows(IllegalArgumentException.class, () ->  new PowerComputer(stream, 15));
     }
+
+
 }

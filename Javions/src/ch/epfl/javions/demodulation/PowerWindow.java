@@ -8,10 +8,11 @@ import java.io.InputStream;
  * @author Paul Quesnot (347572)
  */
 public final class PowerWindow {
-    private PowerComputer computer;
+    // TODO: 3/7/2023 change back to private
+    public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    private final int batchSize = (int) Math.pow(2, 16);
+    private final static int batchSize = 2400;
     private int[] window;
     public int[] batchOne;
     public int[] batchTwo;
@@ -23,15 +24,14 @@ public final class PowerWindow {
         if (windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
         this.windowSize = windowSize;
-
+        window = new int[windowSize];
         batchOne = new int[batchSize];
         this.computer = new PowerComputer(stream, batchSize);
-        computer.readBatch(batchOne);
-        this.stream = stream;
-
-        batchOneActive = true;
         batchOne = new int[batchSize];
         batchTwo = new int[batchSize];
+        computer.readBatch(batchOne);
+        this.stream = stream;
+        batchOneActive = true;
         for (int i = 0; i < batchSize; i++)
             batchOne[i] = computer.output[i];
     }
@@ -51,8 +51,12 @@ public final class PowerWindow {
     }
 
     //here there can be a lot of mistakes with reading the files and positionCounter being too big
+
+    /**
+     * @return
+     */
     public boolean isFull() {
-        return positionCounter >= computer.output.length;
+        return positionCounter <= computer.output.length;
     }
 
     public int get(int i) {
@@ -71,7 +75,10 @@ public final class PowerWindow {
         }
     }
 
-    public void advance() throws IOException {
+    /**
+     * Moves either the first or the second batch forwards by one which simulates
+     */
+    public void advance() {
         ++positionCounter;
         int positionInsideBatch = positionCounter % batchSize;
         if (batchOneActive) {
@@ -144,7 +151,7 @@ public final class PowerWindow {
 
 
 
-    public void advanceBy(int offset) throws IOException {
+    public void advanceBy(int offset) {
         //todo offset can't be bigger than window size no???
         if(offset >= windowSize) throw new IllegalArgumentException();
         if (offset <= 0) throw new IllegalArgumentException();
