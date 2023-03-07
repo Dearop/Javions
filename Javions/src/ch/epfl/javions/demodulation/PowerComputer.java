@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+/**
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public final class PowerComputer {
     private final int batchSize;
     private final InputStream stream;

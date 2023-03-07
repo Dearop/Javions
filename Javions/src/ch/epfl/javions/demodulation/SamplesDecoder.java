@@ -5,6 +5,10 @@ import ch.epfl.javions.Preconditions;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public final class SamplesDecoder {
     private InputStream stream;
     private int batchSize;
