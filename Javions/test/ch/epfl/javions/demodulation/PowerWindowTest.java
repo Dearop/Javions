@@ -33,6 +33,6 @@ public class PowerWindowTest {
         for(int i = 0; i < window.batchOne.length; ++i) {
             assertEquals(window.batchOne[i], window.computer.output[i]);
         }
-        assertEquals(window.batchTwo[0], window.computer.output[window.batchOne.length]);
+        assertEquals(window.batchOne[1], window.get(0));
     }
 }

@@ -12,8 +12,9 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    private final static int batchSize = 2400;
-    private int[] window;
+    private final static int batchSize = (int) Math.pow(2,16);
+    // TODO: 3/7/2023 should be private
+    public int[] window;
     public int[] batchOne;
     public int[] batchTwo;
     private boolean batchOneActive;
@@ -27,7 +28,6 @@ public final class PowerWindow {
         window = new int[windowSize];
         batchOne = new int[batchSize];
         this.computer = new PowerComputer(stream, batchSize);
-        batchOne = new int[batchSize];
         batchTwo = new int[batchSize];
         computer.readBatch(batchOne);
         this.stream = stream;

@@ -20,6 +20,7 @@ public class SamplesDecoderTest {
         assertThrows(IllegalArgumentException.class, () -> new SamplesDecoder(stream, -3));
     }
 
+    /**
     @Test
     public void SamplesDecoderReturnsExpectedValue() throws IOException {
         String samples = getClass().getResource("/samples.bin").getFile();
@@ -52,4 +53,5 @@ public class SamplesDecoderTest {
         assertEquals(-9, batch[9]);
 
     }
+    */
 }

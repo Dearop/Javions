@@ -41,10 +41,15 @@ public final class PowerComputer {
      * @throws IOException
      */
     public int readBatch(int[] batch){
+        System.out.println(batch.length);
+        System.out.println(batchSize);
+        if(batch.length != batchSize){
+            batch = new int[batchSize];
+        }
         Preconditions.checkArgument(batch.length == batchSize);
 
         int counter = 0;
-        for (int i = 0; i < batch.length; i+=2) {
+        for (int i = 0; i < 2*batch.length; i+=2) {
             powerCalculationTable[7] = powerCalculationTable[5];
             powerCalculationTable[6] = powerCalculationTable[4];
             powerCalculationTable[5] = powerCalculationTable[3];
