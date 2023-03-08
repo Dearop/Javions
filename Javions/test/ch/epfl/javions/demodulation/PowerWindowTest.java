@@ -28,11 +28,18 @@ public class PowerWindowTest {
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
 
-        PowerWindow window = new PowerWindow(stream, 16);
+        PowerWindow window = new PowerWindow(stream, 24);
+
         window.advance();
         for(int i = 0; i < window.batchOne.length; ++i) {
             assertEquals(window.batchOne[i], window.computer.output[i]);
         }
-        assertEquals(window.batchOne[1], window.get(0));
+
+        for (int i = 1; i < 5000; i++) {
+            System.out.println(i);
+            assertEquals(window.batchOne[i], window.get(0));
+            window.advance();
+        }
+
     }
 }

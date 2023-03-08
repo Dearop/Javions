@@ -12,9 +12,8 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    private final static int batchSize = (int) Math.pow(2,16);
+    private final static int batchSize = (int) Math.pow(2, 16);
     // TODO: 3/7/2023 should be private
-    public int[] window;
     public int[] batchOne;
     public int[] batchTwo;
     private boolean batchOneActive;
@@ -25,19 +24,17 @@ public final class PowerWindow {
         if (windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
         this.windowSize = windowSize;
-        window = new int[windowSize];
+
         batchOne = new int[batchSize];
-        this.computer = new PowerComputer(stream, batchSize);
         batchTwo = new int[batchSize];
-        computer.readBatch(batchOne);
+
+        this.computer = new PowerComputer(stream, batchSize);
         this.stream = stream;
+        computer.readBatch(batchOne);
+
         batchOneActive = true;
         for (int i = 0; i < batchSize; i++)
             batchOne[i] = computer.output[i];
-
-        for (int i = 0; i < windowSize; i++) {
-            window[i] = batchOne[i];
-        }
     }
 
     /**
@@ -65,19 +62,21 @@ public final class PowerWindow {
 
     public int get(int i) {
         if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
-//        if (i + (positionCounter % batchSize) > batchSize) {
-//            /**
-//             * then take value from non-active batch
-//             * example for following code why it is written the way it is:
-//             * positioncounter = 198, batchsize = 100, i = 6
-//             * we want position 4 from batch that is not active
-//             */
-//            if (batchOneActive) return batchTwo[(i + positionCounter) % batchSize];
-//            else return batchOne[(i + positionCounter) % batchSize];
-//        } else { // here we want the information from the batch that is active because the get i stays inside the batch.
-//            return window[i];
-//        }
-        return window[i];
+        int positionInBatch = positionCounter % batchSize;
+        if (batchOneActive) {
+            if ((positionInBatch) + i < batchSize) {
+                return batchOne[positionInBatch + i];
+            } else {
+                return batchTwo[(positionInBatch + i) & batchSize];
+            }
+        }
+        //here batch one is not active
+        //TODO is it batchsize -1 or without -1??
+        if ((positionInBatch) + i < batchSize) {
+            return batchTwo[positionInBatch + i];
+        } else {
+            return batchOne[(positionInBatch + i) & batchSize];
+        }
     }
 
     /**
@@ -85,7 +84,7 @@ public final class PowerWindow {
      */
     public void advance() {
         ++positionCounter;
-        int positionInsideBatch = positionCounter % batchSize;
+        int positionInsideBatch = positionCounter - 1 % batchSize;
         if (batchOneActive) {
 
             // we first check if we need to take the new window value from the other batch or not.
@@ -101,23 +100,9 @@ public final class PowerWindow {
                     for (int i = 0; i < batchSize; i++)
                         batchOne[i] = computer.output[positionCounter + i];
                 }
-
-                // we "move" the window by one.
-                for (int i = 1; i < windowSize; i++)
-                    window[i - 1] = window[i];
-
-                // example posInsideB = 150, windowSize = 50, batchSize = 200, then we add to the window the value
-                // from batchTwo (with modulo we see which value has to be taken)
-                window[windowSize - 1] = batchTwo[(positionInsideBatch + windowSize) % batchSize];
-
-
-                // case where we just move by one and also get the new window value from the priority batch.
-            } else {
-                for (int i = 1; i < windowSize; i++)
-                    window[i - 1] = window[i];
-                window[windowSize - 1] = batchOne[(positionInsideBatch + windowSize) % batchSize];
             }
 
+            // case where we just move by one and also get the new window value from the priority batch.
 
         } else {
 
@@ -134,31 +119,16 @@ public final class PowerWindow {
                         batchTwo[i] = computer.output[positionCounter + i];
                 }
 
-                // we "move" the window by one.
-                for (int i = 1; i < windowSize; i++)
-                    window[i - 1] = window[i];
-
-                // example posInsideB = 150, windowSize = 50, batchSize = 200, then we add to the window the value
-                // from batchOne (with modulo we see which value has to be taken)
-                window[windowSize - 1] = batchOne[positionInsideBatch + windowSize % batchSize];
-
-
-                // case where we just move by one and also get the new window value from the priority batch.
-            } else {
-                for (int i = 1; i < windowSize; i++)
-                    window[i - 1] = window[i];
-                window[windowSize - 1] = batchOne[(positionInsideBatch + windowSize) % batchSize];
             }
-
-
         }
     }
 
 
 
+
     public void advanceBy(int offset) {
         //todo offset can't be bigger than window size no???
-        if(offset >= windowSize) throw new IllegalArgumentException();
+        if (offset >= windowSize) throw new IllegalArgumentException();
         if (offset <= 0) throw new IllegalArgumentException();
         for (int i = 0; i < offset; i++) advance();
     }
