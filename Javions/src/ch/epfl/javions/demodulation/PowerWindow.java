@@ -2,6 +2,7 @@ package ch.epfl.javions.demodulation;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 /**
  * @author Henri Antal (339444)
@@ -32,9 +33,17 @@ public final class PowerWindow {
         this.stream = stream;
         computer.readBatch(batchOne);
 
+        //System.out.println(Arrays.toString(batchOne));
+
         batchOneActive = true;
-        for (int i = 0; i < batchSize; i++)
+        for (int i = 0; i < batchSize; i++) {
             batchOne[i] = computer.output[i];
+        }
+
+        computer.readBatch(batchTwo);
+        for (int i = 0; i < batchSize; i++) {
+            batchTwo[i] = computer.output[i];
+        }
     }
 
     /**
@@ -63,20 +72,21 @@ public final class PowerWindow {
     public int get(int i) {
         if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
         int positionInBatch = positionCounter % batchSize;
-        if (batchOneActive) {
-            if ((positionInBatch) + i < batchSize) {
-                return batchOne[positionInBatch + i];
-            } else {
-                return batchTwo[(positionInBatch + i) & batchSize];
-            }
-        }
-        //here batch one is not active
-        //TODO is it batchsize -1 or without -1??
-        if ((positionInBatch) + i < batchSize) {
-            return batchTwo[positionInBatch + i];
-        } else {
-            return batchOne[(positionInBatch + i) & batchSize];
-        }
+//        if (batchOneActive) {
+//            if ((positionInBatch) + i < batchSize) {
+//                return batchOne[positionInBatch + i];
+//            } else {
+//                return batchTwo[(positionInBatch + i) & batchSize-1];
+//            }
+//        }
+//        //here batch one is not active
+//        //TODO is it batchsize -1 or without -1??
+//        if ((positionInBatch) + i < batchSize) {
+//            return batchTwo[positionInBatch + i];
+//        } else {
+//            return batchOne[(positionInBatch + i) & batchSize-1];
+//        }
+        return positionInBatch + i < batchSize ? batchOne[positionInBatch + i] : batchTwo[positionInBatch + i % batchSize];
     }
 
     /**
@@ -84,46 +94,25 @@ public final class PowerWindow {
      */
     public void advance() {
         ++positionCounter;
-        int positionInsideBatch = positionCounter - 1 % batchSize;
-        if (batchOneActive) {
+        int positionInsideBatch = positionCounter % batchSize;
 
-            // we first check if we need to take the new window value from the other batch or not.
-            if (positionInsideBatch + windowSize >= batchSize) {
 
-                // we check if the new position is at the end of the current priority batch.
-                if (positionInsideBatch == 0) {
-                    //make batchTwo priority batch
-                    batchOneActive = false;
+        // we check if the new position is at the end of the current priority batch.
+        if (positionInsideBatch == 0) {
 
-                    // because batchTwo is now priority batch we can replace all values inside batchOne with
-                    // the new info from output
-                    for (int i = 0; i < batchSize; i++)
-                        batchOne[i] = computer.output[positionCounter + i];
-                }
+            // because batchTwo is now priority batch we can replace all values inside batchOne with
+            // the new info from output
+            for (int i = 0; i < batchSize; i++) {
+                batchOne[i] = batchTwo[i];
+                computer.readBatch(batchTwo);
+                batchTwo[i] = computer.output[i];
             }
 
-            // case where we just move by one and also get the new window value from the priority batch.
-
-        } else {
-
-            // we advance by one and check if we got to the end of the batch
-            if ((positionInsideBatch) + windowSize >= batchSize) {
-
-                if (positionInsideBatch == 0) {
-                    //make batchOne priority batch
-                    batchOneActive = true;
-
-                    // because batchOne is now priority batch we can replace all values inside batchTwo with
-                    // the new info from output
-                    for (int i = 0; i < batchSize; i++)
-                        batchTwo[i] = computer.output[positionCounter + i];
-                }
-
-            }
         }
-    }
 
 
+
+}
 
 
     public void advanceBy(int offset) {

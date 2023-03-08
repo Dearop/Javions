@@ -26,8 +26,8 @@ public class PowerComputerTest {
 
         // first is 8pow2 + 3pow2
         computer.readBatch(batch);
-        for (int i = 0; i < batch.length; i++) {
-            //System.out.println(computer.output[i]);
+        for (int i = 0; i < 1000; i++) {
+            System.out.println(computer.output[i]);
         }
         assertEquals(73, computer.output[0]);
         assertEquals(292, computer.output[1]);
