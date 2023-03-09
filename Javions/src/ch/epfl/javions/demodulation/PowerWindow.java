@@ -65,7 +65,7 @@ public final class PowerWindow {
      * size of the window
      */
     public boolean isFull() {
-        return positionCounter == windowSize;
+        return positionCounter <= windowSize;
     }
 
     public int get(int i) {
@@ -98,7 +98,7 @@ public final class PowerWindow {
 
         // we check if the new position is at the end of the current priority batch.
         if (positionInsideBatch == 0) {
-        batchOneActive = false; // TODO: 3/9/2023 show Henri  
+            batchOneActive = false; // TODO: 3/9/2023 show Henri
             // because batchTwo is now priority batch we can replace all values inside batchOne with
             // the new info from output
             for (int i = 0; i < batchSize; i++) {
