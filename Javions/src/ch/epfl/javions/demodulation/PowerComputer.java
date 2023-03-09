@@ -44,7 +44,7 @@ public final class PowerComputer {
 //        System.out.println(batch.length);
 //        System.out.println(batchSize);
         if(batch.length != batchSize){
-            batch = new int[batchSize];
+            throw new IllegalArgumentException();
         }
         Preconditions.checkArgument(batch.length == batchSize);
 

@@ -9,7 +9,7 @@ import java.util.Arrays;
  * @author Paul Quesnot (347572)
  */
 public final class PowerWindow {
-    // TODO: 3/7/2023 change back to private
+    // TODO: 3/9/2023 Should be public 
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
@@ -107,14 +107,16 @@ public final class PowerWindow {
                 computer.readBatch(batchTwo);
                 batchTwo[i] = computer.output[i];
             }
-
         }
-
-
-
 }
 
 
+    /**
+     * This method applies the advance method but instead of letting the window move forwards one-by-one
+     * we move it by the integer value given as a parameter.
+     *
+     * @param offset integer value representing how much we are skipping forwards
+     */
     public void advanceBy(int offset) {
         //todo offset can't be bigger than window size no???
         if (offset >= windowSize) throw new IllegalArgumentException();

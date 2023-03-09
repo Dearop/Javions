@@ -10,9 +10,9 @@ import java.io.InputStream;
  * @author Paul Quesnot (347572)
  */
 public final class SamplesDecoder {
-    private InputStream stream;
+    private final InputStream stream;
     private int batchSize;
-    private byte[] bytes;
+    private final byte[] bytes;
     public short[] batch;
 
     public SamplesDecoder(InputStream stream, int batchSize) {
@@ -26,8 +26,8 @@ public final class SamplesDecoder {
 
     public int readBatch(short[] batch) throws IOException{
         Preconditions.checkArgument(batch.length == batchSize);
-        //if(stream.available() <= batchSize) return (int) Math.floor(stream.available()/2);
         int streamSize = stream.readNBytes(bytes, 0,batchSize);
+        //if(stream.available() <= batchSize) batchSize = stream.readAllBytes().length;
         for(int i = 0; i < bytes.length/2; i+=2){
             short lowerWeight = bytes[i];
             short higherWeight = (short) Bits.extractUInt(bytes[i+1], 4, 4);

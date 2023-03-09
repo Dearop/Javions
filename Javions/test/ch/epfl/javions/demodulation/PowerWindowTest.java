@@ -3,13 +3,13 @@ package ch.epfl.javions.demodulation;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PowerWindowTest {
 
@@ -18,9 +18,7 @@ public class PowerWindowTest {
         String samples = getClass().getResource("/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
-
         PowerWindow window = new PowerWindow(stream, 16);
-
     }
     @Test
     public void PowerWindowAdvanceMethodWorks() throws IOException {
@@ -38,9 +36,6 @@ public class PowerWindowTest {
                 window.advance();
             }
         }
-
-
-
     }
 
     @Test
