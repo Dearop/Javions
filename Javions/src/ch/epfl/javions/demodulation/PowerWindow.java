@@ -2,7 +2,6 @@ package ch.epfl.javions.demodulation;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 /**
  * @author Henri Antal (339444)
@@ -19,7 +18,7 @@ public final class PowerWindow {
     public int[] batchTwo;
     private boolean batchOneActive;
     private int tableCounter;
-    private InputStream stream;
+    private final InputStream stream;
 
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if (windowSize <= 0 || windowSize > batchSize)
@@ -39,7 +38,6 @@ public final class PowerWindow {
         for (int i = 0; i < batchSize; i++) {
             batchOne[i] = computer.output[i];
         }
-
         computer.readBatch(batchTwo);
         for (int i = 0; i < batchSize; i++) {
             batchTwo[i] = computer.output[i];
@@ -63,10 +61,11 @@ public final class PowerWindow {
     //here there can be a lot of mistakes with reading the files and positionCounter being too big
 
     /**
-     * @return
+     * @return a boolean value telling us if the counter tracking our position in the window is greater than the
+     * size of the window
      */
     public boolean isFull() {
-        return positionCounter <= computer.output.length;
+        return positionCounter == windowSize;
     }
 
     public int get(int i) {
@@ -99,7 +98,7 @@ public final class PowerWindow {
 
         // we check if the new position is at the end of the current priority batch.
         if (positionInsideBatch == 0) {
-
+        batchOneActive = false; // TODO: 3/9/2023 show Henri  
             // because batchTwo is now priority batch we can replace all values inside batchOne with
             // the new info from output
             for (int i = 0; i < batchSize; i++) {
@@ -110,16 +109,14 @@ public final class PowerWindow {
         }
 }
 
-
     /**
      * This method applies the advance method but instead of letting the window move forwards one-by-one
      * we move it by the integer value given as a parameter.
      *
      * @param offset integer value representing how much we are skipping forwards
      */
+
     public void advanceBy(int offset) {
-        //todo offset can't be bigger than window size no???
-        if (offset >= windowSize) throw new IllegalArgumentException();
         if (offset <= 0) throw new IllegalArgumentException();
         for (int i = 0; i < offset; i++) advance();
     }

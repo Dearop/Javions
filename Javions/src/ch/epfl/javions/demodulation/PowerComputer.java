@@ -11,7 +11,7 @@ import java.util.Arrays;
  * @author Paul Quesnot (347572)
  */
 public final class PowerComputer {
-    private int batchSize;
+    public int batchSize;
     private final InputStream stream;
     private final SamplesDecoder decoder;
     private final short[] powerCalculationTable = new short[8];
@@ -31,7 +31,7 @@ public final class PowerComputer {
         this.stream = stream;
         this.decoder = new SamplesDecoder(stream, 2*batchSize);
         intermediary = new short[2*batchSize];
-        this.batchSize = decoder.readBatch(intermediary);
+        decoder.readBatch(intermediary);
     }
 
     /**
