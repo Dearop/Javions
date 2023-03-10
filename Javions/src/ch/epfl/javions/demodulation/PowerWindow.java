@@ -7,7 +7,7 @@ import java.io.InputStream;
  * In this class we create two tables called batchOne and batchTwo that take in the information we get from PowerComputer
  * when we read the stream that is given through the constructor. We read through these two tables with the help
  * of the methods that we created in this class. To access the data inside the batches we create a window with a
- * windowSize that is given in the parameter of the constructor. This window doesn't store any data but it defines,
+ * windowSize that is given in the parameter of the constructor. This window doesn't store any data, but it defines,
  * what part of the batches we can access. It always has the same starting position as the integer positionCounter.
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
@@ -16,11 +16,11 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
+    // TODO: 3/10/2023 change before Giving in!
     private final static int batchSize = (int) Math.pow(2, 3);
     public int[] batchOne;
     public int[] batchTwo;
-    private final InputStream stream;
-    private int availableStream;
+    private final int availableStream;
 
     /**
      *
@@ -32,15 +32,11 @@ public final class PowerWindow {
         if (windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
         availableStream = stream.available();
-        System.out.println(stream.available());
         this.windowSize = windowSize;
         this.computer = new PowerComputer(stream, batchSize);
         batchOne = new int[batchSize];
-        int batchSize = computer.readBatch(batchOne);;
         batchTwo = new int[batchSize];
-        this.stream = stream;
-        //System.out.println(Arrays.toString(batchOne));
-
+        computer.readBatch(batchOne);
     }
 
     /**
@@ -88,13 +84,14 @@ public final class PowerWindow {
         int positionInsideBatch = positionCounter % batchSize;
 
         // we check if the new position is at the end of the current priority batch.
-        if (positionInsideBatch == 0) {
+        if (positionInsideBatch != 0) {
             // because batchTwo is now priority batch we can replace all values inside batchOne with
             // the new info from output
             for (int i = 0; i < batchSize; i++) {
                 batchOne[i] = batchTwo[i];
                 //System.out.println(positionCounter);
                 //computer.readBatch(batchTwo);
+                System.out.println("C");
                computer.readBatch(batchTwo);
             }
         }

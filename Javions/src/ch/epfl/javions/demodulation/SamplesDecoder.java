@@ -32,16 +32,15 @@ public final class SamplesDecoder {
         Preconditions.checkArgument(batch.length == batchSize);
 
         int byteCounter = 0;
+        int bytesRead = stream.readNBytes(bytes, 0 ,2*batchSize);
+        for(int i = 0; i < bytesRead/2 ; ++i){
 
-        for(int i = 0; i < batchSize ; i+=2){
-            byteCounter += stream.readNBytes(bytes, i ,2);
-
-            short lowerWeight = bytes[i];
-            short higherWeight = (short) Bits.extractUInt(bytes[i+1], 4, 4);
+            short lowerWeight = bytes[2*i];
+            short higherWeight = (short) Bits.extractUInt(bytes[2*i+1], 4, 4);
             higherWeight <<= 8;
 
-            batch[i/2] = (short) (higherWeight | lowerWeight);
+            batch[i] = (short) (higherWeight | lowerWeight);
         }
-        return byteCounter/2;
+        return bytesRead/2;
     }
 }

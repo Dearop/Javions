@@ -10,8 +10,7 @@ import java.io.InputStream;
  * @author Paul Quesnot (347572)
  */
 public final class PowerComputer {
-    // TODO: 3/10/2023 ask TA
-    public int batchSize;
+    private final int batchSize;
     private final SamplesDecoder decoder;
     private final int[] powerCalculationTable = new int[8];
     /**
@@ -28,7 +27,7 @@ public final class PowerComputer {
         if(batchSize < 0) throw new IllegalArgumentException();
         this.batchSize = batchSize;
         this.decodedBatch = new short[2*batchSize];
-        this.decoder = new SamplesDecoder(stream, batchSize*2);
+        this.decoder = new SamplesDecoder(stream, 2*batchSize);
     }
 
     /**
@@ -53,7 +52,7 @@ public final class PowerComputer {
             powerCalculationTable[1] = decodedBatch[i];
 
 
-            batch[counter] =  (int) (Math.pow(powerCalculationTable[1]-powerCalculationTable[3]+
+            batch[i/2] =  (int) (Math.pow(powerCalculationTable[1]-powerCalculationTable[3]+
                                     powerCalculationTable[5]-powerCalculationTable[7], 2) //even
                                     +
                                     Math.pow(powerCalculationTable[0] - powerCalculationTable[2] + powerCalculationTable[4] -

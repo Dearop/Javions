@@ -175,14 +175,15 @@ public class PowerWindowTest {
 
     @Test
     void testTable() throws IOException{    String samples = getClass().getResource("/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);    InputStream stream = new FileInputStream(samples);
-        PowerWindow window = new PowerWindow(stream, 8);    int[] test = new int[8];
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+        PowerWindow window = new PowerWindow(stream, 8);
 
-        System.out.println(Arrays.toString(window.batchOne));    System.out.println(Arrays.toString(window.batchTwo));
+        System.out.println(Arrays.toString(window.batchOne));
+        System.out.println(Arrays.toString(window.batchTwo));
         System.out.println("advanced by 5");
         window.advanceBy(5);
         System.out.println(Arrays.toString(window.batchOne));
         System.out.println(Arrays.toString(window.batchTwo));
     }
-
 }
