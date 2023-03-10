@@ -68,7 +68,7 @@ public class PowerWindowTest {
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
 
-        PowerWindow window = new PowerWindow(stream, 160);
+        PowerWindow window = new PowerWindow(stream, 40);
         PowerComputer computer = new PowerComputer(stream, 2400);
         int[] batch = new int[2400];
         computer.readBatch(batch);
@@ -79,10 +79,10 @@ public class PowerWindowTest {
         //System.out.println(counter);
         //System.out.print(Arrays.toString(window.computer.output));
 
-        window.advanceBy(100);
-        for (int i = 0; i < 100; i++) {
+        window.advanceBy(50);
+        for (int i = 0; i < 40; i++) {
             //System.out.println(window.get(i));
-            assertEquals(window.get(i),window.batchOne[i+100]);
+            assertEquals(window.get(i),window.batchOne[i+50]);
         }
     }
 
@@ -103,8 +103,8 @@ public class PowerWindowTest {
         InputStream stream = new FileInputStream(samples);
         InputStream f = new FileInputStream(samples);
         PowerWindow powerWindow=new PowerWindow(stream,60);
-        PowerComputer powerComputer = new PowerComputer(f,1208);
-        int[] tab = new int[1208];
+        PowerComputer powerComputer = new PowerComputer(f,120);
+        int[] tab = new int[120];
         int count = powerComputer.readBatch(tab);
         for(var i=0;i<60;i++) {
             assertEquals(tab[i],powerWindow.get(i));
@@ -171,6 +171,18 @@ public class PowerWindowTest {
         assertTrue(powerWindow.isFull());
         powerWindow.advance();
         assertFalse(powerWindow.isFull());
+    }
+
+    @Test
+    void testTable() throws IOException{    String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);    InputStream stream = new FileInputStream(samples);
+        PowerWindow window = new PowerWindow(stream, 8);    int[] test = new int[8];
+
+        System.out.println(Arrays.toString(window.batchOne));    System.out.println(Arrays.toString(window.batchTwo));
+        System.out.println("advanced by 5");
+        window.advanceBy(5);
+        System.out.println(Arrays.toString(window.batchOne));
+        System.out.println(Arrays.toString(window.batchTwo));
     }
 
 }

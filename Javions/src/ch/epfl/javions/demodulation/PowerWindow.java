@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * In this class we create two tables called batchOne and batchTwo that take in the information we get from PowerComputer
+ * when we read the stream that is given through the constructor. We read through these two tables with the help
+ * of the methods that we created in this class. To access the data inside the batches we create a window with a
+ * windowSize that is given in the parameter of the constructor. This window doesn't store any data but it defines,
+ * what part of the batches we can access. It always has the same starting position as the integer positionCounter.
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
@@ -11,15 +16,18 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    private final static int batchSize = (int) Math.pow(2, 16);
-    // TODO: 3/7/2023 should be private
+    private final static int batchSize = (int) Math.pow(2, 3);
     public int[] batchOne;
     public int[] batchTwo;
-    private boolean batchOneActive;
-    private int tableCounter;
     private final InputStream stream;
     private int availableStream;
 
+    /**
+     *
+     * @param stream
+     * @param windowSize
+     * @throws IOException
+     */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if (windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
@@ -49,20 +57,20 @@ public final class PowerWindow {
         return positionCounter;
     }
 
-    //here there can be a lot of mistakes with reading the files and positionCounter being too big
-
-    /**
-     * @return boolean value that says if the window is full which itself is reliant upon the fact that the window is
-     * in the batch
+    /** TODO ask if this is allowed
+     * @return boolean value that says if the window is full.
+     * This statement is true as long as all the inputs are coming from within the stream size.
+     * Once the positionCounter + windowSize is bigger than the stream/4 then it return false.
      */
     public boolean isFull() {
         return availableStream/4 >= positionCounter +windowSize ;
     }
 
     /**
-     *
+     * With this function we can access the values inside the window. If the window contains information from two batches
+     * we check from which batch we need to get the information from which we do in the return line.
      * @param i integer value representing the position in the window we want to get
-     * @return power computed at the ith spot of the window
+     * @return PowerComputerValue computed at the ith spot of the window
      */
     public int get(int i) {
         if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
@@ -71,16 +79,16 @@ public final class PowerWindow {
     }
 
     /**
-     * Moves either the first or the second batch forwards by one which simulates
+     * Moves the position by one step forward and then checks if the position entered the end of the batch. If this
+     * happens the first batch copies the values from the second batch and the second batch loads new values from the
+     * Power computer.
      */
     public void advance() throws IOException{
         ++positionCounter;
         int positionInsideBatch = positionCounter % batchSize;
 
-
         // we check if the new position is at the end of the current priority batch.
         if (positionInsideBatch == 0) {
-            batchOneActive = false; // TODO: 3/9/2023 show Henri
             // because batchTwo is now priority batch we can replace all values inside batchOne with
             // the new info from output
             for (int i = 0; i < batchSize; i++) {
@@ -93,8 +101,8 @@ public final class PowerWindow {
 }
 
     /**
-     * This method applies the advance method but instead of letting the window move forwards one-by-one
-     * we move it by the integer value given as a parameter.
+     * This method applies the advance method for a certain number of times which is specified
+     * with the parameter offset.
      *
      * @param offset integer value representing how much we are skipping forwards
      */
