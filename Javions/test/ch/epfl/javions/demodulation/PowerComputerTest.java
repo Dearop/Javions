@@ -11,8 +11,6 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
-// TODO: 3/9/2023 OK so the problem is that the stream.available just gives us Zero everytime 
 public class PowerComputerTest {
     @Test
     public void PowerComputerTestFirstValuesAreCorrect() throws IOException {
@@ -30,18 +28,18 @@ public class PowerComputerTest {
         // first is 8pow2 + 3pow2
         computer.readBatch(batch);
         for (int i = 0; i < 2402; i++) {
-            System.out.println(computer.output[i]);
+            System.out.println(batch[i]);
         }
-        assertEquals(73, computer.output[0]);
-        assertEquals(292, computer.output[1]);
-        assertEquals(65, computer.output[2]);
-        assertEquals(745, computer.output[3]);
-        assertEquals(98, computer.output[4]);
-        assertEquals(4226,computer.output[5]);
-        assertEquals(12244, computer.output[6]);
-        assertEquals(25722,computer.output[7]);
-        assertEquals(36818, computer.output[8]);
-        assertEquals(23825, computer.output[9]);
+        assertEquals(73, batch[0]);
+        assertEquals(292, batch[1]);
+        assertEquals(65, batch[2]);
+        assertEquals(745, batch[3]);
+        assertEquals(98, batch[4]);
+        assertEquals(4226,batch[5]);
+        assertEquals(12244, batch[6]);
+        assertEquals(25722,batch[7]);
+        assertEquals(36818, batch[8]);
+        assertEquals(23825, batch[9]);
     }
 
     @Test
@@ -58,9 +56,9 @@ public class PowerComputerTest {
         computer.readBatch(batch);
         int[] firstValues = new int[160];
         for (int i = 0; i < firstValues.length; i++) {
-            firstValues[i] = computer.output[i];
+            firstValues[i] = batch[i];
         }
-        assertEquals(73, computer.output[0]);
+        assertEquals(73, batch[0]);
     }
 
     @Test

@@ -11,6 +11,7 @@ import java.util.Arrays;
  * @author Paul Quesnot (347572)
  */
 public final class PowerComputer {
+    // TODO: 3/10/2023 ask TA
     public int batchSize;
     private final InputStream stream;
     private final SamplesDecoder decoder;
@@ -18,7 +19,6 @@ public final class PowerComputer {
     /**
      * Table that contains the batch of computed powers
      */
-    public int[] output;
     private short[] intermediary;
     /**
      *
@@ -35,6 +35,7 @@ public final class PowerComputer {
 
     /**
      *
+     *
      * @param batch
      * @return integer value representing the size of the batch
      */
@@ -42,7 +43,8 @@ public final class PowerComputer {
 //        System.out.println(batch.length);
 //        System.out.println(batchSize);
         Preconditions.checkArgument(batch.length == batchSize);
-        this.batchSize = decoder.readBatch(new short[batchSize]);
+        short[] decodedBatch = new short[batchSize];
+        this.batchSize = decoder.readBatch(decodedBatch);
         int counter = 0;
         for (int i = 0; i < batchSize; i+=2) {
             powerCalculationTable[7] = powerCalculationTable[5];
@@ -52,8 +54,8 @@ public final class PowerComputer {
             powerCalculationTable[3] = powerCalculationTable[1];
             powerCalculationTable[2] = powerCalculationTable[0];
 
-            powerCalculationTable[0] = decoder.batch[i+1];
-            powerCalculationTable[1] = decoder.batch[i];
+            powerCalculationTable[0] = decodedBatch[i+1];
+            powerCalculationTable[1] = decodedBatch[i];
 
 
             batch[counter] =  (int) (Math.pow(powerCalculationTable[1]-powerCalculationTable[3]+
@@ -63,7 +65,6 @@ public final class PowerComputer {
                                     powerCalculationTable[6],2)); //odd
             counter++;
         }
-        output = batch.clone();
         return counter;
     }
 }

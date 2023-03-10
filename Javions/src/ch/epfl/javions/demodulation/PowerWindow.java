@@ -26,18 +26,12 @@ public final class PowerWindow {
         this.windowSize = windowSize;
         this.computer = new PowerComputer(stream, batchSize);
         batchOne = new int[batchSize];
-        int batchSize = computer.readBatch(batchOne);
-        batchOne = computer.output.clone();
+        int batchSize = computer.readBatch(batchOne);;
         batchTwo = new int[batchSize];
         this.stream = stream;
 
-
         //System.out.println(Arrays.toString(batchOne));
 
-        batchOneActive = true;
-        for (int i = 0; i < batchSize; i++) {
-            batchOne[i] = computer.output[i];
-        }
     }
 
     /**
@@ -87,7 +81,7 @@ public final class PowerWindow {
     /**
      * Moves either the first or the second batch forwards by one which simulates
      */
-    public void advance() {
+    public void advance() throws IOException{
         ++positionCounter;
         int positionInsideBatch = positionCounter % batchSize;
 
@@ -101,7 +95,7 @@ public final class PowerWindow {
                 batchOne[i] = batchTwo[i];
                 System.out.println(positionCounter);
                 //computer.readBatch(batchTwo);
-                batchTwo[i] = computer.output[i];
+               computer.readBatch(batchTwo);
             }
         }
 }
@@ -113,7 +107,7 @@ public final class PowerWindow {
      * @param offset integer value representing how much we are skipping forwards
      */
 
-    public void advanceBy(int offset) {
+    public void advanceBy(int offset) throws IOException{
         if (offset <= 0) throw new IllegalArgumentException();
         for (int i = 0; i < offset; i++) advance();
     }

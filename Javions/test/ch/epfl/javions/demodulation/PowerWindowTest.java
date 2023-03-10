@@ -69,20 +69,20 @@ public class PowerWindowTest {
         InputStream stream = new FileInputStream(samples);
 
         PowerWindow window = new PowerWindow(stream, 160);
-        PowerComputer computer = new PowerComputer(stream, 240);
-        int[] batch = new int[240];
+        PowerComputer computer = new PowerComputer(stream, 2400);
+        int[] batch = new int[2400];
         computer.readBatch(batch);
         System.out.println(Arrays.toString(window.batchOne));
         int counter = 0;
-        while(window.computer.output[counter] != 0)
+        while(batch[counter] != 0)
             ++ counter;
-        //System.out.println(counter);
+        System.out.println(counter);
         //System.out.print(Arrays.toString(window.computer.output));
 
         window.advanceBy(100);
         for (int i = 0; i < 100; i++) {
             //System.out.println(window.get(i));
-            assertEquals(window.get(i),window.computer.output[i+100]);
+            assertEquals(window.get(i),window.batchOne[i+100]);
         }
     }
 

@@ -28,7 +28,7 @@ public class SamplesDecoderTest {
         InputStream stream = new FileInputStream(samples);
         SamplesDecoder decoder = new SamplesDecoder(stream, 2402);
         short[] batch = new short[2402];
-        assertEquals(1201, decoder.readBatch(batch));
+        assertEquals(2402, decoder.readBatch(batch));
     }
 
     @Test
