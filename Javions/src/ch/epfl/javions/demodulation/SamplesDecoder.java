@@ -18,7 +18,7 @@ import java.io.InputStream;
  */
 public final class SamplesDecoder {
     private final InputStream stream;
-    private int batchSize;
+    private final int batchSize;
     private final byte[] bytes;
 
     /**

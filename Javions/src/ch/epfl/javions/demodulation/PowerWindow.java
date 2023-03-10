@@ -16,16 +16,15 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    // TODO: 3/10/2023 change before Giving in!
-    private final static int batchSize = (int) Math.pow(2, 3);
+    private final static int batchSize = (int) Math.pow(2, 16);
     public int[] batchOne;
     public int[] batchTwo;
     private final int availableStream;
 
     /**
-     * this constructor first checks that the window size is smaller or equal to the batch size. If not a
-     * IllegalArgumentException gets thrown. Then we check how long the given stream is and safe that number. We will
-     * use it later for the isFull() method. Then a new PowerComputer get's created with the parameters batchSize and
+     * this constructor first checks that the window size is smaller or equal to the batch size. If not an
+     * IllegalArgumentException gets thrown. Then we check how long the given stream is and save that number. We will
+     * use it later for the isFull() method. Then a new PowerComputer gets created with the parameters batchSize and
      * stream. In the end the batchOne and batchTwo get filled up with the values that we get from PowerComputer.
      *
      * @param stream     stream that contains zero's and one's that will get decoded inside SampleDecoder.
@@ -41,6 +40,7 @@ public final class PowerWindow {
         batchOne = new int[batchSize];
         batchTwo = new int[batchSize];
         computer.readBatch(batchOne);
+        computer.readBatch(batchTwo);
     }
 
     /**
@@ -86,19 +86,14 @@ public final class PowerWindow {
     public void advance() throws IOException{
         ++positionCounter;
         int positionInsideBatch = positionCounter % batchSize;
-
         // we check if the new position is at the end of the current priority batch.
-        if (positionInsideBatch != 0) {
+        if (positionInsideBatch == batchSize-1) {
             // because batchTwo is now priority batch we can replace all values inside batchOne with
             // the new info from output
-            for (int i = 0; i < batchSize; i++) {
-                batchOne[i] = batchTwo[i];
-                //System.out.println(positionCounter);
-                //computer.readBatch(batchTwo);
-                System.out.println("C");
-               computer.readBatch(batchTwo);
-            }
+            batchOne = batchTwo.clone();
+            computer.readBatch(batchTwo);
         }
+
 }
 
     /**
@@ -107,7 +102,6 @@ public final class PowerWindow {
      *
      * @param offset integer value representing how much we are skipping forwards
      */
-
     public void advanceBy(int offset) throws IOException{
         if (offset <= 0) throw new IllegalArgumentException();
         for (int i = 0; i < offset; i++) advance();
