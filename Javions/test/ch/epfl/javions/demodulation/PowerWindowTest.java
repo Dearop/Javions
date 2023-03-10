@@ -72,11 +72,11 @@ public class PowerWindowTest {
         PowerComputer computer = new PowerComputer(stream, 2400);
         int[] batch = new int[2400];
         computer.readBatch(batch);
-        System.out.println(Arrays.toString(window.batchOne));
+        //System.out.println(Arrays.toString(window.batchOne));
         int counter = 0;
         while(batch[counter] != 0)
             ++ counter;
-        System.out.println(counter);
+        //System.out.println(counter);
         //System.out.print(Arrays.toString(window.computer.output));
 
         window.advanceBy(100);
@@ -98,9 +98,11 @@ public class PowerWindowTest {
 
     @Test
     void testIfGetWorksForTriviain1stWindow() throws IOException {
-        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        PowerWindow powerWindow=new PowerWindow(inputStream,60);
+        String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+        InputStream f = new FileInputStream(samples);
+        PowerWindow powerWindow=new PowerWindow(stream,60);
         PowerComputer powerComputer = new PowerComputer(f,1208);
         int[] tab = new int[1208];
         int count = powerComputer.readBatch(tab);
@@ -111,9 +113,11 @@ public class PowerWindowTest {
 
     @Test
     void testIfGetWorksIfCanSwitchTable() throws IOException { //with small batchsize
-        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        PowerWindow powerWindow=new PowerWindow(inputStream,8);
+        String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+        InputStream f = new FileInputStream(samples);
+        PowerWindow powerWindow=new PowerWindow(stream,8);
         PowerComputer powerComputer = new PowerComputer(f,1208);
         int[] tab = new int[1208];
         int count = powerComputer.readBatch(tab);
@@ -125,9 +129,12 @@ public class PowerWindowTest {
 
     @Test
     void testIfAdvanceby1Worksfor1TableCases() throws IOException{
-        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        PowerWindow powerWindow=new PowerWindow(inputStream,60);
+        String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+        InputStream f=new FileInputStream(samples);
+
+        PowerWindow powerWindow=new PowerWindow(stream,60);
         PowerComputer powerComputer = new PowerComputer(f,1208);
         int[] tab = new int[1208];
         int count = powerComputer.readBatch(tab);
@@ -139,9 +146,11 @@ public class PowerWindowTest {
 
     @Test
     void testIfAdvancebyOffsetWorksfor1TableCases() throws IOException{
-        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        PowerWindow powerWindow=new PowerWindow(inputStream,60);
+        String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+        InputStream f=new FileInputStream(samples);
+        PowerWindow powerWindow=new PowerWindow(stream,60);
         PowerComputer powerComputer = new PowerComputer(f,1208);
         int[] tab = new int[1208];
         int count = powerComputer.readBatch(tab);
@@ -153,13 +162,15 @@ public class PowerWindowTest {
 
     @Test
     void testIfIsFullforSmallFile()throws IOException {
-        InputStream inputStream = new FileInputStream(getClass().getResource("/samples.bin").getFile());
-        PowerWindow powerWindow = new PowerWindow(inputStream, 8);
-        assertEquals(false, powerWindow.isFull());
+        String samples = getClass().getResource("/samples.bin").getFile();
+        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        InputStream stream = new FileInputStream(samples);
+        PowerWindow powerWindow = new PowerWindow(stream, 8);
+        assertTrue(powerWindow.isFull());
+        powerWindow.advanceBy(1193);
+        assertTrue(powerWindow.isFull());
+        powerWindow.advance();
+        assertFalse(powerWindow.isFull());
     }
-
-
-
-
 
 }

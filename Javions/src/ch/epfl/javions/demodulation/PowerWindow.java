@@ -8,7 +8,6 @@ import java.io.InputStream;
  * @author Paul Quesnot (347572)
  */
 public final class PowerWindow {
-    // TODO: 3/9/2023 Should be public 
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
@@ -19,17 +18,19 @@ public final class PowerWindow {
     private boolean batchOneActive;
     private int tableCounter;
     private final InputStream stream;
+    private int availableStream;
 
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if (windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
+        availableStream = stream.available();
+        System.out.println(stream.available());
         this.windowSize = windowSize;
         this.computer = new PowerComputer(stream, batchSize);
         batchOne = new int[batchSize];
         int batchSize = computer.readBatch(batchOne);;
         batchTwo = new int[batchSize];
         this.stream = stream;
-
         //System.out.println(Arrays.toString(batchOne));
 
     }
@@ -51,30 +52,21 @@ public final class PowerWindow {
     //here there can be a lot of mistakes with reading the files and positionCounter being too big
 
     /**
-     * @return a boolean value telling us if the counter tracking our position in the window is greater than the
-     * size of the window
+     * @return boolean value that says if the window is full which itself is reliant upon the fact that the window is
+     * in the batch
      */
     public boolean isFull() {
-        return positionCounter <= windowSize;
+        return availableStream/4 >= positionCounter +windowSize ;
     }
 
+    /**
+     *
+     * @param i integer value representing the position in the window we want to get
+     * @return power computed at the ith spot of the window
+     */
     public int get(int i) {
         if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
         int positionInBatch = positionCounter % batchSize;
-//        if (batchOneActive) {
-//            if ((positionInBatch) + i < batchSize) {
-//                return batchOne[positionInBatch + i];
-//            } else {
-//                return batchTwo[(positionInBatch + i) & batchSize-1];
-//            }
-//        }
-//        //here batch one is not active
-//        //TODO is it batchsize -1 or without -1??
-//        if ((positionInBatch) + i < batchSize) {
-//            return batchTwo[positionInBatch + i];
-//        } else {
-//            return batchOne[(positionInBatch + i) & batchSize-1];
-//        }
         return positionInBatch + i < batchSize ? batchOne[positionInBatch + i] : batchTwo[positionInBatch + i % batchSize];
     }
 
@@ -93,7 +85,7 @@ public final class PowerWindow {
             // the new info from output
             for (int i = 0; i < batchSize; i++) {
                 batchOne[i] = batchTwo[i];
-                System.out.println(positionCounter);
+                //System.out.println(positionCounter);
                 //computer.readBatch(batchTwo);
                computer.readBatch(batchTwo);
             }

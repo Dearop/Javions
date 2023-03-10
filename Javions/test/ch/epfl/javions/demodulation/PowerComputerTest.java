@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -17,19 +19,13 @@ public class PowerComputerTest {
         String samples = getClass().getResource("/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
-        int pow16 = 1;
-        for (int i = 0; i < 16; i++)
-            pow16*=2;
-
+        int pow16 = 24;
 
         PowerComputer computer = new PowerComputer(stream, pow16);
-        int[] batch = new int[computer.batchSize];
-    
+        int[] batch = new int[24];
         // first is 8pow2 + 3pow2
         computer.readBatch(batch);
-        for (int i = 0; i < 2402; i++) {
-            System.out.println(batch[i]);
-        }
+        System.out.println(Arrays.toString(batch));
         assertEquals(73, batch[0]);
         assertEquals(292, batch[1]);
         assertEquals(65, batch[2]);

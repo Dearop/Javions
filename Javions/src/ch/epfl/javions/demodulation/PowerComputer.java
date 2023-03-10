@@ -4,7 +4,6 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 /**
  * @author Henri Antal (339444)
@@ -13,40 +12,36 @@ import java.util.Arrays;
 public final class PowerComputer {
     // TODO: 3/10/2023 ask TA
     public int batchSize;
-    private final InputStream stream;
     private final SamplesDecoder decoder;
-    private final short[] powerCalculationTable = new short[8];
+    private final int[] powerCalculationTable = new int[8];
     /**
      * Table that contains the batch of computed powers
      */
-    private short[] intermediary;
+    private final short[] decodedBatch;
     /**
      *
-     * @param stream
-     * @param batchSize
+     * @param stream inputStream from which we decode the samples and compute the appropriate powers
+     * @param batchSize integer value that corresponds to the size of the batch
      */
     public PowerComputer(InputStream stream, int batchSize){
         if(batchSize % 8 != 0) throw new IllegalArgumentException();
         if(batchSize < 0) throw new IllegalArgumentException();
         this.batchSize = batchSize;
-        this.stream = stream;
-        this.decoder = new SamplesDecoder(stream, batchSize);
+        this.decodedBatch = new short[2*batchSize];
+        this.decoder = new SamplesDecoder(stream, batchSize*2);
     }
 
     /**
+     * read batches
      *
-     *
-     * @param batch
+     * @param batch integer table in which the computed powers are stored
      * @return integer value representing the size of the batch
      */
     public int readBatch(int[] batch) throws IOException {
-//        System.out.println(batch.length);
-//        System.out.println(batchSize);
         Preconditions.checkArgument(batch.length == batchSize);
-        short[] decodedBatch = new short[batchSize];
-        this.batchSize = decoder.readBatch(decodedBatch);
+        int bytesRead = decoder.readBatch(decodedBatch);
         int counter = 0;
-        for (int i = 0; i < batchSize; i+=2) {
+        for (int i = 0; i < bytesRead; i+=2) {
             powerCalculationTable[7] = powerCalculationTable[5];
             powerCalculationTable[6] = powerCalculationTable[4];
             powerCalculationTable[5] = powerCalculationTable[3];
