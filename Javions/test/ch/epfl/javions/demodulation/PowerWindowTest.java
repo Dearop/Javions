@@ -95,4 +95,71 @@ public class PowerWindowTest {
         PowerWindow window = new PowerWindow(stream, 16);
         assertEquals(16, window.size());
     }
+
+    @Test
+    void testIfGetWorksForTriviain1stWindow() throws IOException {
+        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        PowerWindow powerWindow=new PowerWindow(inputStream,60);
+        PowerComputer powerComputer = new PowerComputer(f,1208);
+        int[] tab = new int[1208];
+        int count = powerComputer.readBatch(tab);
+        for(var i=0;i<60;i++) {
+            assertEquals(tab[i],powerWindow.get(i));
+        }
+    }
+
+    @Test
+    void testIfGetWorksIfCanSwitchTable() throws IOException { //with small batchsize
+        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        PowerWindow powerWindow=new PowerWindow(inputStream,8);
+        PowerComputer powerComputer = new PowerComputer(f,1208);
+        int[] tab = new int[1208];
+        int count = powerComputer.readBatch(tab);
+        powerWindow.advanceBy(9);
+        for(var i=0;i<8;i++){
+            assertEquals(tab[i+9],powerWindow.get(i));
+        }
+    }
+
+    @Test
+    void testIfAdvanceby1Worksfor1TableCases() throws IOException{
+        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        PowerWindow powerWindow=new PowerWindow(inputStream,60);
+        PowerComputer powerComputer = new PowerComputer(f,1208);
+        int[] tab = new int[1208];
+        int count = powerComputer.readBatch(tab);
+        for(var i=0;i<60;i++) {
+            assertEquals(tab[i],powerWindow.get(0));
+            powerWindow.advance();
+        }
+    }
+
+    @Test
+    void testIfAdvancebyOffsetWorksfor1TableCases() throws IOException{
+        InputStream inputStream=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        InputStream f=new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        PowerWindow powerWindow=new PowerWindow(inputStream,60);
+        PowerComputer powerComputer = new PowerComputer(f,1208);
+        int[] tab = new int[1208];
+        int count = powerComputer.readBatch(tab);
+        for(var i=0;i<60;i+=3) {
+            assertEquals(tab[i],powerWindow.get(0));
+            powerWindow.advanceBy(3);
+        }
+    }
+
+    @Test
+    void testIfIsFullforSmallFile()throws IOException {
+        InputStream inputStream = new FileInputStream(getClass().getResource("/samples.bin").getFile());
+        PowerWindow powerWindow = new PowerWindow(inputStream, 8);
+        assertEquals(false, powerWindow.isFull());
+    }
+
+
+
+
+
 }
