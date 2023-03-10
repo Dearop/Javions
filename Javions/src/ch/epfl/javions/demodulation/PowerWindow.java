@@ -23,10 +23,14 @@ public final class PowerWindow {
     private final int availableStream;
 
     /**
+     * this constructor first checks that the window size is smaller or equal to the batch size. If not a
+     * IllegalArgumentException gets thrown. Then we check how long the given stream is and safe that number. We will
+     * use it later for the isFull() method. Then a new PowerComputer get's created with the parameters batchSize and
+     * stream. In the end the batchOne and batchTwo get filled up with the values that we get from PowerComputer.
      *
-     * @param stream
-     * @param windowSize
-     * @throws IOException
+     * @param stream     stream that contains zero's and one's that will get decoded inside SampleDecoder.
+     * @param windowSize windowSize that defines how many numbers we can access from the batches.
+     * @throws IOException Throws Exception when there is a problem reading the stream.
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if (windowSize <= 0 || windowSize > batchSize)

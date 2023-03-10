@@ -6,21 +6,31 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * In this class we compute the values that we get from the SampleDecoder. To do this, we apply a well-defined algorithm
+ * that gives you a power value, so if the stream length is 4804 we will get a total of 1201 power values.
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
 public final class PowerComputer {
+    // The private final batchSize that is given as a parameter into the Sample Decoder.
     private final int batchSize;
+
+    // SampleDecoder that saves the decoded sample inside the class.
     private final SamplesDecoder decoder;
+
+    // Table that contains the numbers that are being used to calculate the powers
     private final int[] powerCalculationTable = new int[8];
-    /**
-     * Table that contains the batch of computed powers
-     */
+
+    // Table that contains the batch of computed powers
     private final short[] decodedBatch;
+
     /**
+     * Creates a new PowerComputer object that also creates a calls a new SampleDecoder with the parameters stream and
+     * two times the batchSize.
      *
-     * @param stream inputStream from which we decode the samples and compute the appropriate powers
-     * @param batchSize integer value that corresponds to the size of the batch
+     * @param stream    The input stream from which to decode the samples.
+     * @param batchSize The number of samples in each batch.
+     * @throws IllegalArgumentException if batchSize is negative or not divisible by 8.
      */
     public PowerComputer(InputStream stream, int batchSize){
         if(batchSize % 8 != 0) throw new IllegalArgumentException();
@@ -31,10 +41,13 @@ public final class PowerComputer {
     }
 
     /**
-     * read batches
+     * Reads the next batch of samples from the input stream, computes the power of each sample, and stores
+     * the results in the provided batch table.
      *
-     * @param batch integer table in which the computed powers are stored
-     * @return integer value representing the size of the batch
+     * @param batch The array in which to store the computed powers.
+     * @return The number of samples processed.
+     * @throws IOException if an I/O error occurs.
+     * @throws IllegalArgumentException if the length of the batch array does not match the batch size.
      */
     public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
