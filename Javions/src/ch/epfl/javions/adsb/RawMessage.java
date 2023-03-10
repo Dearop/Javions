@@ -35,7 +35,12 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public IcaoAddress icaoAddress(){
-
+        byte[] byteAdress = new byte[3];
+        for(int i = 2; i >= 0; --i){
+            byteAdress[i] = (byte) bytes.byteAt(i);
+        }
+       ByteString address = new ByteString(byteAdress);
+        return new IcaoAddress(address.toString());
     }
 
     public long payload(){
@@ -50,7 +55,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value with the expected bits
      */
     public int typeCode(){
-        int ME56To48 = bytes.byteAt(4);
-        return ME56To48 >> 3;
+        return bytes.byteAt(4) >> 3;
     }
 }
