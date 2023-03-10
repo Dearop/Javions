@@ -25,31 +25,26 @@ public final class PowerComputer {
      * @param stream
      * @param batchSize
      */
-    public PowerComputer(InputStream stream, int batchSize) throws IOException {
+    public PowerComputer(InputStream stream, int batchSize){
         if(batchSize % 8 != 0) throw new IllegalArgumentException();
+        if(batchSize < 0) throw new IllegalArgumentException();
         this.batchSize = batchSize;
         this.stream = stream;
-        this.decoder = new SamplesDecoder(stream, 2*batchSize);
-        intermediary = new short[2*batchSize];
-        decoder.readBatch(intermediary);
+        this.decoder = new SamplesDecoder(stream, batchSize);
     }
 
     /**
      *
      * @param batch
-     * @return
-     * @throws IOException
+     * @return integer value representing the size of the batch
      */
-    public int readBatch(int[] batch){
+    public int readBatch(int[] batch) throws IOException {
 //        System.out.println(batch.length);
 //        System.out.println(batchSize);
-        if(batch.length != batchSize){
-            throw new IllegalArgumentException();
-        }
         Preconditions.checkArgument(batch.length == batchSize);
-
+        this.batchSize = decoder.readBatch(new short[batchSize]);
         int counter = 0;
-        for (int i = 0; i < batch.length; i+=2) {
+        for (int i = 0; i < batchSize; i+=2) {
             powerCalculationTable[7] = powerCalculationTable[5];
             powerCalculationTable[6] = powerCalculationTable[4];
             powerCalculationTable[5] = powerCalculationTable[3];
@@ -69,6 +64,6 @@ public final class PowerComputer {
             counter++;
         }
         output = batch.clone();
-        return batchSize;
+        return counter;
     }
 }

@@ -24,23 +24,19 @@ public final class PowerWindow {
         if (windowSize <= 0 || windowSize > batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
         this.windowSize = windowSize;
-
-        batchOne = new int[batchSize];
-        batchTwo = new int[batchSize];
-
         this.computer = new PowerComputer(stream, batchSize);
+        batchOne = new int[batchSize];
+        int batchSize = computer.readBatch(batchOne);
+        batchOne = computer.output.clone();
+        batchTwo = new int[batchSize];
         this.stream = stream;
-        computer.readBatch(batchOne);
+
 
         //System.out.println(Arrays.toString(batchOne));
 
         batchOneActive = true;
         for (int i = 0; i < batchSize; i++) {
             batchOne[i] = computer.output[i];
-        }
-        computer.readBatch(batchTwo);
-        for (int i = 0; i < batchSize; i++) {
-            batchTwo[i] = computer.output[i];
         }
     }
 
@@ -103,7 +99,8 @@ public final class PowerWindow {
             // the new info from output
             for (int i = 0; i < batchSize; i++) {
                 batchOne[i] = batchTwo[i];
-                computer.readBatch(batchTwo);
+                System.out.println(positionCounter);
+                //computer.readBatch(batchTwo);
                 batchTwo[i] = computer.output[i];
             }
         }

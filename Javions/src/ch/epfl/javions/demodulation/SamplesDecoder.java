@@ -24,10 +24,16 @@ public final class SamplesDecoder {
         batch = new short[batchSize/2];
     }
 
+    /**
+     *
+     * @param batch
+     * @return
+     * @throws IOException
+     */
     public int readBatch(short[] batch) throws IOException{
         Preconditions.checkArgument(batch.length == batchSize);
-        //if(stream.readAllBytes().length <= batchSize) batchSize = stream.readAllBytes().length;
-        int streamSize = stream.readNBytes(bytes, 0,batchSize);
+        if(stream.available() <= batchSize) batchSize = stream.available();
+        stream.readNBytes(bytes, 0,batchSize);
         for(int i = 0; i < bytes.length/2; i+=2){
             short lowerWeight = bytes[i];
             short higherWeight = (short) Bits.extractUInt(bytes[i+1], 4, 4);
@@ -35,6 +41,7 @@ public final class SamplesDecoder {
             batch[i/2] = (short) (higherWeight | lowerWeight);
         }
         this.batch = batch.clone();
-        return batchSize/2;
+
+        return (int) Math.floor(batchSize/2);
     }
 }
