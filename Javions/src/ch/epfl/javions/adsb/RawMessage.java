@@ -18,7 +18,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public static RawMessage of(long timeStampNs, byte[] bytes){
         Crc24 crc = new Crc24(Crc24.GENERATOR);
-        if(crc.crc(bytes) == 0) return null;
+        if(crc.crc(bytes) != 0) return null;
+        return new RawMessage(timeStampNs, new ByteString(bytes));
     }
 
     public static int size(byte byte0){
@@ -27,11 +28,11 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public static int typeCode(long payLoad){
-
+        return (int) payLoad >> 51;
     }
 
     public int downLinkFormat(){
-
+        return bytes.byteAt(0);
     }
 
     public IcaoAddress icaoAddress(){

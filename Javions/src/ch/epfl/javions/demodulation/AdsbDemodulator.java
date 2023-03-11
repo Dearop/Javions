@@ -7,11 +7,13 @@ import java.io.InputStream;
 
 public class AdsbDemodulator {
     private final static int windowSize = 1200;
+    private PowerWindow window;
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
-        PowerWindow window = new PowerWindow(samplesStream, windowSize);
+        this.window = new PowerWindow(samplesStream, windowSize);
     }
 
     public RawMessage nextMessage() throws IOException{
+        if(window.isFull()) return null;
 
     }
 }
