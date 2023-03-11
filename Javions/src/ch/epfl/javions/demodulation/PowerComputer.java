@@ -12,16 +12,9 @@ import java.io.InputStream;
  * @author Paul Quesnot (347572)
  */
 public final class PowerComputer {
-    // The private final batchSize that is given as a parameter into the Sample Decoder.
     private final int batchSize;
-
-    // SampleDecoder that saves the decoded sample inside the class.
     private final SamplesDecoder decoder;
-
-    // Table that contains the numbers that are being used to calculate the powers
     private final int[] powerCalculationTable = new int[8];
-
-    // Table that contains the batch of computed powers
     private final short[] decodedBatch;
 
     /**
