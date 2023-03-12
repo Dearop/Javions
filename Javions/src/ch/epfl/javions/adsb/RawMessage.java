@@ -37,16 +37,21 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
 
     public IcaoAddress icaoAddress(){
         byte[] byteAdress = new byte[3];
-        for(int i = 2; i >= 0; --i){
-            byteAdress[i] = (byte) bytes.byteAt(i);
+        for(int i = 1; i < 4; ++i){
+            byteAdress[i-1] = (byte) bytes.byteAt(i);
         }
        ByteString address = new ByteString(byteAdress);
         return new IcaoAddress(address.toString());
     }
 
+    /**
+     *
+     * @return
+     */
+    // TODO: 3/12/2023 Get this to work 
     public long payload(){
         long ME56To0 = bytes.bytesInRange(4,10);
-        return ME56To0 ^= bytes().byteAt(4) >> 3;
+        return ME56To0 = ME56To0 & 0;
     }
 
     /**
