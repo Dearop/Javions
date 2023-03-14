@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.Bits;
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;
@@ -11,24 +12,32 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @param bytes representing the bytes that represent the messages
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
-    public final static int LENGTH = 14;
-    public RawMessage{
+    private final static int LENGTH = 14;
+    private final static int CAStart= 0;
+    private final static int CASize = 3;
+    private final static int DFSize = 5;
+    private final static int timeBetweenTwoBatches = 120000;
+
+    public RawMessage(long timeStampNs, ByteString bytes){
         Preconditions.checkArgument(timeStampNs > 0 && LENGTH == bytes.size());
+        this.timeStampNs = timeStampNs;
+        this.bytes = bytes;
     }
 
     public static RawMessage of(long timeStampNs, byte[] bytes){
         Crc24 crc = new Crc24(Crc24.GENERATOR);
         if(crc.crc(bytes) != 0) return null;
+        timeStampNs += 120000;
         return new RawMessage(timeStampNs, new ByteString(bytes));
     }
 
     public static int size(byte byte0){
-        if(byte0 == 17) return LENGTH;
+        if(Bits.extractUInt(byte0,CAStart + CASize,DFSize) == 17) return LENGTH;
         return 0;
     }
 
-    public static int typeCode(long payLoad){
-        return (int) payLoad >> 51;
+    public static int typeCode(long payload){
+        return (int) (payload >> 51);
     }
 
     public int downLinkFormat(){
@@ -50,8 +59,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     // TODO: 3/12/2023 Get this to work 
     public long payload(){
-        long ME56To0 = bytes.bytesInRange(4,10);
-        return ME56To0 ^= ((ME56To0 >> 51) << 51);
+        return bytes.bytesInRange(4,11);
     }
 
     /**

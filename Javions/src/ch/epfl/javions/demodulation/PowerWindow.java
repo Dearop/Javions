@@ -16,9 +16,9 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    private final static int batchSize = (int) Math.pow(2, 16);
-    public int[] batchOne;
-    public int[] batchTwo;
+    public final static int batchSize = (int) Math.pow(2, 16);
+    private int[] batchOne;
+    private int[] batchTwo;
     private final int availableStream;
 
     /**
