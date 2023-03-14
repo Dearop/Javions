@@ -22,7 +22,7 @@ public final class AdsbDemodulator {
         int beforeP = 0;
         boolean condition = true;
         while(condition) {
-            if(!window.isFull()) return null;
+            if(window.isFull()) return null;
             sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
             sumPNext = window.get(1) + window.get(11) + window.get(36) + window.get(46);
             sumV = window.get(5) + window.get(15) + window.get(20) + window.get(25) + window.get(30) + window.get(40);
