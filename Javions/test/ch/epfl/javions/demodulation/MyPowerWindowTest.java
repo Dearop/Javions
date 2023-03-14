@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PowerWindowTest {
+public class MyPowerWindowTest {
 
     @Test
     public void PowerWindowConstructorTest() throws IOException {

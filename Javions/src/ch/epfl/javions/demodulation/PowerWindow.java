@@ -75,7 +75,7 @@ public final class PowerWindow {
     public int get(int i) {
         if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
         int positionInBatch = positionCounter % batchSize;
-        return positionInBatch + i < batchSize ? batchOne[positionInBatch + i] : batchTwo[positionInBatch + i % batchSize];
+        return positionInBatch + i < batchSize ? batchOne[positionInBatch + i] : batchTwo[(positionInBatch + i) % batchSize];
     }
 
     /**

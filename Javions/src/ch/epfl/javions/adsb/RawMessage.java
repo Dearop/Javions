@@ -51,7 +51,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     // TODO: 3/12/2023 Get this to work 
     public long payload(){
         long ME56To0 = bytes.bytesInRange(4,10);
-        return ME56To0 = ME56To0 & 0;
+        return ME56To0 ^= ((ME56To0 >> 51) << 51);
     }
 
     /**

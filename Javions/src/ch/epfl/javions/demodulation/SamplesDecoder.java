@@ -48,15 +48,14 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException{
         Preconditions.checkArgument(batch.length == batchSize);
 
-        int byteCounter = 0;
         int bytesRead = stream.readNBytes(bytes, 0 ,2*batchSize);
         for(int i = 0; i < bytesRead/2 ; ++i){
 
-            short lowerWeight = bytes[2*i];
-            short higherWeight = (short) Bits.extractUInt(bytes[2*i+1], 4, 4);
+            short higherWeight = bytes[2*i+1];
             higherWeight <<= 8;
 
-            batch[i] = (short) (higherWeight | lowerWeight);
+            batch[i] = (short) ((short) ((higherWeight & 0xF00) | (bytes[2*i] & 0xFF))-2048);
+
         }
         return bytesRead/2;
     }
