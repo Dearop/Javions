@@ -12,7 +12,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @param bytes representing the bytes that represent the messages
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
-    private final static int LENGTH = 14;
+    public final static int LENGTH = 14;
     private final static int CAStart= 0;
     private final static int CASize = 3;
     private final static int DFSize = 5;
@@ -45,19 +45,18 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public IcaoAddress icaoAddress(){
-        byte[] byteAdress = new byte[3];
+        byte[] byteAddress = new byte[3];
         for(int i = 1; i < 4; ++i){
-            byteAdress[i-1] = (byte) bytes.byteAt(i);
+            byteAddress[i-1] = (byte) bytes.byteAt(i);
         }
-       ByteString address = new ByteString(byteAdress);
+       ByteString address = new ByteString(byteAddress);
         return new IcaoAddress(address.toString());
     }
 
     /**
      *
-     * @return
+     * @return long value representing the crucial part of the ADS-B message
      */
-    // TODO: 3/12/2023 Get this to work 
     public long payload(){
         return bytes.bytesInRange(4,11);
     }
