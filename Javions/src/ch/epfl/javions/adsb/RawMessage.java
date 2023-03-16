@@ -1,6 +1,5 @@
 package ch.epfl.javions.adsb;
 
-import ch.epfl.javions.Bits;
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;

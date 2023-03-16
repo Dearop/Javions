@@ -10,17 +10,31 @@ import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 public class MyRawMessageTest {
+    private final String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
         @Test
         public void RawMessagesTest1() throws IOException{
-            String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
+
             try (InputStream s = new FileInputStream(f)) {
                 AdsbDemodulator d = new AdsbDemodulator(s);
                 RawMessage m;
                 while ((m = d.nextMessage()) != null) {
                     System.out.println(m);
                 }
-                System.out.println(d.counter);
+            }
+        }
+        @Test
+        public void RawMessageTest2() throws IOException{
+            try (InputStream s = new FileInputStream(f)) {
+                AdsbDemodulator d = new AdsbDemodulator(s);
+                RawMessage m;
+                m = d.nextMessage();
+                System.out.println(m);
+                assert m != null;
+                assertEquals(m.downLinkFormat(), 17);
+                assertEquals(m.icaoAddress(), new IcaoAddress("4B17E5"));
+                assertEquals(m.typeCode(), 0xF8 >> 3);
             }
         }
     }
