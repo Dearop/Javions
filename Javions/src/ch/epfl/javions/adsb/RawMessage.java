@@ -16,8 +16,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private final static int CAStart= 0;
     private final static int CASize = 3;
     private final static int DFSize = 5;
-
-    private static Crc24 crc = new Crc24(Crc24.GENERATOR);
+    private final static int timeBetweenTwoBatches = 120000;
 
     public RawMessage(long timeStampNs, ByteString bytes){
         Preconditions.checkArgument(timeStampNs > 0 && LENGTH == bytes.size());
@@ -26,14 +25,9 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     public static RawMessage of(long timeStampNs, byte[] bytes){
-        byte[] crcByte = new byte[3];
-        // getting the 3 last bytes to check for crc TODO this probably does not work we only get 3 crc=0 when there should be 384
-        for (int i = 0; i < 3; i++) {
-            crcByte[i] = bytes[i+11];
-        }
-        //System.out.println(crc.crc(crcByte));
-        if(crc.crc(crcByte) != 0) return null;
-
+        Crc24 crc = new Crc24(Crc24.GENERATOR);
+        if(crc.crc(bytes) != 0) return null;
+        timeStampNs += 120000;
         return new RawMessage(timeStampNs, new ByteString(bytes));
     }
 
@@ -55,7 +49,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
         for(int i = 1; i < 4; ++i){
             byteAddress[i-1] = (byte) bytes.byteAt(i);
         }
-        ByteString address = new ByteString(byteAddress);
+       ByteString address = new ByteString(byteAddress);
         return new IcaoAddress(address.toString());
     }
 
