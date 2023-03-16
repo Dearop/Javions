@@ -52,9 +52,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * is the expected value (17) or 0 if it isn't
      */
     public static int size(byte byte0){
-        byte shiftedByte = (byte) (byte0 >> 3);
-        if(Byte.toUnsignedInt(shiftedByte) != ExpectedDF) return LENGTH;
-        return 0;
+        return Byte.toUnsignedInt(byte0)>>3 == 17 ? LENGTH : 0;
     }
 
     public static int typeCode(long payload){
