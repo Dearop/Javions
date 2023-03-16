@@ -10,13 +10,14 @@ public final class AdsbDemodulator {
     private final PowerWindow window;
     private final static int windowSize = 1200;
     private final static int ExpectedDF = 14;
+    public int counter = 0;
 
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         this.window = new PowerWindow(samplesStream, windowSize);
     }
 
     public RawMessage nextMessage() throws IOException {
-                int sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
+        int sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
         int sumV;
         int sumPNext;
         int beforeP = 0;
@@ -28,7 +29,6 @@ public final class AdsbDemodulator {
             if ((beforeP < sumP) && (sumPNext < sumP) && (sumP >= (2 * sumV))) {
                 byte byte0 = 0;
                 byte[] table = new byte[14];
-                // let's calculate the first 5 bits to see if the DF is correct
                 for (int j = 0; j < 8; j++) {
                     if (window.get(80 + (10 * j)) >= window.get(85 + (10 * j))) {
                         table[0]|=(byte) (1<< (7-j));
@@ -47,6 +47,7 @@ public final class AdsbDemodulator {
 
                     if (checker != null) {
                         window.advanceBy(window.size());
+                        ++counter;
                         return checker;
                     }
                 }

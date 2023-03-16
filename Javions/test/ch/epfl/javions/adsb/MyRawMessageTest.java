@@ -20,6 +20,7 @@ public class MyRawMessageTest {
                 while ((m = d.nextMessage()) != null) {
                     System.out.println(m);
                 }
+                System.out.println(d.counter);
             }
         }
     }
