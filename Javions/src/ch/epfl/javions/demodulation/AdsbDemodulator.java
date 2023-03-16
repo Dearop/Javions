@@ -19,8 +19,6 @@ public final class AdsbDemodulator {
     }
 
     public RawMessage nextMessage() throws IOException {
-        int UselessCounter = 0;
-
         int lastWindowCounter = 0;
         ArrayList<RawMessage> rawTable = new ArrayList<>();
         int sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);;
@@ -58,8 +56,6 @@ public final class AdsbDemodulator {
                      * BUUUT it works and it seems to me to be very efficient we don't calculate the whole byte
                      * but only the first 5 bits... defo faster
                      */
-                    ++UselessCounter;
-
                     timeStamp = window.position() * 100;
 
 
