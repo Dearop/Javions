@@ -1,6 +1,5 @@
 package ch.epfl.javions.demodulation;
 
-import ch.epfl.javions.demodulation.SamplesDecoder;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -10,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class SamplesDecoderTest {
+public class MySamplesDecoderTest {
     @Test
     public void SamplesDecodeThrowsExceptions() throws FileNotFoundException {
         String samples = getClass().getResource("/samples.bin").getFile();
