@@ -13,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MyRawMessageTest {
         @Test
         public void RawMessagesTest1() throws IOException{
-            String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
+            String f = "/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/samples_20230304_1442.bin";
+
             try (InputStream s = new FileInputStream(f)) {
                 AdsbDemodulator d = new AdsbDemodulator(s);
                 RawMessage m;
