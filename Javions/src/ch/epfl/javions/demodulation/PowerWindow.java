@@ -93,8 +93,7 @@ public final class PowerWindow {
             batchOne = batchTwo.clone();
             computer.readBatch(batchTwo);
         }
-
-}
+    }
 
     /**
      * This method applies the advance method for a certain number of times which is specified
