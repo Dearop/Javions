@@ -25,8 +25,8 @@ public record AircraftIdentificationMessage
         String numbers = "0123456789";
         String space = " ";
         char intermediary;
-        int[] table = new int[20];
         //creating the table containing the values the byte cannot be equal to
+        int[] table = new int[20];
         for(int i = 0; i < 20; ++i){
             if(i+27 != 32) table[i] = i+27;
         }

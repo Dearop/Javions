@@ -15,11 +15,12 @@ public record AirbornePositionMessage
     public static AirbornePositionMessage of(RawMessage rawMessage){
         if(rawMessage.typeCode() < 9 || rawMessage.typeCode() > 22 || rawMessage.typeCode() == 19) return null;
         long payload = rawMessage.payload();
-        int LON_CPR = Bits.extractUInt(payload,0,17);
-        int LAT_CPR = Bits.extractUInt(payload,17,17);
+        // longitude and latitude are between 0 and 1 so this must be right (extractUInt gives back unsigned integer)
+        int longitude = (int) (Bits.extractUInt(payload,0,17) / Math.pow(2,17));
+        int latitude = (int) (Bits.extractUInt(payload,17,17) / Math.pow(2,17));
         int FORMAT = (int) ((payload >> 34) & 1);
         int ALT = Bits.extractUInt(payload,36,12);
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
-                rawMessage.icaoAddress(), ALT, FORMAT, LON_CPR,LAT_CPR);
+                rawMessage.icaoAddress(), ALT, FORMAT, longitude, latitude);
     }
 }
