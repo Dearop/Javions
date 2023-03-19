@@ -33,7 +33,6 @@ public record AircraftIdentificationMessage
         char intermediary = '\0';
         long payload = rawMessage.payload();
         int b;
-
         for (int i = 42; i >= 0; i-=6) {
             b = Bits.extractUInt(payload, i, 6);
             if(!isValidCharCode(b)) return null;
@@ -45,6 +44,9 @@ public record AircraftIdentificationMessage
         }
 
         String finishedSign = sign.toString();
+        // TODO: 3/19/2023 just testing
+        if(finishedSign.equals(finishedSign.stripTrailing())) return null;
+        // weird, this line gives us the right messages, what in the actual fuck
         CallSign callSign1 = new CallSign(finishedSign.stripTrailing());
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign1);
         // I'm getting too many I think
