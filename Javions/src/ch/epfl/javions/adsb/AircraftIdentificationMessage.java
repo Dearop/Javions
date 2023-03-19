@@ -1,9 +1,14 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
 public record AircraftIdentificationMessage
         (long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
+    public AircraftIdentificationMessage{
+        Preconditions.checkArgument(timeStampNs >=0);
+        if(callSign == null || icaoAddress == null) throw new NullPointerException();
+    }
     @Override
     public long timeStampNs() {
         return 0;
@@ -14,37 +19,31 @@ public record AircraftIdentificationMessage
         return null;
     }
 
-    public AircraftIdentificationMessage of(RawMessage rawMessage){
+    public static AircraftIdentificationMessage of(RawMessage rawMessage){
         //computing the category
         int MSB = (14 - rawMessage.typeCode()) << 4;
         int LSB = rawMessage.bytes().byteAt(4) & 0b111;
-        int category = MSB ^ LSB;
+        int category = MSB | LSB;
         //computing the CallSign
-        String sign = "";
-        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        String numbers = "0123456789";
-        String space = " ";
-        char intermediary;
-        //creating the table containing the values the byte cannot be equal to
-        int[] table = new int[20];
-        for(int i = 0; i < 20; ++i){
-            if(i+27 != 32) table[i] = i+27;
-        }
+        StringBuilder sign = new StringBuilder();
+        char intermediary = '\0';
         long payload = rawMessage.payload();
         int b;
         for (int i = 42; i >= 0; i-=6) {
-            b = Byte.toUnsignedInt( (byte) ((payload >> i) & 0xFF));
-            if(b > 57) return null;
-            for (int t : table) {
-                if(t == b) return null;
+            b =  (int) (payload >> i) & 127;
+            if(!isValidCharCode(b)) return null;
+            System.out.println(b);
+            if(b >= 48)intermediary = (char) ((b-48)+'0');
+            if(b <= 26) intermediary = (char) (b+64);
+            if(b == 32) intermediary = 32;
+            sign.append(intermediary);
             }
-            intermediary = numbers.charAt(b-48);
-            if(b < 26) intermediary = alphabet.charAt(b);
-            if(b == 32) intermediary = space.charAt(0);
-            sign += intermediary;
-            }
-        CallSign callSign1 = new CallSign(sign);
+        CallSign callSign1 = new CallSign(sign.toString());
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign1);
+    }
+
+    private static boolean isValidCharCode(int code) {
+        return (code >= 1 && code <= 26) || (code >= 48 && code <= 57) || code == 32;
     }
 }
 
