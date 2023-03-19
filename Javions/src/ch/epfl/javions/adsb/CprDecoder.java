@@ -23,11 +23,12 @@ public class CprDecoder {
     //     for now so might be a good idea to make it a bit tidier.
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent){
         Preconditions.checkArgument((mostRecent == 0) || (mostRecent == 1));
-        // Latitude
+        //variable declaration, can't do it out of method because it's a record
         double evenZoneLocationLat0;
         double evenZoneLocationLat1;
         double oddZoneLocationLat0;
         double oddZoneLocationLat1;
+        // Latitude
         double zPhiLatitude = Math.rint(y0*59 - y1*60);
         double phi0 = (zPhiLatitude + y0)/60;
         double phi1 = (zPhiLatitude + y1)/59;
@@ -46,6 +47,7 @@ public class CprDecoder {
             oddZoneLocationLat0 = Math.floor(2*Math.PI/A1);
         }
         oddZoneLocationLat1 = oddZoneLocationLat0-1;
+        //not sure
         if((evenZoneLocationLat0 != oddZoneLocationLat0) || (evenZoneLocationLat1 != oddZoneLocationLat1)) return null;
         //Longitude
         double evenZoneLocationLong0 = 1;
