@@ -17,8 +17,8 @@ public record AirbornePositionMessage
         if(rawMessage.typeCode() < 9 || rawMessage.typeCode() > 22 || rawMessage.typeCode() == 19) return null;
         long payload = rawMessage.payload();
         // longitude and latitude are between 0 and 1 so this must be right (extractUInt gives back unsigned integer)
-        int longitude = (int) (Bits.extractUInt(payload,0,17) / Math.pow(2,17));
-        int latitude = (int) (Bits.extractUInt(payload,17,17) / Math.pow(2,17));
+        double longitude = (Bits.extractUInt(payload,0,17))/Math.pow(2,17);
+        double latitude = (Bits.extractUInt(payload,17,17))/Math.pow(2,17);
         int FORMAT = (int) ((payload >> 34) & 1);
         int ALT = Bits.extractUInt(payload,36,12);
         double computedAltitude = altitudeComputer(ALT);
