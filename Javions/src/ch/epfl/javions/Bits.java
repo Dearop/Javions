@@ -6,8 +6,7 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  */
 public class Bits {
-    private Bits() {
-    }
+    private Bits() {}
 
     /**This static method extracts a range of bits from the 64-bit vector value, starting at bit index start and
      * continuing for size bits, and interprets the resulting range as an unsigned integer value.

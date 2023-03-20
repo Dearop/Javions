@@ -25,7 +25,7 @@ public record AirbornePositionMessage
         double computedAltitude = altitudeComputer(ALT);
         if(computedAltitude == -0xFFFFF) return null;
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
-                rawMessage.icaoAddress(), ALT, FORMAT, longitude, latitude);
+                rawMessage.icaoAddress(), computedAltitude, FORMAT, longitude, latitude);
     }
 
     public static double altitudeComputer(int ALT) {

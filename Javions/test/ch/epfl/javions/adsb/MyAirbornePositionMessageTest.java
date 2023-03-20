@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.ByteString;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
 import org.junit.jupiter.api.Test;
 
@@ -25,8 +26,13 @@ public class MyAirbornePositionMessageTest {
         }
     }
     @Test
-    public void AltitudeComputerTest(){
+    public void AltitudeComputerTestQis0(){
         assertEquals(AirbornePositionMessage.altitudeComputer(0b100010110011), 8130.54);
+    }
 
+    @Test
+    public void AltitudeComputerTestQis1(){
+        byte[] bytes = {(byte) 0x8D,0x39,0x20,0x35,0x59, (byte) 0xB2,0x25, (byte) 0xF0,0x75,0x50, (byte) 0xAD, (byte) 0xBE,0x32, (byte) 0x8F};
+        System.out.println(AirbornePositionMessage.of(new RawMessage(0, new ByteString(bytes))));
     }
 }
