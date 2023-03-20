@@ -6,8 +6,7 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  */
 public final class Units {
-    private Units() {
-    }
+    private Units() {}
 
     /**
      * Constant for the CENTI conversion, so 100*CENTI = 1

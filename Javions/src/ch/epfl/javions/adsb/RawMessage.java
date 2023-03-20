@@ -1,12 +1,9 @@
 package ch.epfl.javions.adsb;
 
-import ch.epfl.javions.Bits;
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
-
-import java.util.Arrays;
 
 /**
  * Record representing a message in its raw form before extraction of the different parts of the message.
@@ -16,16 +13,14 @@ import java.util.Arrays;
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
     public final static int LENGTH = 14;
-
-    private final static int CAStart= 0;
     private final static int CASize = 3;
-    private final static int DFSize = 5;
     private final static int DFLocation = 0;
-    private final static int ExpectedDF = 17;
-    private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
+    private final static int messageLength = 56;
+    private final static int typeCodeLength = 5;
+    private final static Crc24 crc = new Crc24(Crc24.GENERATOR);
 
     public RawMessage(long timeStampNs, ByteString bytes){
-        Preconditions.checkArgument(timeStampNs > 0 && LENGTH == bytes.size());
+        Preconditions.checkArgument(timeStampNs >= 0 && LENGTH == bytes.size());
         this.timeStampNs = timeStampNs;
         this.bytes = bytes;
     }
@@ -38,10 +33,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return RawMessage with the parameters given to the function if the crc of the message is 0 or null otherwise
      */
     public static RawMessage of(long timeStampNs, byte[] bytes){
-        byte[] crcByte = new byte[3];
-        if(crc.crc(bytes) != 0) return null;
-
-        return new RawMessage(timeStampNs, new ByteString(bytes));
+       return crc.crc(bytes) == 0 ? new RawMessage(timeStampNs,new ByteString(bytes)) : null;
     }
 
     /**
@@ -50,13 +42,16 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * is the expected value (17) or 0 if it isn't
      */
     public static int size(byte byte0){
-        byte shiftedByte = (byte) (byte0 >> 3);
-        if(Byte.toUnsignedInt(shiftedByte) != ExpectedDF) return LENGTH;
-        return 0;
+        return Byte.toUnsignedInt(byte0)>>3 == 17 ? LENGTH : 0;
     }
 
+    /**
+     *
+     * @param payload long value representing the heart of the message
+     * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
+     */
     public static int typeCode(long payload){
-        return (int) (payload >> 51);
+        return (int) (payload >> (messageLength - typeCodeLength));
     }
 
     /**
@@ -67,7 +62,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     }
 
     /**
-     *
      * @return Icao address contained in the message
      */
     public IcaoAddress icaoAddress(){

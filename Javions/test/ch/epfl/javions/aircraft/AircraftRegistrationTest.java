@@ -9,8 +9,8 @@ public class AircraftRegistrationTest {
 
     @Test
     public void AircraftRegistrationTest() {
-        assertThrows(IllegalArgumentException.class, () -> new AircraftDescription("FOPJEWF"));
+        assertThrows(IllegalArgumentException.class, () -> new AircraftRegistration("[OPJEWF"));
         assertThrows(IllegalArgumentException.class, () -> new AircraftRegistration("a"));
-        assertThrows(IllegalArgumentException.class, () -> new AircraftDescription(""));
+        assertThrows(IllegalArgumentException.class, () -> new AircraftRegistration(""));
     }
 }

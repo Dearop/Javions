@@ -4,17 +4,17 @@ import ch.epfl.javions.GeoPos;
 
 public interface AircraftStateSetter {
 
-    public void setLastMessageTimeStampNs(long timeStampNs);
+    public abstract void setLastMessageTimeStampNs(long timeStampNs);
 
-    public void setCategory(int category);
+    public abstract void setCategory(int category);
 
-    public void setCallSign(CallSign callSign);
+    public abstract void setCallSign(CallSign callSign);
 
-    public void setPosition(GeoPos position);
+    public abstract void setPosition(GeoPos position);
 
-    public void setAltitude(double altitude);
+    public abstract void setAltitude(double altitude);
 
-    public void setVelocity(double velocity);
+    public abstract void setVelocity(double velocity);
 
-    public void setTrackOrHeading(double trackOrHeading);
+    public abstract void setTrackOrHeading(double trackOrHeading);
 }
