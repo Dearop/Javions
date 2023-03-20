@@ -35,4 +35,9 @@ public class MyAirbornePositionMessageTest {
         byte[] bytes = {(byte) 0x8D,0x39,0x20,0x35,0x59, (byte) 0xB2,0x25, (byte) 0xF0,0x75,0x50, (byte) 0xAD, (byte) 0xBE,0x32, (byte) 0x8F};
         System.out.println(AirbornePositionMessage.of(new RawMessage(0, new ByteString(bytes))));
     }
+
+    @Test
+    public void AltitiudeComputerTestGrayCode(){
+        System.out.println(AirbornePositionMessage.altitudeComputer(0b011001001010));
+    }
 }

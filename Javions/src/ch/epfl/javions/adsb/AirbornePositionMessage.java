@@ -35,31 +35,32 @@ public record AirbornePositionMessage
             double baseAltitude = -1000;
             return Units.convertFrom(altitudeInFeet * 25 + baseAltitude, Units.Length.FOOT);
         }
-        System.out.println("coc");
         //Q=0
         int MSBGray = 0;
         int LSBGray = 0;
         // reorganising the bits
         for (int i = 0; i < 5; i+=2) {
             // D
-            MSBGray += (Bits.extractUInt(ALT, i, 1) << (9 + i/2));
+            MSBGray |= ((Bits.extractUInt(ALT, i, 1) << (6 + i/2)));
             // A
-            MSBGray += (Bits.extractUInt(ALT, 6 + i, 1) << (6 + i/2));
+            MSBGray |= ((Bits.extractUInt(ALT, 6 + i, 1) << (3 + i/2)));
             // B
-            MSBGray += (Bits.extractUInt(ALT, 1 + i, 1) << (3 + i/2));
+            MSBGray |= ((Bits.extractUInt(ALT, 1 + i, 1) << (i/2)));
             // C
-            LSBGray += (Bits.extractUInt(ALT, 7 + i, 1) << i/2);
+            LSBGray |= ((Bits.extractUInt(ALT, 7 + i, 1) << i/2));
         }
         double MSB = grayToBinary(MSBGray);
         double LSB = grayToBinary(LSBGray);
+        System.out.println(MSBGray);
+        System.out.println(MSB + " " +LSB);
         if(LSB == 0 || LSB == 5|| LSB == 6) return -0xFFFFF;
         // Dumb Question : does this bit exclude 7 too?
         if(LSB == 7) LSB = 5;
         if( MSB % 2 == 1)  LSB += (6-LSB);
-        return(Units.convertFrom(-1300 + MSB * 500 + LSB * 100, Units.Length.FOOT));
+        return Units.convertFrom(-1300 + (MSB * 500) + (LSB * 100), Units.Length.FOOT);
     }
 
-    private static int grayToBinary(int grey){
+    public static int grayToBinary(int grey){
         int binary = grey;
         while (grey > 0){
             grey >>= 1;
