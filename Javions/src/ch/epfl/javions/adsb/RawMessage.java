@@ -1,5 +1,6 @@
 package ch.epfl.javions.adsb;
 
+import ch.epfl.javions.Bits;
 import ch.epfl.javions.ByteString;
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.Preconditions;
@@ -51,7 +52,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
      */
     public static int typeCode(long payload){
-        return (int) (payload >> (messageLength - typeCodeLength));
+        return Bits.extractUInt(payload, messageLength - typeCodeLength, typeCodeLength);
     }
 
     /**
