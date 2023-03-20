@@ -12,21 +12,17 @@ public record AircraftIdentificationMessage
     }
     @Override
     public long timeStampNs() {
-        return 0;
+        return timeStampNs;
     }
 
     @Override
     public IcaoAddress icaoAddress() {
-        return null;
+        return icaoAddress;
     }
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
-
         //computing the category
         if(rawMessage.typeCode() == 0) return null;
-        byte MSB = (byte) ((14 - rawMessage.typeCode()) << 4);
-        byte LSB = (byte) (rawMessage.bytes().byteAt(4) & 0b111);
-        int category = Byte.toUnsignedInt((byte) (MSB | LSB));
 
         //computing the CallSign
         StringBuilder sign = new StringBuilder();
@@ -39,18 +35,21 @@ public record AircraftIdentificationMessage
             // the values I substract or add to b are for the corresponding values associated to the characters in ASCII
             if(b >= 48)intermediary = (char) ((b-48)+'0');
             if(b <= 26) intermediary = (char) (b+64);
-            if(b == 32) intermediary = 32;
+            if(b == 32) intermediary = (char) 32;
             sign.append(intermediary);
         }
 
+        byte MSB = (byte) ((14 - rawMessage.typeCode()) << 4);
+        byte LSB = (byte) (rawMessage.bytes().byteAt(4) & 0b111);
+        int category = Byte.toUnsignedInt((byte) (MSB | LSB));
+
         String finishedSign = sign.toString();
-        // TODO: 3/19/2023 just testing
-        if(finishedSign.equals(finishedSign.stripTrailing())) return null;
+        String strippedFinishedSign = finishedSign.stripTrailing();
+
+        if(finishedSign.equals(strippedFinishedSign)) return null;
         // weird, this line gives us the right messages, what in the actual fuck
-        CallSign callSign1 = new CallSign(finishedSign.stripTrailing());
+        CallSign callSign1 = new CallSign(strippedFinishedSign);
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign1);
-        // I'm getting too many I think
-        // TODO: 3/19/2023 if we want to optimise the code we can switch the computation of the callsign and the category
     }
 
     private static boolean isValidCharCode(int code) {

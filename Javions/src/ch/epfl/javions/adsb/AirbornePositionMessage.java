@@ -10,7 +10,8 @@ public record AirbornePositionMessage
     public AirbornePositionMessage{
         if(icaoAddress == null) throw new NullPointerException();
         Preconditions.checkArgument((timeStampNs >= 0) && ((parity == 0) || (parity == 1)) &&
-                (x >= 0) && (x < 1) && (y >= 0) && (y < 1));
+                (x > 0) && (x <= 1) && (y > 0) && (y <= 1));
+        // ask if 0 or 1 included
     }
 
     public static AirbornePositionMessage of(RawMessage rawMessage){
@@ -30,10 +31,11 @@ public record AirbornePositionMessage
     public static double altitudeComputer(int ALT) {
         //Q=1
         if(Bits.extractUInt(ALT, 4, 1) == 1){
-            double altitudeInFeet = Bits.extractUInt(ALT, 0, 3) + (Bits.extractUInt(ALT, 5, 8) << 3);
+            double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
             double baseAltitude = -1000;
-            return Units.convertFrom(altitudeInFeet * 25 - baseAltitude, Units.Length.FOOT);
+            return Units.convertFrom(altitudeInFeet * 25 + baseAltitude, Units.Length.FOOT);
         }
+        System.out.println("coc");
         //Q=0
         int MSBGray = 0;
         int LSBGray = 0;
@@ -48,8 +50,8 @@ public record AirbornePositionMessage
             // C
             LSBGray += (Bits.extractUInt(ALT, 7 + i, 1) << i/2);
         }
-        int MSB = grayToBinary(MSBGray);
-        int LSB = grayToBinary(LSBGray);
+        double MSB = grayToBinary(MSBGray);
+        double LSB = grayToBinary(LSBGray);
         if(LSB == 0 || LSB == 5|| LSB == 6) return -0xFFFFF;
         // Dumb Question : does this bit exclude 7 too?
         if(LSB == 7) LSB = 5;
@@ -57,7 +59,7 @@ public record AirbornePositionMessage
         return(Units.convertFrom(-1300 + MSB * 500 + LSB * 100, Units.Length.FOOT));
     }
 
-    public static int grayToBinary(int grey){
+    private static int grayToBinary(int grey){
         int binary = grey;
         while (grey > 0){
             grey >>= 1;

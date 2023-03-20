@@ -5,10 +5,7 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 
 public class CprDecoder {
-    //non-instanciable!
-    private CprDecoder(){
-
-    }
+    private CprDecoder(){}
 
     /**
      *
@@ -20,7 +17,7 @@ public class CprDecoder {
      * @return the latest geographic position
      */
     // TODO: 3/18/2023  this whole function is pretty long because we have loads of steps. It seems pretty clumsy
-    //     for now so might be a good idea to make it a bit tidier.
+    //     for now so might be a good idea to make it a bit tidier and optimise a little.
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent){
         Preconditions.checkArgument((mostRecent == 0) || (mostRecent == 1));
         //variable declaration, can't do it out of method because it's a record
@@ -33,7 +30,7 @@ public class CprDecoder {
         double phi0 = (zPhiLatitude + y0)/60;
         double phi1 = (zPhiLatitude + y1)/59;
         double A0 = Math.acos(1-((1-Math.cos(2*Math.PI/60))/Math.pow(Math.cos(phi0),2)));
-        double A1 = Math.acos(1-((1-Math.cos(2*Math.PI/60))/Math.pow(Math.cos(phi1),2)));
+        double A1 = Math.acos(1-((1-Math.cos(2*Math.PI/59))/Math.pow(Math.cos(phi1),2)));
         if(Double.isNaN(A0)){
             //not sure
             evenZoneLocationLat0 = 1;
@@ -53,10 +50,10 @@ public class CprDecoder {
         double evenZoneLocationLong0 = 1;
         double oddZoneLocationLong0 = 1;
         double zPhiLongitude = Math.rint(x0*59 - x1*60);
-        phi0 = (zPhiLongitude + y0)/60;
-        phi1 = (zPhiLongitude + y1)/60;
+        phi0 = (zPhiLongitude + x0)/60;
+        phi1 = (zPhiLongitude + x1)/59;
         A0 = Math.acos(1-((1-Math.cos(2*Math.PI/60))/Math.pow(Math.cos(phi0),2)));
-        A1 = Math.acos(1-((1-Math.cos(2*Math.PI/60))/Math.pow(Math.cos(phi1),2)));
+        A1 = Math.acos(1-((1-Math.cos(2*Math.PI/59))/Math.pow(Math.cos(phi1),2)));
 
         if(!Double.isNaN(A0))  evenZoneLocationLong0 = Math.floor(2*Math.PI/A0);
         if(!Double.isNaN(A0)) oddZoneLocationLong0 = Math.floor(2*Math.PI/A1);
