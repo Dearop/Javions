@@ -51,12 +51,9 @@ public record AirbornePositionMessage
         }
         double MSB = grayToBinary(MSBGray);
         double LSB = grayToBinary(LSBGray);
-        System.out.println(MSBGray);
-        System.out.println(MSB + " " +LSB);
         if(LSB == 0 || LSB == 5|| LSB == 6) return -0xFFFFF;
-        // Dumb Question : does this bit exclude 7 too?
         if(LSB == 7) LSB = 5;
-        if( MSB % 2 == 1)  LSB += (6-LSB);
+        if( MSB % 2 == 1)  LSB = (6-LSB);
         return Units.convertFrom(-1300 + (MSB * 500) + (LSB * 100), Units.Length.FOOT);
     }
 

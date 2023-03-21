@@ -16,9 +16,7 @@ public record AircraftIdentificationMessage
     }
 
     @Override
-    public IcaoAddress icaoAddress() {
-        return icaoAddress;
-    }
+    public IcaoAddress icaoAddress() { return icaoAddress;}
 
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
         //computing the category
