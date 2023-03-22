@@ -42,7 +42,7 @@ public class CprDecoder {
 
         // Getting the right Latitude or Longitude due to parity
         double evenZoneLocationLat = (mostRecent == 0) ? phiEven : phiOdd;
-        double finalLongAngle = (mostRecent == 0) ? lambdaEven: lambdaOdd;
+        double finalLongAngle = (mostRecent == 0) ? lambdaEven : lambdaOdd;
         int actualLatT32 = (int) Units.convert(evenZoneLocationLat, Units.Angle.DEGREE, Units.Angle.T32);
         int actualLongT32 = (int) Units.convert(finalLongAngle, Units.Angle.DEGREE, Units.Angle.T32);
         return new GeoPos( actualLongT32, actualLatT32);
