@@ -24,7 +24,9 @@ public class CprDecoder {
         // Latitude
         double zPhiLatitude = Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
         double phiEven = currentZone(nbreZonesDeDecoupageLatitude0, zPhiLatitude, y0);
+        if(phiEven > Math.PI/2 || phiEven < -(Math.PI/2)) return null;
         double phiOdd = currentZone(nbreZonesDeDecoupageLatitude1, zPhiLatitude, y1);
+        if(phiOdd > Math.PI/2 || phiOdd < -(Math.PI/2)) return null;
         double A0 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiEven);
         double A1 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiOdd);
         double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 :  Math.floor(2*Math.PI/A0);
@@ -36,6 +38,10 @@ public class CprDecoder {
         int zPhiLongitude =(int) Math.rint(x0*oddZoneLocationLat - x1*evenZoneLocationLat0);
         double lambdaEven = currentZone(evenZoneLocationLat0, zPhiLongitude, x0);
         double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitude, x1);
+        if(evenZoneLocationLat0 == 1) {
+            lambdaEven = x0;
+            lambdaOdd = x1;
+        }
 
         // Getting the right Latitude or Longitude due to parity
         double finalLongAngle = (mostRecent == 0) ? lambdaEven : lambdaOdd;
