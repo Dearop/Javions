@@ -56,6 +56,6 @@ class GeoPosTest {
     void geoPosToStringReturnsValuesInDegree() {
         var quarterTurnT32 = 1 << 30;
         var geoPos = new GeoPos(quarterTurnT32, quarterTurnT32);
-        assertEquals("(90.0°, 90.0°)", geoPos.toString());
+        assertEquals("(90.0\u00B0, 90.0\u00B0)", geoPos.toString());
     }
 }

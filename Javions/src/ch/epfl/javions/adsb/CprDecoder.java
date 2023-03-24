@@ -22,7 +22,7 @@ public class CprDecoder {
         double nbreZonesDeDecoupageLatitude0 = 60d;
         double nbreZonesDeDecoupageLatitude1 = 59d;
         // Latitude
-        int zPhiLatitude = (int) Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
+        double zPhiLatitude = Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
         double phiEven = currentZone(nbreZonesDeDecoupageLatitude0, zPhiLatitude, y0);
         double phiOdd = currentZone(nbreZonesDeDecoupageLatitude1, zPhiLatitude, y1);
         double A0 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiEven);
@@ -41,8 +41,8 @@ public class CprDecoder {
         double finalLongAngle = (mostRecent == 0) ? lambdaEven : lambdaOdd;
         double finalLatAngle = (mostRecent == 0) ? phiEven : phiOdd;
 
-        double actualLatT32 = (int) Units.convertTo(finalLatAngle, Units.Angle.T32);
-        double actualLongT32 = (int) Units.convertTo(finalLongAngle, Units.Angle.T32);
+        double actualLatT32 = Units.convertTo(finalLatAngle, Units.Angle.T32);
+        double actualLongT32 = Units.convertTo(finalLongAngle, Units.Angle.T32);
         return new GeoPos((int) Math.rint(actualLongT32), (int) Math.rint(actualLatT32));
     }
 

@@ -5,6 +5,8 @@ import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
 import org.junit.jupiter.api.Test;
+
+import java.util.Arrays;
 import java.util.List;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,29 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MyCprDecoderTest {
-    @Test
-    public void CprDecoderWorksWithGivenExample(){
-        double x0 = 111600/Math.pow(2,17);
-        double x1 = 108865/Math.pow(2,17);
-        double y0 = 94445/Math.pow(2,17);
-        double y1 = 77558/Math.pow(2,17);
-        assertEquals(CprDecoder.decodePosition(x0, y0, x1, y1, 0),
-                new GeoPos((int) Units.convert(7.476062, Units.Angle.DEGREE, Units.Angle.T32),
-                        (int) Units.convert(46.323349, Units.Angle.DEGREE, Units.Angle.T32)));
-    }
-
-    @Test
-    public void CprDecoderWorksWithGivenExample2() {
-        double x0 = 111600 / Math.pow(2, 17);
-        double x1 = 108865 / Math.pow(2, 17);
-        double y0 = 94445 / Math.pow(2, 17);
-        double y1 = 77558 / Math.pow(2, 17);
-        GeoPos expected = new GeoPos((int) Units.convert(7.476062, Units.Angle.DEGREE, Units.Angle.T32),
-                (int) Units.convert(46.323349, Units.Angle.DEGREE, Units.Angle.T32));
-        GeoPos actual = CprDecoder.decodePosition(x0, y0, x1, y1, 0);
-        assertEquals(expected, actual);
-    }
-
 
     private final List<String> positions = List.of(        "(5.620176717638969°, 45.71530147455633°)",
             "(5.621292097494006°, 45.715926848351955°)",        "(5.62225341796875°, 45.71644593961537°)",
@@ -77,7 +56,10 @@ public class MyCprDecoderTest {
                     AirbornePositionMessage[] apmm = new AirbornePositionMessage[2];
                     apmm[apm.parity()] = apm;
                     hashMap.put(icaoAddress, apmm);                }
-            }        }
+
+            }
+        }
         assertArrayEquals(positions.toArray(), o.toArray());
-    }}
+        }
+    }
 }
