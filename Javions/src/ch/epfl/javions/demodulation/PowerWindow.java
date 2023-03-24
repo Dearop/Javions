@@ -57,7 +57,7 @@ public final class PowerWindow {
         return positionCounter;
     }
 
-    /** TODO ask if this is allowed
+    /**
      * @return boolean value that says if the window is full.
      * This statement is true as long as all the inputs are coming from within the stream size.
      * Once the positionCounter + windowSize is bigger than the stream/4 then it return false.
