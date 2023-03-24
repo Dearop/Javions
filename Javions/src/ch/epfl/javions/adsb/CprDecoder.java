@@ -22,7 +22,7 @@ public class CprDecoder {
         double nbreZonesDeDecoupageLatitude0 = 60d;
         double nbreZonesDeDecoupageLatitude1 = 59d;
         // Latitude
-        double zPhiLatitude = Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
+        int zPhiLatitude = (int) Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
         double phiEven = currentZone(nbreZonesDeDecoupageLatitude0, zPhiLatitude, y0);
         if(phiEven > Math.PI/2 || phiEven < -(Math.PI/2)) return null;
         double phiOdd = currentZone(nbreZonesDeDecoupageLatitude1, zPhiLatitude, y1);
@@ -39,6 +39,11 @@ public class CprDecoder {
         double lambdaEven = currentZone(evenZoneLocationLat0, zPhiLongitude, x0);
         double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitude, x1);
         if(evenZoneLocationLat0 == 1) {
+            lambdaEven = x0;
+            lambdaOdd = x1;
+        }
+
+        if(evenZoneLocationLat0 == 1){
             lambdaEven = x0;
             lambdaOdd = x1;
         }

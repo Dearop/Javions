@@ -4,20 +4,53 @@ import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+/**
+ * Creates a record that identifies the messages of the aircraft and checks that they are correct.
+ *
+ * @param timeStampNs the timestamp of the message in nanoseconds
+ * @param icaoAddress the unique identifier of the aircraft
+ * @param category the category of the aircraft
+ * @param callSign the call sign of the aircraft
+ */
 public record AircraftIdentificationMessage
         (long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
+    /**
+     * Creates a new AircraftIdentificationMessage with the given timestamp, ICAO address, category and call sign.
+     *
+     * @param timeStampNs the timestamp of the message in nanoseconds
+     * @param icaoAddress the unique identifier of the aircraft
+     * @param category the category of the aircraft
+     * @param callSign the call sign of the aircraft
+     * @throws NullPointerException if either the icaoAddress or callSign is null
+     */
     public AircraftIdentificationMessage{
         Preconditions.checkArgument(timeStampNs >=0);
         if(callSign == null || icaoAddress == null) throw new NullPointerException();
     }
+    /**
+     * Returns the timestamp of the AircraftIdentificationMessage.
+     *
+     * @return the timestamp in nanoseconds
+     */
     @Override
     public long timeStampNs() {
         return timeStampNs;
     }
 
+    /**
+     * Returns the ICAO address of the AircraftIdentificationMessage.
+     *
+     * @return the ICAO address
+     */
     @Override
     public IcaoAddress icaoAddress() { return icaoAddress;}
 
+    /**
+     * Creates a new AircraftIdentificationMessage from a RawMessage object.
+     *
+     * @param rawMessage the RawMessage to create the AircraftIdentificationMessage from
+     * @return a new AircraftIdentificationMessage, or null if the RawMessage is invalid
+     */
     public static AircraftIdentificationMessage of(RawMessage rawMessage){
         //computing the category
         if(rawMessage.typeCode() == 0) return null;
@@ -50,6 +83,14 @@ public record AircraftIdentificationMessage
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign1);
     }
 
+    /**
+     * Checks whether a given ASCII character code is valid.
+     *
+     * Valid character codes include alphanumeric characters and the space character.
+     *
+     * @param code the ASCII code of the character
+     * @return true if the character code is valid, false otherwise
+     */
     private static boolean isValidCharCode(int code) {
         return (code >= 1 && code <= 26) || (code >= 48 && code <= 57) || code == 32;
     }
