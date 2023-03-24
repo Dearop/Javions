@@ -34,24 +34,6 @@ public record AirbornePositionMessage
     }
 
     /**
-     * Returns the timestamp of the AircraftIdentificationMessage.
-     *
-     * @return the timestamp in nanoseconds
-     */
-    @Override
-    public long timeStampNs() {
-        return timeStampNs;
-    }
-
-    /**
-     * Returns the ICAO address of the AircraftIdentificationMessage.
-     *
-     * @return the ICAO address
-     */
-    @Override
-    public IcaoAddress icaoAddress() { return icaoAddress;}
-
-    /**
      * Creates an instance of the AirbornePositionMessage class from a RawMessage object.
      * Returns null if the RawMessage object does not correspond to an airborne position message.
      *

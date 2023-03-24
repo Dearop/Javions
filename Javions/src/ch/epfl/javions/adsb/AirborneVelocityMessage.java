@@ -12,24 +12,6 @@ implements Message{
         Preconditions.checkArgument(timeStampNs >= 0 && speed >= 0 && trackOrHeading >= 0);
     }
 
-    /**
-     * Returns the timestamp of the AircraftIdentificationMessage.
-     *
-     * @return the timestamp in nanoseconds
-     */
-    @Override
-    public long timeStampNs() {
-        return timeStampNs;
-    }
-
-    /**
-     * Returns the ICAO address of the AircraftIdentificationMessage.
-     *
-     * @return the ICAO address
-     */
-    @Override
-    public IcaoAddress icaoAddress() { return icaoAddress;}
-
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
         long payload = rawMessage.payload();
         int ST = Bits.extractUInt(payload, 48, 3);

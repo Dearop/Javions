@@ -27,23 +27,6 @@ public record AircraftIdentificationMessage
         Preconditions.checkArgument(timeStampNs >=0);
         if(callSign == null || icaoAddress == null) throw new NullPointerException();
     }
-    /**
-     * Returns the timestamp of the AircraftIdentificationMessage.
-     *
-     * @return the timestamp in nanoseconds
-     */
-    @Override
-    public long timeStampNs() {
-        return timeStampNs;
-    }
-
-    /**
-     * Returns the ICAO address of the AircraftIdentificationMessage.
-     *
-     * @return the ICAO address
-     */
-    @Override
-    public IcaoAddress icaoAddress() { return icaoAddress;}
 
     /**
      * Creates a new AircraftIdentificationMessage from a RawMessage object.
