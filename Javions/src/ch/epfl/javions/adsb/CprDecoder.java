@@ -19,8 +19,6 @@ public class CprDecoder {
     public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent){
         Preconditions.checkArgument((mostRecent == 0) || (mostRecent == 1));
         //variable declaration, can't do it out of method because it's a record
-        double evenZoneLocationLat1;
-        double oddZoneLocationLat1;
         double nbreZonesDeDecoupageLatitude0 = 60d;
         double nbreZonesDeDecoupageLatitude1 = 59d;
         // Latitude
@@ -28,24 +26,24 @@ public class CprDecoder {
         double phiEven = currentZone(nbreZonesDeDecoupageLatitude0, zPhiLatitude, y0);
         double phiOdd = currentZone(nbreZonesDeDecoupageLatitude1, zPhiLatitude, y1);
         double A0 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiEven);
-        double A1 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude1, phiOdd);
+        double A1 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiOdd);
         double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 :  Math.floor(2*Math.PI/A0);
-        double oddZoneLocationLat0 = (Double.isNaN(A0)) ? 1 :  Math.floor(2*Math.PI/A1);
-        evenZoneLocationLat1 = evenZoneLocationLat0 -1;
-        oddZoneLocationLat1 = oddZoneLocationLat0-1;
-        if((evenZoneLocationLat0 != oddZoneLocationLat0) || (evenZoneLocationLat1 != oddZoneLocationLat1)) return null;
+        double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 :  Math.floor(2*Math.PI/A1);
+        if (evenZoneLocationLat0 != evenZoneLocationLat1) return null;
+        double oddZoneLocationLat = evenZoneLocationLat0 - 1;
 
         //Longitude
-        int zPhiLongitude =(int) Math.rint(x0*oddZoneLocationLat1 - x1*oddZoneLocationLat0);
-        double lambdaEven = currentZone(oddZoneLocationLat0, zPhiLongitude, x0);
-        double lambdaOdd = currentZone(oddZoneLocationLat1, zPhiLongitude, x1);
+        int zPhiLongitude =(int) Math.rint(x0*oddZoneLocationLat - x1*evenZoneLocationLat0);
+        double lambdaEven = currentZone(evenZoneLocationLat0, zPhiLongitude, x0);
+        double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitude, x1);
 
         // Getting the right Latitude or Longitude due to parity
-        double evenZoneLocationLat = (mostRecent == 0) ? phiEven : phiOdd;
         double finalLongAngle = (mostRecent == 0) ? lambdaEven : lambdaOdd;
-        int actualLatT32 = (int) Units.convert(evenZoneLocationLat, Units.Angle.DEGREE, Units.Angle.T32);
-        int actualLongT32 = (int) Units.convert(finalLongAngle, Units.Angle.DEGREE, Units.Angle.T32);
-        return new GeoPos( actualLongT32, actualLatT32);
+        double finalLatAngle = (mostRecent == 0) ? phiEven : phiOdd;
+
+        double actualLatT32 = (int) Units.convertTo(finalLatAngle, Units.Angle.T32);
+        double actualLongT32 = (int) Units.convertTo(finalLongAngle, Units.Angle.T32);
+        return new GeoPos((int) Math.rint(actualLongT32), (int) Math.rint(actualLatT32));
     }
 
     private static double AngleToZoneCalculator(double numberOfZones, double currentAngle){
@@ -53,8 +51,10 @@ public class CprDecoder {
     }
 
     private static double currentZone(double numberOfZones, double currentZone, double position){
-        return Units.convert((currentZone + position)/
-               numberOfZones, Units.Angle.TURN, Units.Angle.DEGREE);
+        currentZone = (currentZone < 0) ? (currentZone + numberOfZones) : currentZone;
+        double angle = (currentZone + position)/ numberOfZones;
+        if (angle >= 0.5) angle -= 1;
+        return Units.convertFrom(angle, Units.Angle.TURN);
     }
 }
 

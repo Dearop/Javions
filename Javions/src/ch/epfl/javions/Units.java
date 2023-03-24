@@ -26,8 +26,7 @@ public final class Units {
         public static final double DEGREE = TURN / 360;
         public static final double T32 = TURN / Math.scalb(1, 32);
 
-        private Angle() {
-        }
+        private Angle() {}
     }
 
     /**
