@@ -20,7 +20,6 @@ public final class AdsbDemodulator {
     }
 
     /**
-     *
      * @return RawMessage from the stream
      * @throws IOException when there is a stream error
      */
@@ -36,20 +35,23 @@ public final class AdsbDemodulator {
 
             if ((beforeP < sumP) && (sumPNext < sumP) && (sumP >= (2 * sumV))) {
                 byte[] table = new byte[messageSize];
+
                 for (int j = 0; j < 8; j++) {
                     if (window.get(80 + (10 * j)) >= window.get(85 + (10 * j))) {
-                        table[0]|=(byte) (1<< (7-j));
+                        table[0] |= (byte) (1 << (7 - j));
                     }
                 }
+
                 if (RawMessage.size(table[0]) == ExpectedDF) {
 
                     for (int i = 1; i < 14; i++) {
                         for (int j = 0; j < 8; j++) {
                             if (window.get(80 + (80 * i) + (10 * j)) >= window.get(85 + (80 * i) + (10 * j))) {
-                                table[i] |=(byte) (1 << (7-j));
+                                table[i] |= (byte) (1 << (7 - j));
                             }
                         }
                     }
+
                     RawMessage checker = RawMessage.of(window.position() * 100, table);
 
                     if (checker != null) {
@@ -58,6 +60,7 @@ public final class AdsbDemodulator {
                     }
                 }
             }
+
             beforeP = sumP;
             sumP = sumPNext;
             window.advance();

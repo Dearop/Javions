@@ -1,4 +1,5 @@
 package ch.epfl.javions.demodulation;
+
 import ch.epfl.javions.Bits;
 import ch.epfl.javions.Preconditions;
 
@@ -31,10 +32,12 @@ public final class SamplesDecoder {
      */
     public SamplesDecoder(InputStream stream, int batchSize) {
         if (batchSize <= 0) throw new IllegalArgumentException();
-        if(stream == null) throw new NullPointerException();
+        if (stream == null) throw new NullPointerException();
+
         this.stream = stream;
         this.batchSize = batchSize;
-        bytes = new byte[2*batchSize];
+
+        bytes = new byte[2 * batchSize];
     }
 
     /**
@@ -45,18 +48,19 @@ public final class SamplesDecoder {
      * @throws IOException              if an I/O error occurs while reading from the input stream*
      * @throws IllegalArgumentException if the size of the batch array is not equal to the batch size
      */
-    public int readBatch(short[] batch) throws IOException{
+    public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
 
-        int bytesRead = stream.readNBytes(bytes, 0 ,2*batchSize);
-        for(int i = 0; i < bytesRead/2 ; ++i){
+        int bytesRead = stream.readNBytes(bytes, 0, 2 * batchSize);
 
-            short higherWeight = bytes[2*i+1];
+        for (int i = 0; i < bytesRead / 2; ++i) {
+
+            short higherWeight = bytes[2 * i + 1];
             higherWeight <<= 8;
 
-            batch[i] = (short) ((short) ((higherWeight & 0xF00) | (bytes[2*i] & 0xFF))-2048);
+            batch[i] = (short) ((short) ((higherWeight & 0xF00) | (bytes[2 * i] & 0xFF)) - 2048);
 
         }
-        return bytesRead/2;
+        return bytesRead / 2;
     }
 }
