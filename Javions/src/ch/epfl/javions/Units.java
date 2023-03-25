@@ -2,11 +2,13 @@ package ch.epfl.javions;
 
 /**
  * this class contains CONSTANTS that will be used throughout the project, they can't be changed or instantiated
+ *
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
 public final class Units {
-    private Units() {}
+    private Units() {
+    }
 
     /**
      * Constant for the CENTI conversion, so 100*CENTI = 1
@@ -63,7 +65,7 @@ public final class Units {
      */
     public static class Speed {
         public static final double KNOT = 0.51444444444;
-        public static final double KILOMETER_PER_HOUR = 1/3.6;
+        public static final double KILOMETER_PER_HOUR = 1 / 3.6;
 
         private Speed() {
         }
@@ -88,10 +90,10 @@ public final class Units {
     /**
      * This function takes a value from one unit system and converts it to the base unit in the appropriate unit system.
      *
-     * @param value   double representing a value in fromUnit
+     * @param value    double representing a value in fromUnit
      * @param fromUnit double representing the value of a unit in the base units of the appropriate unit system
      *                 and the unit in which value is expressed
-     * @return  double representing the value of value in the base units of the appropriate unit system.
+     * @return double representing the value of value in the base units of the appropriate unit system.
      */
     public static double convertFrom(double value, double fromUnit) {
         return value * fromUnit;

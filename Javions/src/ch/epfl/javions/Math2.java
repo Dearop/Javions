@@ -11,7 +11,8 @@ public final class Math2 {
     private Math2() {
     }
 
-    /**This method returns the minimum if v is smaller than min or returns the maximum if v is bigger than max and
+    /**
+     * This method returns the minimum if v is smaller than min or returns the maximum if v is bigger than max and
      * returns v otherwise (3.5)
      *
      * @param min int signifying greatest lower bound
@@ -22,8 +23,10 @@ public final class Math2 {
      */
     public static int clamp(int min, int v, int max) {
         if (min > max) throw new IllegalArgumentException();
+
         else if (v < min) return min;
         else if (v > max) return max;
+
         return v;
     }
 
