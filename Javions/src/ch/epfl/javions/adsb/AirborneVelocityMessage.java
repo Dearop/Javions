@@ -33,7 +33,7 @@ implements Message{
             if (Vns == 0 || Vew == 0) return null;
 
             speed = Math.hypot(Vns, Vew);
-            Vns = (Dns == 0) ? -Vns : Vns; // todo this one sure? positive defined as from north to south?
+            Vns = (Dns == 0) ? -Vns : Vns;
             Vew = (Dew == 0) ? Vew : -Vew;
 
             trackOrHeading = Math.atan2(Vew, Vns) + Math.PI; // todo is this in degree?

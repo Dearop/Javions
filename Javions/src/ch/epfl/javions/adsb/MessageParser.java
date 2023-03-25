@@ -8,10 +8,16 @@ public class MessageParser {
     }
 
     public static Message parse(RawMessage rawMessage) {
-        if (AircraftIdentificationMessage.of(rawMessage) != null) return AircraftIdentificationMessage.of(rawMessage);
-        if (AirbornePositionMessage.of(rawMessage) != null) return AirbornePositionMessage.of(rawMessage);
-        if (AirborneVelocityMessage.of(rawMessage) != null) return AirborneVelocityMessage.of(rawMessage);
-        return null; // returns either one of the three Messages depending on type or null if all return null (makes it invalid)
+        int checkValue = rawMessage.typeCode();
+
+        if (checkValue > 0 && checkValue < 5)
+            return AircraftIdentificationMessage.of(rawMessage);
+        if ((checkValue > 8 && checkValue < 19) || (checkValue > 19 && checkValue < 23))
+            return AirbornePositionMessage.of(rawMessage);
+        if (checkValue == 19) return AirborneVelocityMessage.of(rawMessage);
+
+        // returns either one of the three Messages depending on type or null if all return null (makes it invalid)
+        return null;
     }
 }
 
