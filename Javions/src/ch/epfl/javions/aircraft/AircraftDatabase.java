@@ -19,7 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public final class AircraftDatabase{
+public final class AircraftDatabase {
     private final String fileName;
     private String testName;
     private WakeTurbulenceCategory WTCTest;
@@ -29,6 +29,7 @@ public final class AircraftDatabase{
      * Stores the specified file name.
      * Throws a NullPointerException if the file name is null.
      * Does not read any data from the file at this point.
+     *
      * @param fileName The name of the file containing the aircraft information.
      * @throws NullPointerException If the file name is null.
      */
@@ -42,6 +43,7 @@ public final class AircraftDatabase{
      * Searches the sorted file for the address and returns the corresponding data.
      * Returns null if no entry exists for that address.
      * Throws an IOException if there is an input/output error.
+     *
      * @param address The ICAO address of the aircraft to retrieve data for.
      * @return The aircraft data for the specified address, or null if no entry exists.
      * @throws IOException If there is an input/output error.
@@ -58,15 +60,17 @@ public final class AircraftDatabase{
              BufferedReader buffer = new BufferedReader(reader)) {
             while ((stringLineFiltered = buffer.readLine()) != null) {
                 String[] lines = stringLineFiltered.split(",", -1);
-                if(address.string().equals(lines[0]))
+                if (address.string().equals(lines[0]))
                     return new AircraftData(new AircraftRegistration(lines[1]), new AircraftTypeDesignator(lines[2]),
                             lines[3], new AircraftDescription(lines[4]), WakeTurbulenceCategory.of(lines[5]));
             }
         }
         return null;
     }
+
     /**
      * This method was written to test the class
+     *
      * @return String created in the get method above that stores the name of the aircraft.
      */
     public String returnModelString() {
@@ -75,9 +79,10 @@ public final class AircraftDatabase{
 
     /**
      * This method was written to test the class
+     *
      * @return WakeTurbulenceCategory created in the get method above.
      */
-    public WakeTurbulenceCategory returnWTCValue(){
+    public WakeTurbulenceCategory returnWTCValue() {
         return this.WTCTest;
     }
 }

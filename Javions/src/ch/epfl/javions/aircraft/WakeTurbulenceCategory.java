@@ -16,7 +16,8 @@ package ch.epfl.javions.aircraft;
 public enum WakeTurbulenceCategory {
     LIGHT, MEDIUM, HEAVY, UNKNOWN;
 
-    /**.
+    /**
+     * .
      * The "of" method is a static method that takes a string argument and returns the corresponding
      * WakeTurbulenceCategory value based on the string. The input string should be one of the following:
      *

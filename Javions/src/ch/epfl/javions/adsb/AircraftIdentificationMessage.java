@@ -73,7 +73,7 @@ public record AircraftIdentificationMessage
 
     /**
      * Checks whether a given ASCII character code is valid.
-     * <p>
+     *
      * Valid character codes include alphanumeric characters and the space character.
      *
      * @param code the ASCII code of the character
