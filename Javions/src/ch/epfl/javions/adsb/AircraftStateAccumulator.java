@@ -1,20 +1,20 @@
 package ch.epfl.javions.adsb;
 
-public class AircraftStateAccumulator<T>{
+public class AircraftStateAccumulator<T> {
 
     private T stateSetter;
     AircraftStateSetter aircraft;
 
-    public AircraftStateAccumulator(T stateSetter){
+    public AircraftStateAccumulator(T stateSetter) {
         if (stateSetter == null) throw new NullPointerException();
         this.stateSetter = stateSetter;
     }
 
-    public T stateSetter(){
+    public T stateSetter() {
         return stateSetter;
     }
 
-    public void update(Message message){
+    public void update(Message message) {
         //setLast
     }
 }

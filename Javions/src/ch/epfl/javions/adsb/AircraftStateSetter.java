@@ -2,6 +2,9 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 
+/**
+ * @author Paul Quesnot (347572)
+ */
 public interface AircraftStateSetter {
 
     public abstract void setLastMessageTimeStampNs(long timeStampNs);

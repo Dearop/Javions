@@ -13,7 +13,8 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @author Henri Antal (339444)
  */
 public record AirbornePositionMessage
-        (long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y) implements Message{
+        (long timeStampNs, IcaoAddress icaoAddress, double altitude,
+         int parity, double x, double y) implements Message {
 
     /**
      * Constructs an instance of the AirbornePositionMessage class.
@@ -22,15 +23,17 @@ public record AirbornePositionMessage
      *
      * @param timeStampNs The timestamp of the message in nanoseconds.
      * @param icaoAddress The ICAO address of the aircraft.
-     * @param altitude The altitude of the aircraft in feet.
-     * @param parity The parity bit of the message.
-     * @param x The longitude of the aircraft, between 0 and 1.
-     * @param y The latitude of the aircraft, between 0 and 1.
+     * @param altitude    The altitude of the aircraft in feet.
+     * @param parity      The parity bit of the message.
+     * @param x           The longitude of the aircraft, between 0 and 1.
+     * @param y           The latitude of the aircraft, between 0 and 1.
      */
     public AirbornePositionMessage {
         if (icaoAddress == null) throw new NullPointerException();
-        Preconditions.checkArgument((timeStampNs >= 0) && ((parity == 0) || (parity == 1)) &&
-                (x > 0) && (x <= 1) && (y > 0) && (y <= 1));
+        Preconditions.checkArgument((timeStampNs >= 0)
+                && ((parity == 0) || (parity == 1))
+                && (x > 0) && (x <= 1)
+                && (y > 0) && (y <= 1));
     }
 
     /**
@@ -42,13 +45,18 @@ public record AirbornePositionMessage
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         if (rawMessage.typeCode() < 9 || rawMessage.typeCode() > 22 || rawMessage.typeCode() == 19) return null;
+
+        // extracting Bits from the payload of the rawMessage
         long payload = rawMessage.payload();
         double longitude = (Bits.extractUInt(payload, 0, 17)) / Math.pow(2, 17);
         double latitude = (Bits.extractUInt(payload, 17, 17)) / Math.pow(2, 17);
         int FORMAT = (int) ((payload >> 34) & 1);
         int ALT = Bits.extractUInt(payload, 36, 12);
         double computedAltitude = altitudeComputer(ALT);
+
+        // if the computedAltitude is invalid, it has the value of -0xFFFFF
         if (computedAltitude == -0xFFFFF) return null;
+
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
                 rawMessage.icaoAddress(), computedAltitude, FORMAT, longitude, latitude);
     }
@@ -70,12 +78,14 @@ public record AirbornePositionMessage
         if (Bits.extractUInt(ALT, 4, 1) == 1) {
             double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
             double baseAltitude = -1000;
-            return Units.convertFrom(altitudeInFeet * 25 + baseAltitude, Units.Length.FOOT);
 
+            return Units.convertFrom(altitudeInFeet * 25 + baseAltitude, Units.Length.FOOT);
         }
+
         //Q=0
         int MSBGray = 0;
         int LSBGray = 0;
+
         // reorganising the bits
         for (int i = 0; i < 5; i += 2) {
             // D
@@ -87,11 +97,14 @@ public record AirbornePositionMessage
             // C
             LSBGray |= ((Bits.extractUInt(ALT, 7 + i, 1) << i / 2));
         }
+
         double MSB = grayToBinary(MSBGray);
         double LSB = grayToBinary(LSBGray);
+
         if (LSB == 0 || LSB == 5 || LSB == 6) return -0xFFFFF;
         if (LSB == 7) LSB = 5;
         if (MSB % 2 == 1) LSB = (6 - LSB);
+
         return Units.convertFrom(-1300 + (MSB * 500) + (LSB * 100), Units.Length.FOOT);
     }
 
@@ -103,10 +116,12 @@ public record AirbornePositionMessage
      */
     public static int grayToBinary(int gray) {
         int binary = gray;
+
         while (gray > 0) {
             gray >>= 1;
             binary ^= gray;
         }
+        
         return binary;
     }
 }
