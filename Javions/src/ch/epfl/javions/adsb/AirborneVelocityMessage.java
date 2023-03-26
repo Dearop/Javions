@@ -50,8 +50,8 @@ implements Message{
             // SH is not allowed to be zero, so null get's returned
             if (SH == 0) return null;
 
-            trackOrHeading = Units.convertFrom(Bits.extractUInt(payload, 11, 10) /
-                    Math.scalb(1, 10), Units.Angle.TURN);
+            trackOrHeading = Units.convert(Bits.extractUInt(payload, 11, 10) /
+                    Math.scalb(1, 10), Units.Angle.TURN, Units.Angle.DEGREE);
 
             if (ST == 3) {
                 speed = Units.convertTo(Bits.extractUInt(payload, 0, 10), Units.Speed.KNOT);
