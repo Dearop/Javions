@@ -7,7 +7,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  */
 public interface Message {
 
-    public abstract long timeStampNs();
+    long timeStampNs();
 
-    public abstract IcaoAddress icaoAddress();
+    IcaoAddress icaoAddress();
 }

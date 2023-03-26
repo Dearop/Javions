@@ -13,8 +13,7 @@ import ch.epfl.javions.Units;
  */
 
 public class CprDecoder {
-    private CprDecoder() {
-    }
+    private CprDecoder() {}
 
     /**
      * Decodes the geographic position based on the provided parameters.
@@ -52,7 +51,7 @@ public class CprDecoder {
         double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
         double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
 
-        // The two even zone locations for latitude need to have the same value, else null get's returned
+        // The two even zone locations for latitude need to have the same value, else null gets returned
         if (evenZoneLocationLat0 != evenZoneLocationLat1) return null;
         double oddZoneLocationLat = evenZoneLocationLat0 - 1;
 
@@ -82,7 +81,7 @@ public class CprDecoder {
      *
      * @param numberOfZones We split earth into 60 and 59 zones, with that we can calculate a more precise position of the aircraft.
      * @param currentAngle  Is either Phi-even or Phi-odd
-     * @return returns the arccos of formula seen in the course.
+     * @return returns the arccosinus of formula seen in the course.
      */
     private static double AngleToZoneCalculator(double numberOfZones, double currentAngle) {
         return Math.acos(1 - ((1 - Math.cos(2 * Math.PI / numberOfZones)) / Math.pow(Math.cos(currentAngle), 2)));
@@ -104,4 +103,3 @@ public class CprDecoder {
         return Units.convertFrom(angle, Units.Angle.TURN);
     }
 }
-

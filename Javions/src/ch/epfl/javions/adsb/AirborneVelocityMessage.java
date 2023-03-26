@@ -47,7 +47,7 @@ implements Message{
         } else {
             int SH = Bits.extractUInt(payload, 21, 1);
 
-            // SH is not allowed to be zero, so null get's returned
+            // SH is not allowed to be zero, so null gets returned
             if (SH == 0) return null;
 
             trackOrHeading = Units.convert(Bits.extractUInt(payload, 11, 10) /
