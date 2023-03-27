@@ -58,8 +58,11 @@ public class CprDecoder {
         //Longitude
         int zPhiLongitude = (int) Math.rint(x0 * oddZoneLocationLat - x1 * evenZoneLocationLat0);
 
-        double lambdaEven = currentZone(evenZoneLocationLat0, zPhiLongitude, x0);
-        double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitude, x1);
+        double zPhiLongitudeEven = (zPhiLongitude < 0) ? zPhiLongitude + evenZoneLocationLat0 : zPhiLongitude;
+        double zPhiLongitudeOdd = (zPhiLongitude < 0) ? zPhiLongitude + oddZoneLocationLat : zPhiLongitude;
+
+        double lambdaEven = CprDecoder.currentZone(evenZoneLocationLat0, zPhiLongitudeEven, x0);
+        double lambdaOdd = CprDecoder.currentZone(oddZoneLocationLat, zPhiLongitudeOdd, x1);
 
         if (evenZoneLocationLat0 == 1) {
             lambdaEven = x0;

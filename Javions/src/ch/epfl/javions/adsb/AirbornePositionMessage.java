@@ -31,9 +31,9 @@ public record AirbornePositionMessage
     public AirbornePositionMessage {
         if (icaoAddress == null) throw new NullPointerException();
         Preconditions.checkArgument((timeStampNs >= 0)
-                && ((parity == 0) || (parity == 1))
-                && (x > 0) && (x <= 1)
-                && (y > 0) && (y <= 1));
+            && ((parity == 0) || (parity == 1))
+            && (x >= 0) && (x < 1)
+            && (y >= 0) && (y < 1));
     }
 
     /**
@@ -51,8 +51,8 @@ public record AirbornePositionMessage
         double longitude = (Bits.extractUInt(payload, 0, 17)) / Math.pow(2, 17);
         double latitude = (Bits.extractUInt(payload, 17, 17)) / Math.pow(2, 17);
         int FORMAT = (int) ((payload >> 34) & 1);
-        int ALT = Bits.extractUInt(payload, 36, 12);
-        double computedAltitude = altitudeComputer(ALT);
+        final int ALT = Bits.extractUInt(payload, 36, 12);
+        final double computedAltitude = AirbornePositionMessage.altitudeComputer(ALT);
 
         // if the computedAltitude is invalid, it has the value of -0xFFFFF
         if (computedAltitude == -0xFFFFF) return null;
