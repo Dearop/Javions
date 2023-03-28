@@ -20,7 +20,7 @@ public class AircraftStateAccumulatorTest {
             while ((m = d.nextMessage()) != null) {
                 if (!m.icaoAddress().equals(expectedAddress)) continue;
                 Message pm = MessageParser.parse(m);
-                if (pm != null) a.update(pm);
+                if (pm != null) a. update(pm);
             }
         }
     }

@@ -6,7 +6,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private AirbornePositionMessage latestEvenMessage;
 
     public AircraftStateAccumulator(T stateSetter) {
-        if (stateSetter == null) throw new NullPointerException();
+        if (null == stateSetter) throw new NullPointerException();
         this.stateSetter = stateSetter;
     }
 
@@ -16,7 +16,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
 
     public void update(Message message) {
         stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
-        AirbornePositionMessage latestAccordingMessage;
         switch (message) {
             case AircraftIdentificationMessage aim -> {
                 stateSetter.setCategory(aim.category());
@@ -28,35 +27,22 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             }
             case AirbornePositionMessage apm -> {
                 stateSetter.setAltitude(apm.altitude());
-                if(apm.parity() == 0){
-                    latestAccordingMessage = latestOddMessage;
+                if (0 == apm.parity()) {
+                    latestEvenMessage = apm;
+                } else {
+                    latestOddMessage = apm;
                 }
-                latestAccordingMessage = latestEvenMessage;
-                System.out.println("coc");
-                if(latestAccordingMessage != null){
-                    System.out.println("coc in");
-                    if (message.timeStampNs() - latestAccordingMessage.timeStampNs() >= 1E10 &&
-                            latestAccordingMessage.parity() != apm.parity()) {
-                        System.out.println("coc out");
+                if (latestEvenMessage != null && latestOddMessage != null) {
+                    if (Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs()) <= 1e10) {
                         double x0, y0, x1, y1;
-                        if (apm.parity() == 0) {
-                            x0 = apm.x();
-                            y0 = apm.y();
-                            y1 = latestAccordingMessage.x();
-                            x1 = latestAccordingMessage.y();
-                        }else {
-                            x0 = latestAccordingMessage.x();
-                            y0 = latestAccordingMessage.y();
-                            x1 = apm.x();
-                            y1 = apm.y();
-                        }
-                        if(apm.parity() == 0){
-                            latestAccordingMessage = apm;
-                        }
-                        latestAccordingMessage = apm;
+                        x0 = latestEvenMessage.x();
+                        y0 = latestEvenMessage.y();
+                        y1 = latestOddMessage.x();
+                        x1 = latestOddMessage.y();
                         stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
                     }
                 }
+
             }
             default -> throw new NullPointerException();
             //setLast
