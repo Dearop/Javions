@@ -35,7 +35,7 @@ implements Message{
             Vns = (Dns == 0) ? Vns : -Vns;
             Vew = (Dew == 0) ? Vew : -Vew;
 
-            trackOrHeading = Math.PI/2 - Math.atan2(Vew, Vns);
+            trackOrHeading = Math.atan2(Vew, Vns);
             trackOrHeading = (trackOrHeading < 0) ? trackOrHeading + 2 * Math.PI : trackOrHeading;
 
             if (ST == 1) {
