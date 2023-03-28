@@ -13,7 +13,7 @@ implements Message{
     }
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
-        long payload = rawMessage.payload();
+        final long payload = rawMessage.payload();
         int ST = Bits.extractUInt(payload, 48, 3);
 
         // If the values of ST (bits 48-51) are invalid, return null
@@ -36,7 +36,7 @@ implements Message{
             Vns = (Dns == 0) ? -Vns : Vns;
             Vew = (Dew == 0) ? Vew : -Vew;
 
-            trackOrHeading = Math.atan2(Vew, Vns) + Math.PI; // todo is this in degree?
+            trackOrHeading = Units.convertTo(Math.atan2(Vew, Vns) + Math.PI, Units.Angle.DEGREE); // todo is this in degree?
 
             if (ST == 1) {
                 speed = Units.convertFrom(speed, Units.Speed.KNOT);

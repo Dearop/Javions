@@ -65,8 +65,8 @@ public class CprDecoder {
         double lambdaOdd = CprDecoder.currentZone(oddZoneLocationLat, zPhiLongitudeOdd, x1);
 
         if (evenZoneLocationLat0 == 1) {
-            lambdaEven = x0;
-            lambdaOdd = x1;
+            lambdaEven = Units.convertFrom(center(x0), Units.Angle.TURN);
+            lambdaOdd = Units.convertFrom(center(x1), Units.Angle.TURN);
         }
 
         // Getting the right Latitude or Longitude due to parity
@@ -101,8 +101,12 @@ public class CprDecoder {
     private static double currentZone(double numberOfZones, double currentZone, double position) {
         currentZone = (currentZone < 0) ? (currentZone + numberOfZones) : currentZone;
         double angle = (currentZone + position) / numberOfZones;
-
-        if (angle >= 0.5) angle -= 1;
+       center(angle);
         return Units.convertFrom(angle, Units.Angle.TURN);
+    }
+
+    private static double center(double angle){
+        if (angle >= 0.5) angle -= 1;
+        return angle;
     }
 }
