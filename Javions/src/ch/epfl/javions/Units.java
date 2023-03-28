@@ -74,7 +74,7 @@ public final class Units {
 
     /**
      * this function converts from one unit to another unit
-     * for example convert(2, FOOT, CENTI) gives you the value 60.96 so we change from 2 foot to 60.96cm
+     * for example convert(2, FOOT, CENTI) gives you the value 60.96, so we change from 2 foot to 60.96cm
      *
      * @param value    double representing a value in fromUnit
      * @param fromUnit double representing the value of a unit in the base units of the appropriate unit system
