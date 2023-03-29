@@ -50,13 +50,13 @@ implements Message{
             // SH is not allowed to be zero, so null gets returned
             if (SH == 0) return null;
 
-            trackOrHeading = Units.convert(Bits.extractUInt(bits22, 11, 10) /
-                    Math.scalb(1, 10), Units.Angle.TURN, Units.Angle.DEGREE);
+            trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
+                    Math.scalb(1, 10), Units.Angle.TURN);
 
             if (ST == 3) {
-                speed = Units.convertFrom(Bits.extractUInt(bits22, 0, 10)-1 , Units.Speed.KNOT);
+                speed = Units.convertFrom(Bits.extractUInt(bits22, 0, 10) - 1 , Units.Speed.KNOT);
             } else {
-                speed = Units.convertFrom(Bits.extractUInt(bits22,0,10) ,4 * Units.Speed.KNOT);
+                speed = Units.convertFrom(Bits.extractUInt(bits22,0,10) - 1,4 * Units.Speed.KNOT);
             }
         }
         //todo heading needs to be in degree
