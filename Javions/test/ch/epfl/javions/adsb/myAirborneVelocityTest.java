@@ -80,14 +80,11 @@ public class myAirborneVelocityTest {
     void ofGivesGoodVelocityAirSpeed(){
         AirborneVelocityMessage message =AirborneVelocityMessage.of(new
                 RawMessage(0,
-                new
-
-                        ByteString(HexFormat.of().parseHex("8DA05F219B06B6AF189400CBC33F")
+                new ByteString(HexFormat.of().parseHex("8DA05F219B06B6AF189400CBC33F")
                 )));
         assertEquals(375,
                 Units.convertTo(message.speed(),Units.Speed.KNOT));
-        assertEquals(243.984375,
-                Units.convertTo(message.trackOrHeading(),Units.Angle.RADIAN));
+        assertEquals(243.984375, Units.convertTo(message.trackOrHeading(), Units.Angle.DEGREE));
     }
 
     @Test
