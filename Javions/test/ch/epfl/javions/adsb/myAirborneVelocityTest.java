@@ -41,15 +41,18 @@ public class myAirborneVelocityTest {
         InputStream stream = new FileInputStream(stream2);
         AdsbDemodulator d = new AdsbDemodulator(stream);
         RawMessage m;
+        int counter = 0;
         while ((m = d.nextMessage()) != null) {
 
             if (m.typeCode() == 19 && AirborneVelocityMessage.of(m) !=
 
                     null) {
-
+                counter++;
                 System.out.println(AirborneVelocityMessage.of(m));
             }
+
         }
+        System.out.println(counter);
     }
 
     @Test
@@ -91,7 +94,7 @@ public class myAirborneVelocityTest {
         assertEquals(375,
                 Units.convertTo(message.speed(),Units.Speed.KNOT));
         assertEquals(243.984375,
-                Units.convertTo(message.trackOrHeading(),Units.Angle.DEGREE));
+                Units.convertTo(message.trackOrHeading(),Units.Angle.RADIAN));
     }
 }
 
