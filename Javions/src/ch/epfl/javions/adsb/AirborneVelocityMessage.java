@@ -13,6 +13,7 @@ implements Message{
     }
 
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
+        if(rawMessage.typeCode() != 19) return null;
         int bits22 = Bits.extractUInt(rawMessage.payload(), 21, 22);
         int ST = Bits.extractUInt(rawMessage.payload(), 48, 3);
 
@@ -59,7 +60,6 @@ implements Message{
                 speed = Units.convertFrom(Bits.extractUInt(bits22,0,10) - 1,4 * Units.Speed.KNOT);
             }
         }
-        //todo heading needs to be in degree
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, trackOrHeading);
     }
 }

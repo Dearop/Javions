@@ -43,7 +43,7 @@ public class myAirborneVelocityTest {
         RawMessage m;
         int counter = 0;
         while ((m = d.nextMessage()) != null) {
-
+            System.out.println(m);
             if (m.typeCode() == 19 && AirborneVelocityMessage.of(m) != null) {
                 counter++;
                 System.out.println(AirborneVelocityMessage.of(m));
@@ -89,14 +89,20 @@ public class myAirborneVelocityTest {
 
     @Test
     public void oneMessageTest1(){
-        RawMessage message = new RawMessage(0, new ByteString( new byte[]{(byte) 0x8D,0x48,0x50,0x20, (byte) 0x99,0x44,0x09, (byte) 0x94,0x08,0x38,0x17,0x5B,0x28,0x4F}));
+        RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994409940838175B284F"));
         AirborneVelocityMessage velocityMessage = AirborneVelocityMessage.of(message);
         System.out.println(velocityMessage);
     }
 
     @Test
     public void oneMessageTestWithST3(){
-        RawMessage message = new RawMessage(0, new ByteString( new byte[]{(byte) 0x8D, (byte) 0xA0,0x5F,0x21, (byte) 0x9B,0x06, (byte) 0xB6, (byte) 0xAF,0x18, (byte) 0x94,0x00, (byte) 0xCB, (byte) 0xC3,0x3F}));
+        RawMessage message = new RawMessage(0,ByteString.ofHexadecimalString("8DA05F219B06B6AF189400CBC33F" ));
+        System.out.println(AirborneVelocityMessage.of(message));
+    }
+
+    @Test
+    public void oneMoreTime(){
+        RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D4D2228EA466864931C082073D1"));
         System.out.println(AirborneVelocityMessage.of(message));
     }
 }
