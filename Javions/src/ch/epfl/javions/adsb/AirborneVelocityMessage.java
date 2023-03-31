@@ -60,7 +60,7 @@ implements Message{
             int Vns = Bits.extractUInt(bits22, 0, 10) - 1;
 
             // If Vns or Vew, which represent the speed of the aircraft, are zero the value is invalid and return null
-            if (Vns == 0 || Vew == 0) return null;
+            if (Vns == -1 || Vew == -1) return null;
 
             speed = Math.hypot(Vns, Vew);
             Vns = (Dns == 0) ? Vns : -Vns;
@@ -83,11 +83,12 @@ implements Message{
 
             trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
                     Math.scalb(1, 10), Units.Angle.TURN);
-
+            int AS = Bits.extractUInt(bits22, 0, 10) - 1;
+            if(AS == - 1) return null;
             if (ST == 3) {
-                speed = Units.convertFrom(Bits.extractUInt(bits22, 0, 10) - 1 , Units.Speed.KNOT);
+                speed = Units.convertFrom(AS, Units.Speed.KNOT);
             } else {
-                speed = Units.convertFrom(Bits.extractUInt(bits22,0,10) - 1,4 * Units.Speed.KNOT);
+                speed = Units.convertFrom(AS,4 * Units.Speed.KNOT);
             }
         }
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, trackOrHeading);

@@ -30,7 +30,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @return the state setter
      */
     public T stateSetter() {
-        return stateSetter;
+        return this.stateSetter;
     }
     /**
      * Updates the aircraft state with the information contained in the given message. Depending on the message
