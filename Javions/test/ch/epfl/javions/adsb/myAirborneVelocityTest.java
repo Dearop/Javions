@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class myAirborneVelocityTest {
 
+
     @Test
     public void AirborneVelocityThrowsExceptions() {
         assertThrows(NullPointerException.class, () -> new AirborneVelocityMessage(0, null, 0, 0));
@@ -104,6 +105,11 @@ public class myAirborneVelocityTest {
     public void oneMoreTime(){
         RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D4D2228EA466864931C082073D1"));
         System.out.println(AirborneVelocityMessage.of(message));
+    }
+
+    @Test
+    public void ST4Message(){
+        System.out.println(AirborneVelocityMessage.of(new RawMessage(0, ByteString.ofHexadecimalString("8DA05F219C06B6AF189400CBC33F"))));
     }
 }
 

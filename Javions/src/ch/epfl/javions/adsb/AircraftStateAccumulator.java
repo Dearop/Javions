@@ -1,5 +1,4 @@
 package ch.epfl.javions.adsb;
-
 /**
  * The AircraftStateAccumulator class accumulates and updates state information of an aircraft based
  * on the received ADS-B messages. It is used to maintain the current state of an aircraft,
@@ -12,7 +11,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private final T stateSetter;
     private AirbornePositionMessage latestOddMessage;
     private AirbornePositionMessage latestEvenMessage;
-
     // 10 seconds in nanoseconds
     private static final double TIME_BETWEEN_TWO_MESSAGES = 1.0e10;
 
@@ -26,7 +24,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
         if (null == stateSetter) throw new NullPointerException();
         this.stateSetter = stateSetter;
     }
-
     /**
      * Returns the state setter used by this accumulator.
      *
@@ -35,7 +32,6 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     public T stateSetter() {
         return stateSetter;
     }
-
     /**
      * Updates the aircraft state with the information contained in the given message. Depending on the message
      * we either update the identification (lambda aim) or the velocity and trackOrHeading (lambda avm) or at last
@@ -77,7 +73,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 }
 
             }
-            default -> throw new NullPointerException();
+            default -> throw new Error();
         }
     }
 }

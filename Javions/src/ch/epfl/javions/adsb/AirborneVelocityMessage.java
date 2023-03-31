@@ -30,7 +30,7 @@ implements Message{
         if(icaoAddress == null) throw new NullPointerException();
         Preconditions.checkArgument(timeStampNs >= 0 && speed >= 0 && trackOrHeading >= 0);
     }
-
+    // TODO: 3/31/2023 ask question if we need to minus 1 before or after checking if it's equal to one
     /**
      * Constructs an airborne velocity message from a raw message.
      * First it check if it is the correct TypeCode which is equal to 19.

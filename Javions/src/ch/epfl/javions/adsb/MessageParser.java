@@ -12,8 +12,7 @@ import ch.epfl.javions.Preconditions;
 public class MessageParser {
 
     // The private constructor is used to prevent instantiation of this class.
-    private MessageParser() {
-    }
+    private MessageParser() {}
 
     /**
      * This static method takes a RawMessage object and returns a corresponding Message object,

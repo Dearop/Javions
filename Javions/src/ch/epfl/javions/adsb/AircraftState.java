@@ -15,7 +15,7 @@ public class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setCallSign(CallSign callSign) {
-        //System.out.println("callsign : " + callSign);
+        System.out.println("callsign : " + callSign);
     }
 
 
@@ -26,17 +26,17 @@ public class AircraftState implements AircraftStateSetter {
 
     @Override
     public void setVelocity(double velocity) {
-        System.out.println("velocity : " + velocity);
+        //System.out.println("velocity : " + velocity);
     }
 
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
-        System.out.println("track or heading : " + trackOrHeading);
+        //System.out.println("track or heading : " + trackOrHeading);
     }
 
     @Override
     public void setPosition(GeoPos position) {
-        //System.out.println("position : " + position);
+        System.out.println("position : " + position);
     }
 
 }
