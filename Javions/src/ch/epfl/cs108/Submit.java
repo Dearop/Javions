@@ -28,7 +28,8 @@ import java.util.zip.ZipOutputStream;
 
 import static java.net.HttpURLConnection.*;
 
-public final class Submit {
+public enum Submit {
+    ;
     // CONFIGURATION
     // -------------
     // Jeton du premier membre du groupe
@@ -47,53 +48,53 @@ public final class Submit {
     private static final String BASE32_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
     private static final Pattern SUBMISSION_ID_RX =
             Pattern.compile(
-                    Stream.generate(() -> "[%s]{4}".formatted(BASE32_ALPHABET))
+                    Stream.generate(() -> "[%s]{4}".formatted(Submit.BASE32_ALPHABET))
                             .limit(4)
                             .collect(Collectors.joining("-")));
 
-    public static void main(String[] args) {
-        var token1 = args.length >= 1 ? args[0] : TOKEN_1;
-        var token2 = args.length >= 2 ? args[1] : TOKEN_2;
+    public static void main(final String[] args) {
+        final var token1 = 1 <= args.length ? args[0] : Submit.TOKEN_1;
+        final var token2 = 2 <= args.length ? args[1] : Submit.TOKEN_2;
 
-        if (token1.length() != TOKEN_LENGTH) {
+        if (TOKEN_LENGTH != token1.length()) {
             System.err.println("Erreur : vous n'avez correctement défini TOKEN_1 dans Submit.java !");
             System.exit(1);
         }
-        if (token2.length() != TOKEN_LENGTH) {
+        if (TOKEN_LENGTH != token2.length()) {
             System.err.println("Erreur : vous n'avez correctement défini TOKEN_2 dans Submit.java !");
             System.exit(1);
         }
 
         try {
-            var projectRoot = Path.of(System.getProperty("user.dir"));
-            var submissionTimeStamp = LocalDateTime.now();
+            final var projectRoot = Path.of(System.getProperty("user.dir"));
+            final var submissionTimeStamp = LocalDateTime.now();
 
-            var submissionsDir = projectRoot.resolve("submissions");
+            final var submissionsDir = projectRoot.resolve("submissions");
             if (!Files.isDirectory(submissionsDir)) {
                 try {
                     Files.createDirectory(submissionsDir);
-                } catch (FileAlreadyExistsException e) {
+                } catch (final FileAlreadyExistsException e) {
                     System.err.printf("Erreur : impossible de créer le dossier %s !\n", submissionsDir);
                 }
             }
 
-            var fileList = getFileList(semesterWeek(LocalDate.now()));
-            var paths = filesToSubmit(projectRoot, p -> fileList.stream().anyMatch(p::endsWith));
+            final var fileList = Submit.getFileList(Submit.semesterWeek(LocalDate.now()));
+            final var paths = Submit.filesToSubmit(projectRoot, p -> fileList.stream().anyMatch(p::endsWith));
 
-            var zipArchive = createZipArchive(paths);
-            var backupName = "%tF_%tH%tM%tS".formatted(
+            final var zipArchive = Submit.createZipArchive(paths);
+            final var backupName = "%tF_%tH%tM%tS".formatted(
                     submissionTimeStamp, submissionTimeStamp, submissionTimeStamp, submissionTimeStamp);
             var backupPath = submissionsDir.resolve(backupName + ".zip");
-            writeZip(backupPath, zipArchive);
+            Submit.writeZip(backupPath, zipArchive);
 
-            var response = submitZip(token1 + token2, zipArchive);
-            var wasCreated = response.statusCode() == HTTP_CREATED;
-            var printStream = wasCreated ? System.out : System.err;
+            final var response = Submit.submitZip(token1 + token2, zipArchive);
+            final var wasCreated = HTTP_CREATED == response.statusCode();
+            final var printStream = wasCreated ? System.out : System.err;
             switch (response.statusCode()) {
                 case HTTP_CREATED -> {
-                    var subIdMatcher = SUBMISSION_ID_RX.matcher(response.body());
-                    var subId = subIdMatcher.find() ? subIdMatcher.group() : "ERREUR";
-                    var oldBackupPath = backupPath;
+                    final var subIdMatcher = Submit.SUBMISSION_ID_RX.matcher(response.body());
+                    final var subId = subIdMatcher.find() ? subIdMatcher.group() : "ERREUR";
+                    final var oldBackupPath = backupPath;
                     backupPath = submissionsDir.resolve(backupName + "_" + subId + ".zip");
                     Files.move(oldBackupPath, backupPath);
                     printStream.printf("""
@@ -115,21 +116,21 @@ public final class Submit {
             printStream.printf("\nUne copie de sauvegarde de l'archive a été stockée dans :\n  %s\n",
                     projectRoot.relativize(backupPath));
             System.exit(wasCreated ? 0 : 1);
-        } catch (IOException | InterruptedException e) {
+        } catch (final IOException | InterruptedException e) {
             System.err.println("Erreur inattendue !");
             e.printStackTrace(System.err);
             System.exit(1);
         }
     }
 
-    private static int semesterWeek(LocalDate date) {
-        assert SEMESTER_START_DATE.isBefore(date);
-        return 1 + (int) ChronoUnit.WEEKS.between(SEMESTER_START_DATE, date);
+    private static int semesterWeek(final LocalDate date) {
+        assert Submit.SEMESTER_START_DATE.isBefore(date);
+        return 1 + (int) ChronoUnit.WEEKS.between(Submit.SEMESTER_START_DATE, date);
     }
 
-    private static List<Path> getFileList(int stage) throws IOException, InterruptedException {
-        var fileListUri = baseUri.resolve("p/f/files-to-submit-%02d.txt".formatted(stage));
-        var httpRequest = HttpRequest.newBuilder(fileListUri)
+    private static List<Path> getFileList(final int stage) throws IOException, InterruptedException {
+        final var fileListUri = Submit.baseUri.resolve("p/f/files-to-submit-%02d.txt".formatted(stage));
+        final var httpRequest = HttpRequest.newBuilder(fileListUri)
                 .GET()
                 .build();
         return HttpClient.newHttpClient()
@@ -139,8 +140,8 @@ public final class Submit {
                 .toList();
     }
 
-    private static List<Path> filesToSubmit(Path projectRoot, Predicate<Path> keepFile) throws IOException {
-        try (var paths = Files.walk(projectRoot)) {
+    private static List<Path> filesToSubmit(final Path projectRoot, final Predicate<Path> keepFile) throws IOException {
+        try (final var paths = Files.walk(projectRoot)) {
             return paths
                     .filter(Files::isRegularFile)
                     .map(projectRoot::relativize)
@@ -150,16 +151,16 @@ public final class Submit {
         }
     }
 
-    private static byte[] createZipArchive(List<Path> paths) throws IOException {
-        var byteArrayOutputStream = new ByteArrayOutputStream();
-        try (var zipStream = new ZipOutputStream(byteArrayOutputStream)) {
-            for (var path : paths) {
-                var entryPath = IntStream.range(0, path.getNameCount())
+    private static byte[] createZipArchive(final List<Path> paths) throws IOException {
+        final var byteArrayOutputStream = new ByteArrayOutputStream();
+        try (final var zipStream = new ZipOutputStream(byteArrayOutputStream)) {
+            for (final var path : paths) {
+                final var entryPath = IntStream.range(0, path.getNameCount())
                         .mapToObj(path::getName)
                         .map(Path::toString)
-                        .collect(Collectors.joining("/", ZIP_ENTRY_NAME_PREFIX, ""));
+                        .collect(Collectors.joining("/", Submit.ZIP_ENTRY_NAME_PREFIX, ""));
                 zipStream.putNextEntry(new ZipEntry(entryPath));
-                try (var fileStream = new FileInputStream(path.toFile())) {
+                try (final var fileStream = new FileInputStream(path.toFile())) {
                     fileStream.transferTo(zipStream);
                 }
                 zipStream.closeEntry();
@@ -168,23 +169,23 @@ public final class Submit {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private static HttpResponse<String> submitZip(String submissionToken, byte[] zipArchive)
+    private static HttpResponse<String> submitZip(final String submissionToken, final byte[] zipArchive)
             throws IOException, InterruptedException {
-        var httpRequest = HttpRequest.newBuilder(baseUri.resolve("api/submissions"))
+        final var httpRequest = HttpRequest.newBuilder(Submit.baseUri.resolve("api/submissions"))
                 .POST(HttpRequest.BodyPublishers.ofByteArray(zipArchive))
                 .header("Authorization", "token %s".formatted(submissionToken))
                 .header("Content-Type", "application/zip")
                 .header("Accept", "text/plain")
                 .header("Accept-Language", "fr")
-                .timeout(Duration.ofSeconds(TIMEOUT_SECONDS))
+                .timeout(Duration.ofSeconds(Submit.TIMEOUT_SECONDS))
                 .build();
 
         return HttpClient.newHttpClient()
                 .send(httpRequest, HttpResponse.BodyHandlers.ofString());
     }
 
-    private static void writeZip(Path filePath, byte[] zipArchive) throws IOException {
-        try (var c = new FileOutputStream(filePath.toFile())) {
+    private static void writeZip(final Path filePath, final byte[] zipArchive) throws IOException {
+        try (final var c = new FileOutputStream(filePath.toFile())) {
             c.write(zipArchive);
         }
     }

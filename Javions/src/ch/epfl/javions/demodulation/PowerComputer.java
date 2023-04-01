@@ -26,13 +26,13 @@ public final class PowerComputer {
      * @param batchSize The number of samples in each batch.
      * @throws IllegalArgumentException if batchSize is negative or not divisible by 8.
      */
-    public PowerComputer(InputStream stream, int batchSize) {
-        if (batchSize % 8 != 0) throw new IllegalArgumentException();
-        if (batchSize < 0) throw new IllegalArgumentException();
+    public PowerComputer(final InputStream stream, final int batchSize) {
+        if (0 != batchSize % 8) throw new IllegalArgumentException();
+        if (0 > batchSize) throw new IllegalArgumentException();
 
         this.batchSize = batchSize;
-        this.decodedBatch = new short[2 * batchSize];
-        this.decoder = new SamplesDecoder(stream, 2 * batchSize);
+        decodedBatch = new short[2 * batchSize];
+        decoder = new SamplesDecoder(stream, 2 * batchSize);
     }
 
     /**
@@ -44,29 +44,29 @@ public final class PowerComputer {
      * @throws IOException              if an I/O error occurs.
      * @throws IllegalArgumentException if the length of the batch array does not match the batch size.
      */
-    public int readBatch(int[] batch) throws IOException {
-        Preconditions.checkArgument(batch.length == batchSize);
+    public int readBatch(final int[] batch) throws IOException {
+        Preconditions.checkArgument(batch.length == this.batchSize);
 
-        int bytesRead = decoder.readBatch(decodedBatch);
+        final int bytesRead = this.decoder.readBatch(this.decodedBatch);
         int counter = 0;
 
         for (int i = 0; i < bytesRead; i += 2) {
-            powerCalculationTable[7] = powerCalculationTable[5];
-            powerCalculationTable[6] = powerCalculationTable[4];
-            powerCalculationTable[5] = powerCalculationTable[3];
-            powerCalculationTable[4] = powerCalculationTable[2];
-            powerCalculationTable[3] = powerCalculationTable[1];
-            powerCalculationTable[2] = powerCalculationTable[0];
+            this.powerCalculationTable[7] = this.powerCalculationTable[5];
+            this.powerCalculationTable[6] = this.powerCalculationTable[4];
+            this.powerCalculationTable[5] = this.powerCalculationTable[3];
+            this.powerCalculationTable[4] = this.powerCalculationTable[2];
+            this.powerCalculationTable[3] = this.powerCalculationTable[1];
+            this.powerCalculationTable[2] = this.powerCalculationTable[0];
 
-            powerCalculationTable[0] = decodedBatch[i + 1];
-            powerCalculationTable[1] = decodedBatch[i];
+            this.powerCalculationTable[0] = this.decodedBatch[i + 1];
+            this.powerCalculationTable[1] = this.decodedBatch[i];
 
 
-            batch[i / 2] = (int) (Math.pow(powerCalculationTable[1] - powerCalculationTable[3] +
-                    powerCalculationTable[5] - powerCalculationTable[7], 2) //even
+            batch[i / 2] = (int) (Math.pow(this.powerCalculationTable[1] - this.powerCalculationTable[3] +
+                    this.powerCalculationTable[5] - this.powerCalculationTable[7], 2) //even
                     +
-                    Math.pow(powerCalculationTable[0] - powerCalculationTable[2] + powerCalculationTable[4] -
-                            powerCalculationTable[6], 2)); //odd
+                    Math.pow(this.powerCalculationTable[0] - this.powerCalculationTable[2] + this.powerCalculationTable[4] -
+                            this.powerCalculationTable[6], 2)); //odd
             counter++;
         }
         return counter;

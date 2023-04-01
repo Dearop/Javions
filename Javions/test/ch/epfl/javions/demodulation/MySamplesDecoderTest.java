@@ -12,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class MySamplesDecoderTest {
     @Test
     public void SamplesDecodeThrowsExceptions() throws FileNotFoundException {
-        String samples = getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
-        InputStream stream = new FileInputStream(samples);
+        final InputStream stream = new FileInputStream(samples);
         assertThrows(NullPointerException.class, () -> new SamplesDecoder(null, 3));
         assertThrows(IllegalArgumentException.class, () -> new SamplesDecoder(stream, -3));
     }
@@ -22,23 +22,23 @@ public class MySamplesDecoderTest {
 
     @Test
     public void SamplesDecoderReturnsExpectedValue() throws IOException {
-        String samples = getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
-        InputStream stream = new FileInputStream(samples);
-        SamplesDecoder decoder = new SamplesDecoder(stream, 2402);
-        short[] batch = new short[2402];
+        final InputStream stream = new FileInputStream(samples);
+        final SamplesDecoder decoder = new SamplesDecoder(stream, 2402);
+        final short[] batch = new short[2402];
         assertEquals(2402, decoder.readBatch(batch));
     }
 
     @Test
     void testValidSampleDecoder() throws IOException {
-        String stream2 = getClass().getResource("/samples.bin").getFile();
+        String stream2 = this.getClass().getResource("/samples.bin").getFile();
         stream2 = URLDecoder.decode(stream2, StandardCharsets.UTF_8);
-        InputStream stream = new FileInputStream(stream2);
-        SamplesDecoder test = new SamplesDecoder(stream, 2402);
+        final InputStream stream = new FileInputStream(stream2);
+        final SamplesDecoder test = new SamplesDecoder(stream, 2402);
 
 
-        short[] batch = new short[2402];
+        final short[] batch = new short[2402];
         test.readBatch(batch);
         assertEquals(-3, batch[0]);
         assertEquals(8, batch[1]);

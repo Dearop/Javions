@@ -99,7 +99,7 @@ class PowerComputerTest {
             """.replace("\n", "");
 
     // The first 1200 power samples corresponding to samples.bin
-    public static final int[] POWER_SAMPLES = new int[]{73, 292, 65,
+    public static final int[] POWER_SAMPLES = {73, 292, 65,
             745, 98, 4226, 12244, 25722, 36818, 23825, 10730, 1657, 1285,
             1280, 394, 521, 1370, 200, 292, 290, 106, 116, 194, 64, 37, 50,
             149, 466, 482, 180, 148, 5576, 13725, 26210, 28305, 14653, 4861,
@@ -222,13 +222,13 @@ class PowerComputerTest {
     static final Base64.Decoder B64_DECODER = Base64.getDecoder();
 
     static InputStream getSamplesStream() {
-        return new ByteArrayInputStream(B64_DECODER.decode(SAMPLES_BIN_BASE64));
+        return new ByteArrayInputStream(PowerComputerTest.B64_DECODER.decode(PowerComputerTest.SAMPLES_BIN_BASE64));
     }
 
     @Test
     void powerComputerConstructorThrowsOnZeroBatchSize() {
         assertThrows(IllegalArgumentException.class, () -> {
-            try (var s = new ByteArrayInputStream(new byte[0])) {
+            try (final var s = new ByteArrayInputStream(new byte[0])) {
                 new PowerComputer(s, 0);
             }
         });
@@ -237,7 +237,7 @@ class PowerComputerTest {
     @Test
     void powerComputerConstructorThrowsOnInvalidBatchSize() {
         assertThrows(IllegalArgumentException.class, () -> {
-            try (var s = new ByteArrayInputStream(new byte[0])) {
+            try (final var s = new ByteArrayInputStream(new byte[0])) {
                 new PowerComputer(s, 7);
             }
         });
@@ -245,26 +245,26 @@ class PowerComputerTest {
 
     @Test
     void powerComputerReadBatchWorksOnGivenSamples() throws IOException {
-        try (var samplesStream = getSamplesStream()) {
-            var batch = new int[1200];
-            var powerComputer = new PowerComputer(samplesStream, batch.length);
-            var read = powerComputer.readBatch(batch);
+        try (final var samplesStream = PowerComputerTest.getSamplesStream()) {
+            final var batch = new int[1200];
+            final var powerComputer = new PowerComputer(samplesStream, batch.length);
+            final var read = powerComputer.readBatch(batch);
             assertEquals(batch.length, read);
-            assertArrayEquals(POWER_SAMPLES, batch);
+            assertArrayEquals(PowerComputerTest.POWER_SAMPLES, batch);
         }
     }
 
     @Test
     void powerComputerReadBatchWorksWithAnyBatchSize() throws IOException {
-        var maxBatchSize = 1024;
-        var expectedSamples = Arrays.copyOf(POWER_SAMPLES, maxBatchSize);
+        final var maxBatchSize = 1024;
+        final var expectedSamples = Arrays.copyOf(PowerComputerTest.POWER_SAMPLES, maxBatchSize);
         for (int batchSize = 8; batchSize <= maxBatchSize; batchSize <<= 1) {
-            try (var samplesStream = getSamplesStream()) {
-                var actualSamples = new int[maxBatchSize];
-                var batch = new int[batchSize];
-                var powerComputer = new PowerComputer(samplesStream, batchSize);
+            try (final var samplesStream = PowerComputerTest.getSamplesStream()) {
+                final var actualSamples = new int[maxBatchSize];
+                final var batch = new int[batchSize];
+                final var powerComputer = new PowerComputer(samplesStream, batchSize);
                 for (int i = 0; i < maxBatchSize / batchSize; i += 1) {
-                    var read = powerComputer.readBatch(batch);
+                    final var read = powerComputer.readBatch(batch);
                     assertEquals(batchSize, read);
                     System.arraycopy(batch, 0, actualSamples, i * batchSize, batchSize);
                 }

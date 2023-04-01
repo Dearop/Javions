@@ -27,10 +27,10 @@ implements Message{
      * @throws IllegalArgumentException if any of the parameters have invalid values.
      */
     public AirborneVelocityMessage{
-        if(icaoAddress == null) throw new NullPointerException();
-        Preconditions.checkArgument(timeStampNs >= 0 && speed >= 0 && trackOrHeading >= 0);
+        if(null == icaoAddress) throw new NullPointerException();
+        Preconditions.checkArgument(0 <= timeStampNs && 0 <= speed && 0 <= trackOrHeading);
     }
-    // TODO: 3/31/2023 ask question if we need to minus 1 before or after checking if it's equal to one
+
     /**
      * Constructs an airborne velocity message from a raw message.
      * First it check if it is the correct TypeCode which is equal to 19.
@@ -42,50 +42,50 @@ implements Message{
      * @param rawMessage The raw message to parse.
      * @return An AirborneVelocityMessage object, or null if the raw message is not a type 19 message.
      */
-    public static AirborneVelocityMessage of(RawMessage rawMessage) {
-        if(rawMessage.typeCode() != 19) return null;
-        int bits22 = Bits.extractUInt(rawMessage.payload(), 21, 22);
-        int ST = Bits.extractUInt(rawMessage.payload(), 48, 3);
+    public static AirborneVelocityMessage of(final RawMessage rawMessage) {
+        if(19 != rawMessage.typeCode()) return null;
+        final int bits22 = Bits.extractUInt(rawMessage.payload(), 21, 22);
+        final int ST = Bits.extractUInt(rawMessage.payload(), 48, 3);
 
-        if (ST < 1 || ST > 4) return null;
+        if (1 > ST || 4 < ST) return null;
 
         double speed;
         double trackOrHeading;
 
         // Ground speed
-        if (ST == 1 || ST == 2) {
-            int Dew = Bits.extractUInt(bits22, 21, 1);
+        if (1 == ST || 2 == ST) {
+            final int Dew = Bits.extractUInt(bits22, 21, 1);
             int Vew = Bits.extractUInt(bits22, 11, 10) - 1;
-            int Dns = Bits.extractUInt(bits22, 10, 1);
+            final int Dns = Bits.extractUInt(bits22, 10, 1);
             int Vns = Bits.extractUInt(bits22, 0, 10) - 1;
 
             // If Vns or Vew, which represent the speed of the aircraft, are zero the value is invalid and return null
-            if (Vns == -1 || Vew == -1) return null;
+            if (-1 == Vns || -1 == Vew) return null;
 
             speed = Math.hypot(Vns, Vew);
-            Vns = (Dns == 0) ? Vns : -Vns;
-            Vew = (Dew == 0) ? Vew : -Vew;
+            Vns = (0 == Dns) ? Vns : -Vns;
+            Vew = (0 == Dew) ? Vew : -Vew;
 
             trackOrHeading = Math.atan2(Vew, Vns);
-            trackOrHeading = (trackOrHeading < 0) ? trackOrHeading + 2 * Math.PI : trackOrHeading;
+            trackOrHeading = (0 > trackOrHeading) ? trackOrHeading + 2 * Math.PI : trackOrHeading;
 
-            if (ST == 1) {
+            if (1 == ST) {
                 speed = Units.convertFrom(speed, Units.Speed.KNOT);
             } else {
                 speed = Units.convertFrom(speed, 4 * Units.Speed.KNOT);
             }
 
         } else {
-            int SH = Bits.extractUInt(bits22, 21, 1);
+            final int SH = Bits.extractUInt(bits22, 21, 1);
 
             // SH is not allowed to be zero, so null gets returned
-            if (SH == 0) return null;
+            if (0 == SH) return null;
 
             trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
                     Math.scalb(1, 10), Units.Angle.TURN);
-            int AS = Bits.extractUInt(bits22, 0, 10) - 1;
-            if(AS == - 1) return null;
-            if (ST == 3) {
+            final int AS = Bits.extractUInt(bits22, 0, 10) - 1;
+            if(-1 == AS) return null;
+            if (3 == ST) {
                 speed = Units.convertFrom(AS, Units.Speed.KNOT);
             } else {
                 speed = Units.convertFrom(AS,4 * Units.Speed.KNOT);

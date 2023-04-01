@@ -13,11 +13,11 @@ public class MyAircraftIdentificationMessageTest {
     @Test
     public void AircraftIdentificationMessagePrintsFirstMessageRight() throws IOException {
         try (
-                InputStream s = new FileInputStream(f)) {
-                AdsbDemodulator d = new AdsbDemodulator(s);
+                final InputStream s = new FileInputStream(this.f)) {
+                final AdsbDemodulator d = new AdsbDemodulator(s);
                 RawMessage m;
-                while ((m = d.nextMessage()) != null) {
-                    if(AircraftIdentificationMessage.of(m) != null){
+                while (null != (m = d.nextMessage())) {
+                    if(null != AircraftIdentificationMessage.of(m)){
                         System.out.println(AircraftIdentificationMessage.of(m));
                     }
                 }

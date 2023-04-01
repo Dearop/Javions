@@ -15,7 +15,7 @@ import java.util.Objects;
 public final class ByteString {
     private final byte[] bytes;
 
-    public ByteString(byte[] bytes) {
+    public ByteString(final byte[] bytes) {
         this.bytes = bytes.clone();
     }
 
@@ -29,11 +29,11 @@ public final class ByteString {
      * @throws IllegalArgumentException if the input string has an odd length
      * @throws NumberFormatException    if the input string contains a non-hexadecimal character
      */
-    public static ByteString ofHexadecimalString(String hexString) {
-        if (hexString.length() % 2 == 1) throw new IllegalArgumentException();
+    public static ByteString ofHexadecimalString(final String hexString) {
+        if (1 == hexString.length() % 2) throw new IllegalArgumentException();
         if (!hexString.matches("^[a-fA-F0-9]+$")) throw new NumberFormatException();
 
-        byte[] bytes = HexFormat.of().withUpperCase().parseHex(hexString);
+        final byte[] bytes = HexFormat.of().withUpperCase().parseHex(hexString);
         return new ByteString(bytes);
     }
 
@@ -43,7 +43,7 @@ public final class ByteString {
      * @return int representing the number of bytes in the ByteString
      */
     public int size() {
-        return bytes.length;
+        return this.bytes.length;
     }
 
     /**
@@ -54,10 +54,10 @@ public final class ByteString {
      * @return int representing the byte at the specified index, interpreted as an unsigned value
      * @throws IndexOutOfBoundsException if the index is negative or greater than the size of the ByteString
      */
-    public int byteAt(int index) {
-        if (index < 0 || index > bytes.length) throw new IndexOutOfBoundsException();
+    public int byteAt(final int index) {
+        if (0 > index || index > this.bytes.length) throw new IndexOutOfBoundsException();
 
-        byte byteAtIndex = bytes[index];
+        final byte byteAtIndex = this.bytes[index];
         return byteAtIndex & 0xFF;
     }
 
@@ -75,17 +75,17 @@ public final class ByteString {
      * @throws IllegalArgumentException  If the range between fromIndex and toIndex is greater than or equal
      *                                   to the size of a long
      */
-    public long bytesInRange(int fromIndex, int toIndex) {
-        Objects.checkFromToIndex(fromIndex, toIndex, this.bytes.length);
+    public long bytesInRange(final int fromIndex, final int toIndex) {
+        Objects.checkFromToIndex(fromIndex, toIndex, bytes.length);
 
-        if (toIndex - fromIndex >= Long.BYTES) {
+        if (Long.BYTES <= toIndex - fromIndex) {
             throw new IllegalArgumentException();
         }
 
         long result = 0;
         for (int i = fromIndex; i < toIndex; ++i) {
             result <<= Byte.SIZE;
-            result |= (this.bytes[i] & 0xFF);
+            result |= (bytes[i] & 0xFF);
         }
         return result;
     }
@@ -98,8 +98,8 @@ public final class ByteString {
      * @param that0 object to compare against the bytes attribute
      * @return boolean indicating whether that0 is equal to the attribute or not
      */
-    public boolean equals(Object that0) {
-        if (that0 instanceof ByteString that) return Arrays.equals(bytes, that.bytes);
+    public boolean equals(final Object that0) {
+        if (that0 instanceof ByteString that) return Arrays.equals(this.bytes, that.bytes);
         return false;
     }
 
@@ -110,7 +110,7 @@ public final class ByteString {
      * @return int value representing the hash code of the ByteString
      */
     public int hashCode() {
-        return Arrays.hashCode(bytes);
+        return Arrays.hashCode(this.bytes);
     }
 
     /**
@@ -120,6 +120,6 @@ public final class ByteString {
      * @return String value representing the bytes in the ByteString in hexadecimal format
      */
     public String toString() {
-        return HexFormat.of().withUpperCase().formatHex(bytes);
+        return HexFormat.of().withUpperCase().formatHex(this.bytes);
     }
 }

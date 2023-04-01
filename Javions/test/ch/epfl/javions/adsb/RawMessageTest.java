@@ -122,13 +122,13 @@ class RawMessageTest {
             "8F3CDDE6EA11A874875C08CA2E79");
 
     private static final List<String> VALID_MESSAGES = Stream
-            .concat(VALID_MESSAGES_DF17.stream(), VALID_MESSAGES_DF_OTHER.stream())
+            .concat(RawMessageTest.VALID_MESSAGES_DF17.stream(), RawMessageTest.VALID_MESSAGES_DF_OTHER.stream())
             .toList();
     //</editor-fold>
 
     @BeforeAll
     static void preventOutput() {
-        if (System.getProperty("ch.epfl.cs108.quiet") != null) {
+        if (null != System.getProperty("ch.epfl.cs108.quiet")) {
             System.setOut(new PrintStream(OutputStream.nullOutputStream()));
             System.setErr(new PrintStream(OutputStream.nullOutputStream()));
         }
@@ -148,10 +148,10 @@ class RawMessageTest {
 
     @Test
     void rawMessageSizeOnlyReturns14ForDF17() {
-        for (var ca = 0; ca < 1 << 3; ca += 1) {
-            for (var df = 0; df < 1 << 5; df += 1) {
-                var byte0 = (df << 3) | ca;
-                var expectedSize = df == 17 ? 14 : 0;
+        for (var ca = 0; 1 << 3 > ca; ca += 1) {
+            for (var df = 0; 1 << 5 > df; df += 1) {
+                final var byte0 = (df << 3) | ca;
+                final var expectedSize = 17 == df ? 14 : 0;
                 assertEquals(expectedSize, RawMessage.size((byte) byte0));
             }
         }
@@ -159,7 +159,7 @@ class RawMessageTest {
 
     @Test
     void rawMessageStaticTypeCodeReturnsTypeCode() {
-        for (var tc = 0; tc < 1 << 5; tc += 1) {
+        for (var tc = 0; 1 << 5 > tc; tc += 1) {
             var payload = ~0L;
             payload = (payload << 5) | (tc + 1);
             payload = (payload << 51) - 1;
@@ -169,9 +169,9 @@ class RawMessageTest {
 
     @Test
     void rawMessageOfReturnsRawMessageForValidMessages() {
-        for (var message : VALID_MESSAGES) {
-            var messageBytes = HexFormat.of().parseHex(message);
-            var rawMessage = RawMessage.of(100, messageBytes);
+        for (final var message : RawMessageTest.VALID_MESSAGES) {
+            final var messageBytes = HexFormat.of().parseHex(message);
+            final var rawMessage = RawMessage.of(100, messageBytes);
             assertNotNull(rawMessage);
         }
     }
@@ -179,11 +179,11 @@ class RawMessageTest {
     @Test
     void rawMessageOfReturnsNullForMessagesWithInvalidCrc() {
         var bitToFlip = 0;
-        for (var message : VALID_MESSAGES) {
-            var messageBytes = HexFormat.of().parseHex(message);
-            var byteToFlip = bitToFlip / Byte.SIZE;
+        for (final var message : RawMessageTest.VALID_MESSAGES) {
+            final var messageBytes = HexFormat.of().parseHex(message);
+            final var byteToFlip = bitToFlip / Byte.SIZE;
             messageBytes[byteToFlip] ^= 1 << (bitToFlip % Byte.SIZE);
-            var rawMessage = RawMessage.of(100, messageBytes);
+            final var rawMessage = RawMessage.of(100, messageBytes);
             assertNull(rawMessage);
             bitToFlip += 1;
         }
@@ -191,10 +191,10 @@ class RawMessageTest {
 
     @Test
     void rawMessageDownlinkFormatReturnsDownlinkFormat() {
-        for (var message : VALID_MESSAGES) {
-            var messageBytes = HexFormat.of().parseHex(message);
-            var expectedDf = Byte.toUnsignedInt(messageBytes[0]) >> 3;
-            var rawMessage = RawMessage.of(100, messageBytes);
+        for (final var message : RawMessageTest.VALID_MESSAGES) {
+            final var messageBytes = HexFormat.of().parseHex(message);
+            final var expectedDf = Byte.toUnsignedInt(messageBytes[0]) >> 3;
+            final var rawMessage = RawMessage.of(100, messageBytes);
             assertNotNull(rawMessage);
             assertEquals(expectedDf, rawMessage.downLinkFormat());
         }
@@ -202,14 +202,14 @@ class RawMessageTest {
 
     @Test
     void rawMessageIcaoAddressReturnsIcaoAddress() {
-        for (var message : VALID_MESSAGES) {
-            var messageBytes = HexFormat.of().parseHex(message);
-            var icaoAddress = (Byte.toUnsignedInt(messageBytes[1]) << 16)
+        for (final var message : RawMessageTest.VALID_MESSAGES) {
+            final var messageBytes = HexFormat.of().parseHex(message);
+            final var icaoAddress = (Byte.toUnsignedInt(messageBytes[1]) << 16)
                     | (Byte.toUnsignedInt(messageBytes[2]) << 8)
                     | Byte.toUnsignedInt(messageBytes[3]);
-            var icaoAddressString = "%06X".formatted(icaoAddress);
-            var expectedIcaoAddress = new IcaoAddress(icaoAddressString);
-            var rawMessage = RawMessage.of(100, messageBytes);
+            final var icaoAddressString = "%06X".formatted(icaoAddress);
+            final var expectedIcaoAddress = new IcaoAddress(icaoAddressString);
+            final var rawMessage = RawMessage.of(100, messageBytes);
             assertNotNull(rawMessage);
             assertEquals(expectedIcaoAddress, rawMessage.icaoAddress());
         }
@@ -217,12 +217,12 @@ class RawMessageTest {
 
     @Test
     void rawMessagePayloadReturnsPayload() {
-        for (var message : VALID_MESSAGES) {
-            var messageBytes = HexFormat.of().parseHex(message);
+        for (final var message : RawMessageTest.VALID_MESSAGES) {
+            final var messageBytes = HexFormat.of().parseHex(message);
             var expectedPayload = 0L;
-            for (var i = 4; i < 11; i += 1)
+            for (var i = 4; 11 > i; i += 1)
                 expectedPayload = (expectedPayload << Byte.SIZE) | Byte.toUnsignedLong(messageBytes[i]);
-            var rawMessage = RawMessage.of(100, messageBytes);
+            final var rawMessage = RawMessage.of(100, messageBytes);
             assertNotNull(rawMessage);
             assertEquals(expectedPayload, rawMessage.payload());
         }
@@ -230,10 +230,10 @@ class RawMessageTest {
 
     @Test
     void rawMessageTypeCodeReturnsTypeCode() {
-        for (var message : VALID_MESSAGES) {
-            var messageBytes = HexFormat.of().parseHex(message);
-            var expectedTypeCode = Byte.toUnsignedInt(messageBytes[4]) >> 3;
-            var rawMessage = RawMessage.of(100, messageBytes);
+        for (final var message : RawMessageTest.VALID_MESSAGES) {
+            final var messageBytes = HexFormat.of().parseHex(message);
+            final var expectedTypeCode = Byte.toUnsignedInt(messageBytes[4]) >> 3;
+            final var rawMessage = RawMessage.of(100, messageBytes);
             assertNotNull(rawMessage);
             assertEquals(expectedTypeCode, rawMessage.typeCode());
         }

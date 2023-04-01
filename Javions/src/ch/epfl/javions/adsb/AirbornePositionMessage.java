@@ -29,11 +29,11 @@ public record AirbornePositionMessage
      * @param y           The latitude of the aircraft, between 0 and 1.
      */
     public AirbornePositionMessage {
-        if (icaoAddress == null) throw new NullPointerException();
-        Preconditions.checkArgument((timeStampNs >= 0)
-            && ((parity == 0) || (parity == 1))
-            && (x >= 0) && (x < 1)
-            && (y >= 0) && (y < 1));
+        if (null == icaoAddress) throw new NullPointerException();
+        Preconditions.checkArgument((0 <= timeStampNs)
+            && ((0 == parity) || (1 == parity))
+            && (0 <= x) && (1 > x)
+            && (0 <= y) && (1 > y));
     }
 
     /**
@@ -43,19 +43,19 @@ public record AirbornePositionMessage
      * @param rawMessage The RawMessage object to create the AirbornePositionMessage from.
      * @return An instance of the AirbornePositionMessage class.
      */
-    public static AirbornePositionMessage of(RawMessage rawMessage) {
-        if (rawMessage.typeCode() < 9 || rawMessage.typeCode() > 22 || rawMessage.typeCode() == 19) return null;
+    public static AirbornePositionMessage of(final RawMessage rawMessage) {
+        if (9 > rawMessage.typeCode() || 22 < rawMessage.typeCode() || 19 == rawMessage.typeCode()) return null;
 
         // extracting Bits from the payload of the rawMessage
-        long payload = rawMessage.payload();
-        double longitude = (Bits.extractUInt(payload, 0, 17)) / Math.pow(2, 17);
-        double latitude = (Bits.extractUInt(payload, 17, 17)) / Math.pow(2, 17);
-        int FORMAT = (int) ((payload >> 34) & 1);
-        final int ALT = Bits.extractUInt(payload, 36, 12);
-        final double computedAltitude = AirbornePositionMessage.altitudeComputer(ALT);
+        final long payload = rawMessage.payload();
+        final double longitude = (Bits.extractUInt(payload, 0, 17)) / Math.pow(2, 17);
+        final double latitude = (Bits.extractUInt(payload, 17, 17)) / Math.pow(2, 17);
+        final int FORMAT = (int) ((payload >> 34) & 1);
+        int ALT = Bits.extractUInt(payload, 36, 12);
+        double computedAltitude = altitudeComputer(ALT);
 
         // if the computedAltitude is invalid, it has the value of -0xFFFFF
-        if (computedAltitude == -0xFFFFF) return null;
+        if (-0xFFFFF == computedAltitude) return null;
 
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
                 rawMessage.icaoAddress(), computedAltitude, FORMAT, longitude, latitude);
@@ -73,11 +73,11 @@ public record AirbornePositionMessage
      * @param ALT The altitude code.
      * @return The altitude of the aircraft in translated from feet to meters.
      */
-    public static double altitudeComputer(int ALT) {
+    public static double altitudeComputer(final int ALT) {
         //Q=1
-        if (Bits.extractUInt(ALT, 4, 1) == 1) {
-            double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
-            double baseAltitude = -1000;
+        if (1 == Bits.extractUInt(ALT, 4, 1)) {
+            final double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
+            final double baseAltitude = -1000;
 
             return Units.convertFrom(altitudeInFeet * 25 + baseAltitude, Units.Length.FOOT);
         }
@@ -87,7 +87,7 @@ public record AirbornePositionMessage
         int LSBGray = 0;
 
         // reorganising the bits
-        for (int i = 0; i < 5; i += 2) {
+        for (int i = 0; 5 > i; i += 2) {
             // D
             MSBGray |= ((Bits.extractUInt(ALT, i, 1) << (6 + i / 2)));
             // A
@@ -98,12 +98,12 @@ public record AirbornePositionMessage
             LSBGray |= ((Bits.extractUInt(ALT, 7 + i, 1) << i / 2));
         }
 
-        double MSB = grayToBinary(MSBGray);
-        double LSB = grayToBinary(LSBGray);
+        final double MSB = AirbornePositionMessage.grayToBinary(MSBGray);
+        double LSB = AirbornePositionMessage.grayToBinary(LSBGray);
 
-        if (LSB == 0 || LSB == 5 || LSB == 6) return -0xFFFFF;
-        if (LSB == 7) LSB = 5;
-        if (MSB % 2 == 1) LSB = (6 - LSB);
+        if (0 == LSB || 5 == LSB || 6 == LSB) return -0xFFFFF;
+        if (7 == LSB) LSB = 5;
+        if (1 == MSB % 2) LSB = (6 - LSB);
 
         return Units.convertFrom(-1300 + (MSB * 500) + (LSB * 100), Units.Length.FOOT);
     }
@@ -117,7 +117,7 @@ public record AirbornePositionMessage
     public static int grayToBinary(int gray) {
         int binary = gray;
 
-        while (gray > 0) {
+        while (0 < gray) {
             gray >>= 1;
             binary ^= gray;
         }

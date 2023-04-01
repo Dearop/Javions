@@ -9,22 +9,22 @@ final class SignatureChecks_3 {
     private SignatureChecks_3() {}
 
     void checkSamplesDecoder() throws Exception {
-        v01 = new ch.epfl.javions.demodulation.SamplesDecoder(v02, v03);
-        v03 = v01.readBatch(v04);
+        this.v01 = new ch.epfl.javions.demodulation.SamplesDecoder(this.v02, this.v03);
+        this.v03 = this.v01.readBatch(this.v04);
     }
 
     void checkPowerComputer() throws Exception {
-        v05 = new ch.epfl.javions.demodulation.PowerComputer(v02, v03);
-        v03 = v05.readBatch(v06);
+        this.v05 = new ch.epfl.javions.demodulation.PowerComputer(this.v02, this.v03);
+        this.v03 = this.v05.readBatch(this.v06);
     }
    void checkPowerWindow() throws Exception {
-        v07 = new ch.epfl.javions.demodulation.PowerWindow(v02, v03);
-        v07.advance();
-        v07.advanceBy(v03);
-        v03 = v07.get(v03);
-        v08 = v07.isFull();
-        v09 = v07.position();
-        v03 = v07.size();
+       this.v07 = new ch.epfl.javions.demodulation.PowerWindow(this.v02, this.v03);
+       this.v07.advance();
+       this.v07.advanceBy(this.v03);
+       this.v03 = this.v07.get(this.v03);
+       this.v08 = this.v07.isFull();
+       this.v09 = this.v07.position();
+       this.v03 = this.v07.size();
     }
 
     ch.epfl.javions.demodulation.SamplesDecoder v01;

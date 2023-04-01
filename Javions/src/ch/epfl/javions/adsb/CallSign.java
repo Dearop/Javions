@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
  * @author Henri Antal (339444)
  */
 public record CallSign(String string) {
-    private final static Pattern pattern = Pattern.compile("[A-Z0-9 ]{0,8}");
+    private static final Pattern pattern = Pattern.compile("[A-Z0-9 ]{0,8}");
 
     /**
      * Checks if the given input string matches the CallSign format.
@@ -19,6 +19,6 @@ public record CallSign(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public CallSign {
-        if (string == null || !pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if (null == string || !CallSign.pattern.matcher(string).matches()) throw new IllegalArgumentException();
     }
 }

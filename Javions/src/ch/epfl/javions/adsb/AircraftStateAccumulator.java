@@ -20,7 +20,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @param stateSetter the state setter to be used to update the aircraft state
      * @throws NullPointerException if the given state setter is null
      */
-    public AircraftStateAccumulator(T stateSetter) {
+    public AircraftStateAccumulator(final T stateSetter) {
         if (null == stateSetter) throw new NullPointerException();
         this.stateSetter = stateSetter;
     }
@@ -30,7 +30,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @return the state setter
      */
     public T stateSetter() {
-        return this.stateSetter;
+        return stateSetter;
     }
     /**
      * Updates the aircraft state with the information contained in the given message. Depending on the message
@@ -41,34 +41,33 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @param message the message containing the information to update the state
      * @throws NullPointerException if the given message is null
      */
-    public void update(Message message) {
-        stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
+    public void update(final Message message) {
+        this.stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
         switch (message) {
             case AircraftIdentificationMessage aim -> {
-                stateSetter.setCategory(aim.category());
-                stateSetter.setCallSign(aim.callSign());
+                this.stateSetter.setCategory(aim.category());
+                this.stateSetter.setCallSign(aim.callSign());
             }
             case AirborneVelocityMessage avm -> {
-                stateSetter.setVelocity(avm.speed());
-                stateSetter.setTrackOrHeading(avm.trackOrHeading());
+                this.stateSetter.setVelocity(avm.speed());
+                this.stateSetter.setTrackOrHeading(avm.trackOrHeading());
             }
             case AirbornePositionMessage apm -> {
-                stateSetter.setAltitude(apm.altitude());
+                this.stateSetter.setAltitude(apm.altitude());
                 if (0 == apm.parity()) {
-                    latestEvenMessage = apm;
+                    this.latestEvenMessage = apm;
                 } else {
-                    latestOddMessage = apm;
+                    this.latestOddMessage = apm;
                 }
-                if (latestEvenMessage != null && latestOddMessage != null) {
+                if (null != latestEvenMessage && null != latestOddMessage) {
                     //this if works
-                    if (Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs()) <=
-                            TIME_BETWEEN_TWO_MESSAGES) {
+                    if (TIME_BETWEEN_TWO_MESSAGES >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
 
-                        double x0 = latestEvenMessage.x();
-                        double y0 = latestEvenMessage.y();
-                        double x1 = latestOddMessage.x();
-                        double y1 = latestOddMessage.y();
-                        stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
+                        final double x0 = this.latestEvenMessage.x();
+                        final double y0 = this.latestEvenMessage.y();
+                        final double x1 = this.latestOddMessage.x();
+                        final double y1 = this.latestOddMessage.y();
+                        this.stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
                     }
                 }
 

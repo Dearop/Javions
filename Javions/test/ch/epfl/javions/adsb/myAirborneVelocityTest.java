@@ -30,22 +30,21 @@ public class myAirborneVelocityTest {
 
     @Test
     public void oneMessageTest() {
-        RawMessage message = new RawMessage(0, new ByteString(new byte[]{(byte) 0x8D, 0x48, 0x50, 0x20, (byte) 0x99, 0x44, 0x09, (byte) 0x94, 0x08, 0x38, 0x17, 0x5B, 0x28, 0x4F}));
-        AirborneVelocityMessage velocityMessage = AirborneVelocityMessage.of(message);
+        final RawMessage message = new RawMessage(0, new ByteString(new byte[]{(byte) 0x8D, 0x48, 0x50, 0x20, (byte) 0x99, 0x44, 0x09, (byte) 0x94, 0x08, 0x38, 0x17, 0x5B, 0x28, 0x4F}));
+        final AirborneVelocityMessage velocityMessage = AirborneVelocityMessage.of(message);
         System.out.println(velocityMessage);
     }
 
     @Test
     public void method() throws IOException {
-        String stream2 = getClass().getResource("/samples_20230304_1442.bin").getFile();
+        String stream2 = this.getClass().getResource("/samples_20230304_1442.bin").getFile();
         stream2 = decode(stream2, StandardCharsets.UTF_8);
-        InputStream stream = new FileInputStream(stream2);
-        AdsbDemodulator d = new AdsbDemodulator(stream);
+        final InputStream stream = new FileInputStream(stream2);
+        final AdsbDemodulator d = new AdsbDemodulator(stream);
         RawMessage m;
         int counter = 0;
-        while ((m = d.nextMessage()) != null) {
-            System.out.println(m);
-            if (m.typeCode() == 19 && AirborneVelocityMessage.of(m) != null) {
+        while (null != (m = d.nextMessage())) {
+            if (19 == m.typeCode() && null != AirborneVelocityMessage.of(m)) {
                 counter++;
                 System.out.println(AirborneVelocityMessage.of(m));
             }
@@ -57,11 +56,11 @@ public class myAirborneVelocityTest {
     @Test
     public void method2() throws IOException {
         String stream2 =
-                getClass().getResource("/samples_20230304_1442.bin").getFile();
-        stream2 = URLDecoder.decode(stream2 , StandardCharsets.UTF_8);
-        InputStream stream = new FileInputStream(stream2);
-        AdsbDemodulator d = new AdsbDemodulator(stream);
-        RawMessage m = new RawMessage(100775400 , new ByteString(new
+                this.getClass().getResource("/samples_20230304_1442.bin").getFile();
+        stream2 = decode(stream2 , StandardCharsets.UTF_8);
+        final InputStream stream = new FileInputStream(stream2);
+        final AdsbDemodulator d = new AdsbDemodulator(stream);
+        final RawMessage m = new RawMessage(100775400 , new ByteString(new
                 byte[] {-115, -96, 95, 33, -101, 6, -74, -81, 24, -108, 0, -53,
                 -61, 63}));
         System.out.println(m.typeCode());
@@ -70,7 +69,7 @@ public class myAirborneVelocityTest {
 
     @Test
     void ofGivesGoodVelocityGroundSpeed(){
-        AirborneVelocityMessage message =
+        final AirborneVelocityMessage message =
                 AirborneVelocityMessage.of(new RawMessage(0, new ByteString(HexFormat.of().parseHex("8D485020994409940838175B284F"))));
         assertEquals(159.20113064925135,
                 Units.convertTo(message.speed(),Units.Speed.KNOT));
@@ -79,7 +78,7 @@ public class myAirborneVelocityTest {
     }
     @Test
     void ofGivesGoodVelocityAirSpeed(){
-        AirborneVelocityMessage message =AirborneVelocityMessage.of(new
+        final AirborneVelocityMessage message =AirborneVelocityMessage.of(new
                 RawMessage(0,
                 new ByteString(HexFormat.of().parseHex("8DA05F219B06B6AF189400CBC33F")
                 )));
@@ -90,20 +89,20 @@ public class myAirborneVelocityTest {
 
     @Test
     public void oneMessageTest1(){
-        RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994409940838175B284F"));
-        AirborneVelocityMessage velocityMessage = AirborneVelocityMessage.of(message);
+        final RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D485020994409940838175B284F"));
+        final AirborneVelocityMessage velocityMessage = AirborneVelocityMessage.of(message);
         System.out.println(velocityMessage);
     }
 
     @Test
     public void oneMessageTestWithST3(){
-        RawMessage message = new RawMessage(0,ByteString.ofHexadecimalString("8DA05F219B06B6AF189400CBC33F" ));
+        final RawMessage message = new RawMessage(0,ByteString.ofHexadecimalString("8DA05F219B06B6AF189400CBC33F" ));
         System.out.println(AirborneVelocityMessage.of(message));
     }
 
     @Test
     public void oneMoreTime(){
-        RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D4D2228EA466864931C082073D1"));
+        final RawMessage message = new RawMessage(0, ByteString.ofHexadecimalString("8D4D2228EA466864931C082073D1"));
         System.out.println(AirborneVelocityMessage.of(message));
     }
 

@@ -16,22 +16,22 @@ public class MyRawMessageTest {
         @Test
         public void RawMessagesTest1() throws IOException{
 
-            try (InputStream s = new FileInputStream(f)) {
-                AdsbDemodulator d = new AdsbDemodulator(s);
+            try (final InputStream s = new FileInputStream(this.f)) {
+                final AdsbDemodulator d = new AdsbDemodulator(s);
                 RawMessage m;
-                while ((m = d.nextMessage()) != null) {
+                while (null != (m = d.nextMessage())) {
                     System.out.println(m);
                 }
             }
         }
         @Test
         public void RawMessageTest2() throws IOException{
-            try (InputStream s = new FileInputStream(f)) {
-                AdsbDemodulator d = new AdsbDemodulator(s);
-                RawMessage m;
+            try (final InputStream s = new FileInputStream(this.f)) {
+                final AdsbDemodulator d = new AdsbDemodulator(s);
+                final RawMessage m;
                 m = d.nextMessage();
                 System.out.println(m);
-                assert m != null;
+                assert null != m;
                 assertEquals(m.downLinkFormat(), 17);
                 assertEquals(m.icaoAddress(), new IcaoAddress("4B17E5"));
                 assertEquals(m.typeCode(), 0xF8 >> 3);

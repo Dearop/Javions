@@ -20,7 +20,7 @@ public record AircraftTypeDesignator(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftTypeDesignator {
-        if (!string.isEmpty() && !pattern.matcher(string).matches()) {
+        if (!string.isEmpty() && !AircraftTypeDesignator.pattern.matcher(string).matches()) {
             throw new IllegalArgumentException();
         }
     }

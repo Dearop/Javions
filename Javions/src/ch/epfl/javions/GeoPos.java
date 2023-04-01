@@ -23,7 +23,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @throws IllegalArgumentException if the given latitude is not valid
      */
     public GeoPos {
-        if (!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException();
+        if (!GeoPos.isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException();
     }
 
     /**
@@ -34,7 +34,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @param latitudeT32 value of the latitude to check expressed in T32
      * @return true if the value checks out with our boundaries, false otherwise
      */
-    public static boolean isValidLatitudeT32(int latitudeT32) {
+    public static boolean isValidLatitudeT32(final int latitudeT32) {
         return (latitudeT32 >= -Math.pow(2, 30)) && (latitudeT32 <= Math.pow(2, 30));
     }
 
@@ -42,14 +42,14 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return longitude in radians
      */
     public double longitude() {
-        return convert(longitudeT32, Angle.T32, Angle.RADIAN);
+        return convert(this.longitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
     }
 
     /**
      * @return latitude in radians
      */
     public double latitude() {
-        return convert(latitudeT32, Angle.T32, Angle.RADIAN);
+        return convert(this.latitudeT32, Units.Angle.T32, Units.Angle.RADIAN);
     }
 
     /**
@@ -60,7 +60,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      */
     @Override
     public String toString() {
-        return "(" + Units.convert(longitudeT32, Angle.T32, Angle.DEGREE) + "\u00B0, "
-                + Units.convert(latitudeT32, Angle.T32, Angle.DEGREE) + "\u00B0)";
+        return "(" + convert(this.longitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "\u00B0, "
+                + convert(this.latitudeT32, Units.Angle.T32, Units.Angle.DEGREE) + "\u00B0)";
     }
 }

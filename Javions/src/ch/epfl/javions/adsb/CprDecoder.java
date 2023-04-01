@@ -12,8 +12,8 @@ import ch.epfl.javions.Units;
  * @author Paul Quesnot (347572)
  */
 
-public class CprDecoder {
-    private CprDecoder() {}
+public enum CprDecoder {
+    ;
 
     /**
      * Decodes the geographic position based on the provided parameters.
@@ -29,52 +29,52 @@ public class CprDecoder {
      * @param mostRecent integer value letting us know which message is the most recent (odd or even)
      * @return the latest geographic position as a GeoPos object or null if decoding failed
      */
-    public static GeoPos decodePosition(double x0, double y0, double x1, double y1, int mostRecent) {
-        Preconditions.checkArgument((mostRecent == 0) || (mostRecent == 1));
+    public static GeoPos decodePosition(final double x0, final double y0, final double x1, final double y1, final int mostRecent) {
+        Preconditions.checkArgument((0 == mostRecent) || (1 == mostRecent));
 
         //variable declaration, can't do it out of method because it's a record
-        double nbreZonesDeDecoupageLatitude0 = 60d;
-        double nbreZonesDeDecoupageLatitude1 = 59d;
+        final double nbreZonesDeDecoupageLatitude0 = 60.0d;
+        final double nbreZonesDeDecoupageLatitude1 = 59.0d;
 
         // Latitude
-        int zPhiLatitude = (int) Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
+        final int zPhiLatitude = (int) Math.rint(y0 * nbreZonesDeDecoupageLatitude1 - y1 * nbreZonesDeDecoupageLatitude0);
 
-        double phiEven = currentZone(nbreZonesDeDecoupageLatitude0, zPhiLatitude, y0);
-        if (phiEven > Math.PI / 2 || phiEven < -(Math.PI / 2)) return null;
+        final double phiEven = CprDecoder.currentZone(nbreZonesDeDecoupageLatitude0, zPhiLatitude, y0);
+        if (Math.PI / 2 < phiEven || -(Math.PI / 2) > phiEven) return null;
 
-        double phiOdd = currentZone(nbreZonesDeDecoupageLatitude1, zPhiLatitude, y1);
-        if (phiOdd > Math.PI / 2 || phiOdd < -(Math.PI / 2)) return null;
+        final double phiOdd = CprDecoder.currentZone(nbreZonesDeDecoupageLatitude1, zPhiLatitude, y1);
+        if (Math.PI / 2 < phiOdd || -(Math.PI / 2) > phiOdd) return null;
 
-        double A0 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiEven);
-        double A1 = AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiOdd);
+        final double A0 = CprDecoder.AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiEven);
+        final double A1 = CprDecoder.AngleToZoneCalculator(nbreZonesDeDecoupageLatitude0, phiOdd);
 
-        double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
-        double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
+        final double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
+        final double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
 
         // The two even zone locations for latitude need to have the same value, else null gets returned
         if (evenZoneLocationLat0 != evenZoneLocationLat1) return null;
-        double oddZoneLocationLat = evenZoneLocationLat0 - 1;
+        final double oddZoneLocationLat = evenZoneLocationLat0 - 1;
 
         //Longitude
-        int zPhiLongitude = (int) Math.rint(x0 * oddZoneLocationLat - x1 * evenZoneLocationLat0);
+        final int zPhiLongitude = (int) Math.rint(x0 * oddZoneLocationLat - x1 * evenZoneLocationLat0);
 
-        double zPhiLongitudeEven = (zPhiLongitude < 0) ? zPhiLongitude + evenZoneLocationLat0 : zPhiLongitude;
-        double zPhiLongitudeOdd = (zPhiLongitude < 0) ? zPhiLongitude + oddZoneLocationLat : zPhiLongitude;
+        final double zPhiLongitudeEven = (0 > zPhiLongitude) ? zPhiLongitude + evenZoneLocationLat0 : zPhiLongitude;
+        final double zPhiLongitudeOdd = (0 > zPhiLongitude) ? zPhiLongitude + oddZoneLocationLat : zPhiLongitude;
 
-        double lambdaEven = CprDecoder.currentZone(evenZoneLocationLat0, zPhiLongitudeEven, x0);
-        double lambdaOdd = CprDecoder.currentZone(oddZoneLocationLat, zPhiLongitudeOdd, x1);
+        double lambdaEven = currentZone(evenZoneLocationLat0, zPhiLongitudeEven, x0);
+        double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitudeOdd, x1);
 
-        if (evenZoneLocationLat0 == 1) {
-            lambdaEven = Units.convertFrom(center(x0), Units.Angle.TURN);
-            lambdaOdd = Units.convertFrom(center(x1), Units.Angle.TURN);
+        if (1 == evenZoneLocationLat0) {
+            lambdaEven = Units.convertFrom(CprDecoder.center(x0), Units.Angle.TURN);
+            lambdaOdd = Units.convertFrom(CprDecoder.center(x1), Units.Angle.TURN);
         }
 
         // Getting the right Latitude or Longitude due to parity
-        double finalLongAngle = (mostRecent == 0) ? lambdaEven : lambdaOdd;
-        double finalLatAngle = (mostRecent == 0) ? phiEven : phiOdd;
+        final double finalLongAngle = (0 == mostRecent) ? lambdaEven : lambdaOdd;
+        final double finalLatAngle = (0 == mostRecent) ? phiEven : phiOdd;
 
-        double actualLatT32 = Units.convertTo(finalLatAngle, Units.Angle.T32);
-        double actualLongT32 = Units.convertTo(finalLongAngle, Units.Angle.T32);
+        final double actualLatT32 = Units.convertTo(finalLatAngle, Units.Angle.T32);
+        final double actualLongT32 = Units.convertTo(finalLongAngle, Units.Angle.T32);
 
         return new GeoPos((int) Math.rint(actualLongT32), (int) Math.rint(actualLatT32));
     }
@@ -86,7 +86,7 @@ public class CprDecoder {
      * @param currentAngle  Is either Phi-even or Phi-odd
      * @return returns the arccosinus of formula seen in the course.
      */
-    private static double AngleToZoneCalculator(double numberOfZones, double currentAngle) {
+    private static double AngleToZoneCalculator(final double numberOfZones, final double currentAngle) {
         return Math.acos(1 - ((1 - Math.cos(2 * Math.PI / numberOfZones)) / Math.pow(Math.cos(currentAngle), 2)));
     }
 
@@ -98,14 +98,14 @@ public class CprDecoder {
      * @param position      position that is given in the parameter of the method decodePosition.
      * @return return Phi0, Phi1, Lambda0 and Lambda1 depending on the parameters.
      */
-    private static double currentZone(double numberOfZones, double currentZone, double position) {
-        currentZone = (currentZone < 0) ? (currentZone + numberOfZones) : currentZone;
-        double angle = (currentZone + position) / numberOfZones;
-        return Units.convertFrom(center(angle), Units.Angle.TURN);
+    private static double currentZone(final double numberOfZones, double currentZone, final double position) {
+        currentZone = (0 > currentZone) ? (currentZone + numberOfZones) : currentZone;
+        final double angle = (currentZone + position) / numberOfZones;
+        return Units.convertFrom(CprDecoder.center(angle), Units.Angle.TURN);
     }
 
     private static double center(double angle){
-        if (angle >= 0.5) angle -= 1;
+        if (0.5 <= angle) angle -= 1;
         return angle;
     }
 }

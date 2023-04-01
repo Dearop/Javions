@@ -29,8 +29,8 @@ public final class AircraftDatabase {
      * @param fileName The name of the file containing the aircraft information.
      * @throws NullPointerException If the file name is null.
      */
-    public AircraftDatabase(String fileName) {
-        if (fileName == null) throw new NullPointerException();
+    public AircraftDatabase(final String fileName) {
+        if (null == fileName) throw new NullPointerException();
         this.fileName = fileName;
     }
 
@@ -44,18 +44,18 @@ public final class AircraftDatabase {
      * @return The aircraft data for the specified address, or null if no entry exists.
      * @throws IOException If there is an input/output error.
      */
-    public AircraftData get(IcaoAddress address) throws IOException {
+    public AircraftData get(final IcaoAddress address) throws IOException {
         String stringLineFiltered = "";
 
         /**
          * This try/catch gets the zip file that includes all the data that we have about the different aircraft
          */
-        try (ZipFile zipFileUsed = new ZipFile(fileName);
-             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry(address.getLastChar() + ".csv"));
-             Reader reader = new InputStreamReader(stream, UTF_8);
-             BufferedReader buffer = new BufferedReader(reader)) {
-            while ((stringLineFiltered = buffer.readLine()) != null) {
-                String[] lines = stringLineFiltered.split(",", -1);
+        try (final ZipFile zipFileUsed = new ZipFile(this.fileName);
+             final InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry(address.getLastChar() + ".csv"));
+             final Reader reader = new InputStreamReader(stream, UTF_8);
+             final BufferedReader buffer = new BufferedReader(reader)) {
+            while (null != (stringLineFiltered = buffer.readLine())) {
+                final String[] lines = stringLineFiltered.split(",", -1);
                 if (address.string().equals(lines[0]))
                     return new AircraftData(new AircraftRegistration(lines[1]), new AircraftTypeDesignator(lines[2]),
                             lines[3], new AircraftDescription(lines[4]), WakeTurbulenceCategory.of(lines[5]));
@@ -70,7 +70,7 @@ public final class AircraftDatabase {
      * @return String created in the get method above that stores the name of the aircraft.
      */
     public String returnModelString() {
-        return this.testName;
+        return testName;
     }
 
     /**
@@ -79,6 +79,6 @@ public final class AircraftDatabase {
      * @return WakeTurbulenceCategory created in the get method above.
      */
     public WakeTurbulenceCategory returnWTCValue() {
-        return this.WTCTest;
+        return WTCTest;
     }
 }

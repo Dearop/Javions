@@ -36,11 +36,11 @@ class FriendRawMessageTest {
             "0A009C"
     );
 
-    private static final int[] typeCodes = new int[] {19, 11, 31, 11, 11, 19, 19, 29, 11, 29, 19};
+    private static final int[] typeCodes = {19, 11, 31, 11, 11, 19, 19, 29, 11, 29, 19};
 
     @Test
     void of() {
-        for (String message : ADSB_MESSAGES) {
+        for (final String message : FriendRawMessageTest.ADSB_MESSAGES) {
             assertNotNull(RawMessage.of(0L, HexFormat.of().withUpperCase().parseHex(message)));
         }
     }
@@ -48,7 +48,7 @@ class FriendRawMessageTest {
     @Test
     void size() {
         System.out.println(0x0L);
-        for (String message : ADSB_MESSAGES) {
+        for (final String message : FriendRawMessageTest.ADSB_MESSAGES) {
             assertEquals(RawMessage.LENGTH, RawMessage.size((byte)ByteString.ofHexadecimalString(message).byteAt(0)));
         }
         assertEquals(RawMessage.LENGTH, RawMessage.size((byte)0b10001000));
@@ -56,30 +56,30 @@ class FriendRawMessageTest {
 
     @Test
     void typeCode() {
-        for (int i = 0; i < ADSB_MESSAGES.size(); i++) {
-            assertEquals(typeCodes[i], new RawMessage(0L, ByteString.ofHexadecimalString(ADSB_MESSAGES.get(i))).typeCode());
+        for (int i = 0; i < FriendRawMessageTest.ADSB_MESSAGES.size(); i++) {
+            assertEquals(FriendRawMessageTest.typeCodes[i], new RawMessage(0L, ByteString.ofHexadecimalString(FriendRawMessageTest.ADSB_MESSAGES.get(i))).typeCode());
         }
     }
 
     @Test
     void typeCodeWithGivenMe() {
-        for (int i = 0; i < ADSB_MESSAGES.size(); i++) {
-            System.out.println(new RawMessage(0L, ByteString.ofHexadecimalString(ADSB_MESSAGES.get(i))).payload());
-            assertEquals(typeCodes[i], RawMessage.typeCode(new RawMessage(0L, ByteString.ofHexadecimalString(ADSB_MESSAGES.get(i))).payload()));
+        for (int i = 0; i < FriendRawMessageTest.ADSB_MESSAGES.size(); i++) {
+            System.out.println(new RawMessage(0L, ByteString.ofHexadecimalString(FriendRawMessageTest.ADSB_MESSAGES.get(i))).payload());
+            assertEquals(FriendRawMessageTest.typeCodes[i], RawMessage.typeCode(new RawMessage(0L, ByteString.ofHexadecimalString(FriendRawMessageTest.ADSB_MESSAGES.get(i))).payload()));
         }
     }
 
     @Test
     void downLinkFormat() {
-        for (String message : ADSB_MESSAGES) {
+        for (final String message : FriendRawMessageTest.ADSB_MESSAGES) {
             assertEquals(17, new RawMessage(0L, ByteString.ofHexadecimalString(message)).downLinkFormat());
         }
     }
 
     @Test
     void icaoAddress() {
-        for (int i = 0; i < ADSB_MESSAGES.size(); i++) {
-            assertEquals(ADSB_ICAO.get(i), new RawMessage(0L, ByteString.ofHexadecimalString(ADSB_MESSAGES.get(i))).icaoAddress().string());
+        for (int i = 0; i < FriendRawMessageTest.ADSB_MESSAGES.size(); i++) {
+            assertEquals(FriendRawMessageTest.ADSB_ICAO.get(i), new RawMessage(0L, ByteString.ofHexadecimalString(FriendRawMessageTest.ADSB_MESSAGES.get(i))).icaoAddress().string());
         }
     }
 }

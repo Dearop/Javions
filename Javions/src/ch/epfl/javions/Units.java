@@ -6,69 +6,64 @@ package ch.epfl.javions;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public final class Units {
-    private Units() {
-    }
+public enum Units {
+    ;
 
     /**
      * Constant for the CENTI conversion, so 100*CENTI = 1
      */
-    public static final double CENTI = 1e-2;
+    public static final double CENTI = 1.0e-2;
     /**
      * Constant for the KILO conversion, so 20*KILO = 20_000 because KILO = 1000
      */
-    public static final double KILO = 1e3;
+    public static final double KILO = 1.0e3;
 
     /**
      * Class that contains all the constants that are needed for doing the angle conversions(base unit is the radian)
      */
-    public static class Angle {
+    public enum Angle {
+        ;
         public static final double RADIAN = 1;
         public static final double TURN = 2 * Math.PI;
-        public static final double DEGREE = TURN / 360;
-        public static final double T32 = TURN / Math.scalb(1, 32);
+        public static final double DEGREE = Angle.TURN / 360;
+        public static final double T32 = Angle.TURN / Math.scalb(1, 32);
 
-        private Angle() {
-        }
     }
 
     /**
      * Class that contains all the constants that are needed for doing the length conversions(base unit is the meter)
      */
-    public static class Length {
+    public enum Length {
+        ;
         public static final double METER = 1;
-        public static final double CENTIMETER = CENTI * METER;
-        public static final double KILOMETER = KILO * METER;
-        public static final double INCH = 2.54 * CENTIMETER;
-        public static final double FOOT = 12 * INCH;
+        public static final double CENTIMETER = Units.CENTI * Length.METER;
+        public static final double KILOMETER = Units.KILO * Length.METER;
+        public static final double INCH = 2.54 * Length.CENTIMETER;
+        public static final double FOOT = 12 * Length.INCH;
         public static final double NAUTICAL_MILE = 1852;
 
-        private Length() {
-        }
     }
 
     /**
      * Class that contains all the constants that are needed for doing the time conversions (base unit is the second)
      */
-    public static class Time {
+    public enum Time {
+        ;
         public static final double SECOND = 1;
         public static final double MINUTE = 60;
-        public static final double HOUR = 60 * MINUTE;
+        public static final double HOUR = 60 * Time.MINUTE;
 
-        private Time() {
-        }
     }
 
     /**
      * Class that contains all the constants that are needed for doing the speed conversions, the base speed is
      * meters per second
      */
-    public static class Speed {
+    public enum Speed {
+        ;
         public static final double KNOT = 0.51444444444;
         public static final double KILOMETER_PER_HOUR = 1 / 3.6;
 
-        private Speed() {
-        }
     }
 
 
@@ -83,7 +78,7 @@ public final class Units {
      *                 and the unit in which we want value to be expressed
      * @return the value in the unit toUnit
      */
-    public static double convert(double value, double fromUnit, double toUnit) {
+    public static double convert(final double value, final double fromUnit, final double toUnit) {
         return value * (fromUnit / toUnit);
     }
 
@@ -95,7 +90,7 @@ public final class Units {
      *                 and the unit in which value is expressed
      * @return double representing the value of value in the base units of the appropriate unit system.
      */
-    public static double convertFrom(double value, double fromUnit) {
+    public static double convertFrom(final double value, final double fromUnit) {
         return value * fromUnit;
     }
 
@@ -107,7 +102,7 @@ public final class Units {
      *               and the unit in which we want value to be expressed
      * @return double representing the value in the toUnit unit
      */
-    public static double convertTo(double value, double toUnit) {
+    public static double convertTo(final double value, final double toUnit) {
         return value / toUnit;
     }
 }

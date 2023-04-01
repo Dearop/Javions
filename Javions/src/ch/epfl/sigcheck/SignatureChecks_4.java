@@ -9,40 +9,40 @@ final class SignatureChecks_4 {
     private SignatureChecks_4() {}
 
     void checkAdsbDemodulator() throws Exception {
-        v01 = new ch.epfl.javions.demodulation.AdsbDemodulator(v02);
-        v03 = v01.nextMessage();
+        this.v01 = new ch.epfl.javions.demodulation.AdsbDemodulator(this.v02);
+        this.v03 = this.v01.nextMessage();
     }
 
     void checkRawMessage() throws Exception {
-        v03 = new ch.epfl.javions.adsb.RawMessage(v04, v05);
-        v06 = ch.epfl.javions.adsb.RawMessage.LENGTH;
-        v03 = ch.epfl.javions.adsb.RawMessage.of(v04, v07);
-        v06 = ch.epfl.javions.adsb.RawMessage.size(v08);
-        v06 = ch.epfl.javions.adsb.RawMessage.typeCode(v04);
-        v05 = v03.bytes();
-        v06 = v03.downLinkFormat();
-        v10 = v03.equals(v09);
-        v06 = v03.hashCode();
-        v11 = v03.icaoAddress();
-        v04 = v03.payload();
-        v04 = v03.timeStampNs();
-        v12 = v03.toString();
-        v06 = v03.typeCode();
+        this.v03 = new ch.epfl.javions.adsb.RawMessage(this.v04, this.v05);
+        this.v06 = ch.epfl.javions.adsb.RawMessage.LENGTH;
+        this.v03 = ch.epfl.javions.adsb.RawMessage.of(this.v04, this.v07);
+        this.v06 = ch.epfl.javions.adsb.RawMessage.size(this.v08);
+        this.v06 = ch.epfl.javions.adsb.RawMessage.typeCode(this.v04);
+        this.v05 = this.v03.bytes();
+        this.v06 = this.v03.downLinkFormat();
+        this.v10 = this.v03.equals(this.v09);
+        this.v06 = this.v03.hashCode();
+        this.v11 = this.v03.icaoAddress();
+        this.v04 = this.v03.payload();
+        this.v04 = this.v03.timeStampNs();
+        this.v12 = this.v03.toString();
+        this.v06 = this.v03.typeCode();
     }
 
     void checkAircraftStateSetter() throws Exception {
-        v13.setAltitude(v14);
-        v13.setCallSign(v15);
-        v13.setCategory(v06);
-        v13.setLastMessageTimeStampNs(v04);
-        v13.setPosition(v16);
-        v13.setTrackOrHeading(v14);
-        v13.setVelocity(v14);
+        this.v13.setAltitude(this.v14);
+        this.v13.setCallSign(this.v15);
+        this.v13.setCategory(this.v06);
+        this.v13.setLastMessageTimeStampNs(this.v04);
+        this.v13.setPosition(this.v16);
+        this.v13.setTrackOrHeading(this.v14);
+        this.v13.setVelocity(this.v14);
     }
 
     void checkMessage() throws Exception {
-        v11 = v17.icaoAddress();
-        v04 = v17.timeStampNs();
+        this.v11 = this.v17.icaoAddress();
+        this.v04 = this.v17.timeStampNs();
     }
 
     ch.epfl.javions.demodulation.AdsbDemodulator v01;

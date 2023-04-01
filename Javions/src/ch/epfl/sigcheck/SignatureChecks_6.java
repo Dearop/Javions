@@ -9,25 +9,25 @@ final class SignatureChecks_6 {
     private SignatureChecks_6() {}
 
     void checkAirborneVelocityMessage() throws Exception {
-        v01 = new ch.epfl.javions.adsb.AirborneVelocityMessage(v02, v03, v04, v04);
-        v01 = ch.epfl.javions.adsb.AirborneVelocityMessage.of(v05);
-        v07 = v01.equals(v06);
-        v08 = v01.hashCode();
-        v03 = v01.icaoAddress();
-        v04 = v01.speed();
-        v02 = v01.timeStampNs();
-        v09 = v01.toString();
-        v04 = v01.trackOrHeading();
+        this.v01 = new ch.epfl.javions.adsb.AirborneVelocityMessage(this.v02, this.v03, this.v04, this.v04);
+        this.v01 = ch.epfl.javions.adsb.AirborneVelocityMessage.of(this.v05);
+        this.v07 = this.v01.equals(this.v06);
+        this.v08 = this.v01.hashCode();
+        this.v03 = this.v01.icaoAddress();
+        this.v04 = this.v01.speed();
+        this.v02 = this.v01.timeStampNs();
+        this.v09 = this.v01.toString();
+        this.v04 = this.v01.trackOrHeading();
     }
 
     void checkAircraftStateAccumulator() throws Exception {
-        v10 = new ch.epfl.javions.adsb.AircraftStateAccumulator<>(v11);
-        v11 = v10.stateSetter();
-        v10.update(v12);
+        this.v10 = new ch.epfl.javions.adsb.AircraftStateAccumulator<>(this.v11);
+        this.v11 = this.v10.stateSetter();
+        this.v10.update(this.v12);
     }
 
     void checkMessageParser() throws Exception {
-        v12 = ch.epfl.javions.adsb.MessageParser.parse(v05);
+        this.v12 = ch.epfl.javions.adsb.MessageParser.parse(this.v05);
     }
 
     ch.epfl.javions.adsb.AirborneVelocityMessage v01;

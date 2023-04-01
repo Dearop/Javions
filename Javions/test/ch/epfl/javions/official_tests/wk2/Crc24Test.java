@@ -28,40 +28,40 @@ class Crc24Test {
 
     @Test
     void crc24CrcWorksOnAdsbMessages() {
-        var crc24 = new Crc24(Crc24.GENERATOR);
+        final var crc24 = new Crc24(Crc24.GENERATOR);
 
         // Pass full messages with valid CRCs, then check that result is 0.
-        for (var m : ADSB_MESSAGES) {
-            var bs = HEX_FORMAT.parseHex(m);
+        for (final var m : Crc24Test.ADSB_MESSAGES) {
+            final var bs = Crc24Test.HEX_FORMAT.parseHex(m);
             assertEquals(0, crc24.crc(bs));
         }
 
         // Pass messages without CRC, then check for equality.
-        for (var m : ADSB_MESSAGES) {
-            var actualCrc = crc24.crc(HEX_FORMAT.parseHex(m.substring(0, m.length() - 6)));
-            var expectedCrc = HexFormat.fromHexDigits(m.substring(m.length() - 6));
+        for (final var m : Crc24Test.ADSB_MESSAGES) {
+            final var actualCrc = crc24.crc(Crc24Test.HEX_FORMAT.parseHex(m.substring(0, m.length() - 6)));
+            final var expectedCrc = HexFormat.fromHexDigits(m.substring(m.length() - 6));
             assertEquals(expectedCrc, actualCrc);
         }
     }
 
     @Test
     void crc24CrcWorksWithDifferentGenerator() {
-        var crc24_FACE51 = new Crc24(0xFACE51);
-        var actual_FACE51 = crc24_FACE51.crc(HEX_FORMAT.parseHex(ADSB_MESSAGES.get(0)));
-        var expected_FACE51 = 3677528;
+        final var crc24_FACE51 = new Crc24(0xFACE51);
+        final var actual_FACE51 = crc24_FACE51.crc(Crc24Test.HEX_FORMAT.parseHex(Crc24Test.ADSB_MESSAGES.get(0)));
+        final var expected_FACE51 = 3677528;
         assertEquals(expected_FACE51, actual_FACE51);
 
-        var crc24_F00DAB = new Crc24(0xF00DAB);
-        var actual_F00DAB = crc24_F00DAB.crc(HEX_FORMAT.parseHex(ADSB_MESSAGES.get(0)));
-        var expected_F00DAB = 16093840;
+        final var crc24_F00DAB = new Crc24(0xF00DAB);
+        final var actual_F00DAB = crc24_F00DAB.crc(Crc24Test.HEX_FORMAT.parseHex(Crc24Test.ADSB_MESSAGES.get(0)));
+        final var expected_F00DAB = 16093840;
         assertEquals(expected_F00DAB, actual_F00DAB);
     }
 
     @Test
     void crc24CrcWorksWithZeroOnlyMessage() {
-        var crc24 = new Crc24(Crc24.GENERATOR);
-        for (int i = 0; i < 10; i += 1) {
-            var m = new byte[i];
+        final var crc24 = new Crc24(Crc24.GENERATOR);
+        for (int i = 0; 10 > i; i += 1) {
+            final var m = new byte[i];
             assertEquals(0, crc24.crc(m));
         }
     }

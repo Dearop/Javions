@@ -20,17 +20,17 @@ class BitsTest {
 
     @Test
     void bitsExtractUIntCanExtractAllNibbles() {
-        var v = 0xFEDCBA9876543210L;
-        for (var i = 0; i < 16; i += 1) {
-            var n = Bits.extractUInt(v, i * 4, 4);
+        final var v = 0xFEDCBA9876543210L;
+        for (var i = 0; 16 > i; i += 1) {
+            final var n = Bits.extractUInt(v, i * 4, 4);
             assertEquals(i, n);
         }
     }
 
     @Test
     void bitsExtractCanExtract31Bits() {
-        var v = 0xFFFF_7654_ABCD_FFFFL;
-        var n = Bits.extractUInt(v, 16, 31);
+        final var v = 0xFFFF_7654_ABCD_FFFFL;
+        final var n = Bits.extractUInt(v, 16, 31);
         assertEquals(0x7654_ABCD, n);
     }
 
@@ -42,10 +42,10 @@ class BitsTest {
 
     @Test
     void bitsTestBitWorksOnAllBits() {
-        for (var i = 0; i < Long.SIZE; i += 1) {
-            var v = 1L << i;
-            for (var j = 0; j < Long.SIZE; j += 1) {
-                var b = Bits.testBit(v, j);
+        for (var i = 0; Long.SIZE > i; i += 1) {
+            final var v = 1L << i;
+            for (var j = 0; Long.SIZE > j; j += 1) {
+                final var b = Bits.testBit(v, j);
                 assertEquals(i == j, b);
             }
         }

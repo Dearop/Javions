@@ -39,7 +39,7 @@ class AircraftIdentificationMessageTest {
         record MessageAndCategory(String message, int category) {
         }
 
-        var messagesAndCategories = List.of(
+        final var messagesAndCategories = List.of(
                 new MessageAndCategory("8D3950D1200464B8D10360A58DCD", 0xa0),
                 new MessageAndCategory("8F471A79215940B5CB08205D57B4", 0xa1),
                 new MessageAndCategory("8D4D24802258A534DF38208E8EED", 0xa2),
@@ -49,13 +49,13 @@ class AircraftIdentificationMessageTest {
                 new MessageAndCategory("8F39AC48274C1355DF3820BB615D", 0xa7),
                 new MessageAndCategory("8E4B2BE21A2024510E0820745102", 0xb2),
                 new MessageAndCategory("8E383F3C1C18A096620820918150", 0xb4));
-        for (var messageAndCategory : messagesAndCategories) {
-            var hf = HexFormat.of();
-            var message = hf.parseHex(messageAndCategory.message());
-            var category = messageAndCategory.category();
-            var rawMessage = RawMessage.of(100, message);
+        for (final var messageAndCategory : messagesAndCategories) {
+            final var hf = HexFormat.of();
+            final var message = hf.parseHex(messageAndCategory.message());
+            final var category = messageAndCategory.category();
+            final var rawMessage = RawMessage.of(100, message);
             assertNotNull(rawMessage);
-            var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
+            final var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
             assertNotNull(aircraftIdentificationMessage);
             assertEquals(category, aircraftIdentificationMessage.category());
         }
@@ -66,7 +66,7 @@ class AircraftIdentificationMessageTest {
         record MessageAndCallSign(String message, String callSign) {
         }
 
-        var messagesAndCallSigns = List.of(
+        final var messagesAndCallSigns = List.of(
                 new MessageAndCallSign("8D3991E1230464B1CD4320FCD23B", "AFR13TL"),
                 new MessageAndCallSign("8F394C09200464B3D546A059C5C9", "AFR35TZ"),
                 new MessageAndCallSign("8D406CA3230570F1DF1820BADDB9", "AWC171"),
@@ -84,13 +84,13 @@ class AircraftIdentificationMessageTest {
                 new MessageAndCallSign("8D4CAF7E234C14F2D78DE075A8A2", "SAS2587"),
                 new MessageAndCallSign("8D3C0CA323515271D37820FC5632", "TUI147"));
 
-        for (var messageAndCallSign : messagesAndCallSigns) {
-            var hf = HexFormat.of();
-            var message = hf.parseHex(messageAndCallSign.message());
-            var callSign = messageAndCallSign.callSign();
-            var rawMessage = RawMessage.of(100, message);
+        for (final var messageAndCallSign : messagesAndCallSigns) {
+            final var hf = HexFormat.of();
+            final var message = hf.parseHex(messageAndCallSign.message());
+            final var callSign = messageAndCallSign.callSign();
+            final var rawMessage = RawMessage.of(100, message);
             assertNotNull(rawMessage);
-            var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
+            final var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
             assertNotNull(aircraftIdentificationMessage);
             assertEquals(callSign, aircraftIdentificationMessage.callSign().string());
         }
@@ -98,25 +98,25 @@ class AircraftIdentificationMessageTest {
 
     // Code to generate the invalid messages used by the test below.
     List<String> aircraftIdentificationMessagesWithInvalidCharacters() {
-        var crcComputer = new Crc24(Crc24.GENERATOR);
-        var messages = new ArrayList<String>();
+        final var crcComputer = new Crc24(Crc24.GENERATOR);
+        final var messages = new ArrayList<String>();
 
-        var byte0 = "8D";
-        var icaoAddress = "3944EF";
-        var payload = 0x200464B2DD8460L;
-        var callSignAlphabet = "?ABCDEFGHIJKLMNOPQRSTUVWXYZ????? ???????????????0123456789??????";
+        final var byte0 = "8D";
+        final var icaoAddress = "3944EF";
+        final var payload = 0x200464B2DD8460L;
+        final var callSignAlphabet = "?ABCDEFGHIJKLMNOPQRSTUVWXYZ????? ???????????????0123456789??????";
         var characterToCorrupt = 0;
         for (var i = 0; i < callSignAlphabet.length(); i++) {
-            var c = callSignAlphabet.charAt(i);
-            if (c != '?') continue;
+            final var c = callSignAlphabet.charAt(i);
+            if ('?' != c) continue;
 
-            var mask = 0b111111L << (characterToCorrupt * 6);
-            var invalidChar = (long) i << (characterToCorrupt * 6);
-            var corruptedPayload = payload & ~mask | invalidChar;
-            var messageWithoutCRC = byte0 + icaoAddress + "%014X".formatted(corruptedPayload);
-            var messageBytes = HexFormat.of().parseHex(messageWithoutCRC);
-            var crc = crcComputer.crc(messageBytes);
-            var message = messageWithoutCRC + "%06X".formatted(crc);
+            final var mask = 0b111111L << (characterToCorrupt * 6);
+            final var invalidChar = (long) i << (characterToCorrupt * 6);
+            final var corruptedPayload = payload & ~mask | invalidChar;
+            final var messageWithoutCRC = byte0 + icaoAddress + "%014X".formatted(corruptedPayload);
+            final var messageBytes = HexFormat.of().parseHex(messageWithoutCRC);
+            final var crc = crcComputer.crc(messageBytes);
+            final var message = messageWithoutCRC + "%06X".formatted(crc);
             messages.add(message);
             characterToCorrupt = (characterToCorrupt + 1) % 8;
         }
@@ -125,7 +125,7 @@ class AircraftIdentificationMessageTest {
 
     @Test
     void aircraftIdentificationMessageOfReturnsNullForInvalidCharacters() {
-        var invalidMessages = List.of(
+        final var invalidMessages = List.of(
                 "8D3944EF200464B2DD8440F1ADDC",
                 "8D3944EF200464B2DD86E0EB71AC",
                 "8D3944EF200464B2DDC4608CE47E",
@@ -153,10 +153,10 @@ class AircraftIdentificationMessageTest {
                 "8D3944EF200464B2DD847D0F30E7",
                 "8D3944EF200464B2DD8FA096934C",
                 "8D3944EF200464B2DFF46049D0F5");
-        for (var message : invalidMessages) {
-            var rawMessage = RawMessage.of(100, HexFormat.of().parseHex(message));
+        for (final var message : invalidMessages) {
+            final var rawMessage = RawMessage.of(100, HexFormat.of().parseHex(message));
             assertNotNull(rawMessage);
-            var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
+            final var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
             assertNull(aircraftIdentificationMessage);
         }
     }

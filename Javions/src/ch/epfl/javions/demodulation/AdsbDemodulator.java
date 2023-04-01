@@ -11,12 +11,12 @@ import java.io.InputStream;
  */
 public final class AdsbDemodulator {
     private final PowerWindow window;
-    private final static int windowSize = 1200;
-    private final static int ExpectedDF = 14;
-    private final static int messageSize = 14;
+    private static final int windowSize = 1200;
+    private static final int ExpectedDF = 14;
+    private static final int messageSize = 14;
 
-    public AdsbDemodulator(InputStream samplesStream) throws IOException {
-        this.window = new PowerWindow(samplesStream, windowSize);
+    public AdsbDemodulator(final InputStream samplesStream) throws IOException {
+        window = new PowerWindow(samplesStream, AdsbDemodulator.windowSize);
     }
 
     /**
@@ -24,38 +24,38 @@ public final class AdsbDemodulator {
      * @throws IOException when there is a stream error
      */
     public RawMessage nextMessage() throws IOException {
-        int sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
+        int sumP = this.window.get(0) + this.window.get(10) + this.window.get(35) + this.window.get(45);
         int sumV;
         int sumPNext;
         int beforeP = 0;
 
-        while (window.isFull()) {
-            sumPNext = window.get(1) + window.get(11) + window.get(36) + window.get(46);
-            sumV = window.get(5) + window.get(15) + window.get(20) + window.get(25) + window.get(30) + window.get(40);
+        while (this.window.isFull()) {
+            sumPNext = this.window.get(1) + this.window.get(11) + this.window.get(36) + this.window.get(46);
+            sumV = this.window.get(5) + this.window.get(15) + this.window.get(20) + this.window.get(25) + this.window.get(30) + this.window.get(40);
 
             if ((beforeP < sumP) && (sumPNext < sumP) && (sumP >= (2 * sumV))) {
-                byte[] table = new byte[messageSize];
+                final byte[] table = new byte[AdsbDemodulator.messageSize];
 
-                for (int j = 0; j < 8; j++) {
-                    if (window.get(80 + (10 * j)) >= window.get(85 + (10 * j))) {
+                for (int j = 0; 8 > j; j++) {
+                    if (this.window.get(80 + (10 * j)) >= this.window.get(85 + (10 * j))) {
                         table[0] |= (byte) (1 << (7 - j));
                     }
                 }
 
-                if (RawMessage.size(table[0]) == ExpectedDF) {
+                if (ExpectedDF == RawMessage.size(table[0])) {
 
-                    for (int i = 1; i < 14; i++) {
-                        for (int j = 0; j < 8; j++) {
-                            if (window.get(80 + (80 * i) + (10 * j)) >= window.get(85 + (80 * i) + (10 * j))) {
+                    for (int i = 1; 14 > i; i++) {
+                        for (int j = 0; 8 > j; j++) {
+                            if (this.window.get(80 + (80 * i) + (10 * j)) >= this.window.get(85 + (80 * i) + (10 * j))) {
                                 table[i] |= (byte) (1 << (7 - j));
                             }
                         }
                     }
 
-                    RawMessage checker = RawMessage.of(window.position() * 100, table);
+                    final RawMessage checker = RawMessage.of(this.window.position() * 100, table);
 
-                    if (checker != null) {
-                        window.advanceBy(window.size());
+                    if (null != checker) {
+                        this.window.advanceBy(this.window.size());
                         return checker;
                     }
                 }
@@ -63,7 +63,7 @@ public final class AdsbDemodulator {
 
             beforeP = sumP;
             sumP = sumPNext;
-            window.advance();
+            this.window.advance();
         }
         return null;
     }

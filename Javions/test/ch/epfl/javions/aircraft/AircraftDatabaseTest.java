@@ -1,6 +1,5 @@
 package ch.epfl.javions.aircraft;
 
-import ch.epfl.javions.aircraft.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

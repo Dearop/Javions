@@ -26,8 +26,8 @@ public record AircraftIdentificationMessage
      * @throws NullPointerException if either the icaoAddress or callSign is null
      */
     public AircraftIdentificationMessage {
-        Preconditions.checkArgument(timeStampNs >= 0);
-        if (callSign == null || icaoAddress == null) throw new NullPointerException();
+        Preconditions.checkArgument(0 <= timeStampNs);
+        if (null == callSign || null == icaoAddress) throw new NullPointerException();
     }
 
     /**
@@ -36,25 +36,33 @@ public record AircraftIdentificationMessage
      * @param rawMessage the RawMessage to create the AircraftIdentificationMessage from
      * @return a new AircraftIdentificationMessage, or null if the RawMessage is invalid
      */
-    public static AircraftIdentificationMessage of(RawMessage rawMessage) {
+    public static AircraftIdentificationMessage of(final RawMessage rawMessage) {
+
         //computing the category
-        if (rawMessage.typeCode() == 0) return null;
+        if (0 == rawMessage.typeCode()) return null;
 
         //computing the CallSign
         StringBuilder sign = new StringBuilder();
+        //intermediary is instantiated with the symbol corresponding to null
         char intermediary = '\0';
         long payload = rawMessage.payload();
         int b;
 
-        for (int i = 42; i >= 0; i -= 6) {
+        for (int i = 42; 0 <= i; i -= 6) {
             b = Bits.extractUInt(payload, i, 6);
             // if b is an invalid chart null gets returned
             if (!isValidCharCode(b)) return null;
 
-            // the values I substract or add to b are for the corresponding values associated to the characters in ASCII
-            if (b >= 48) intermediary = (char) ((b - 48) + '0');
-            if (b <= 26) intermediary = (char) (b + 64);
-            if (b == 32) intermediary = (char) 32;
+            /**
+             * The values that we check using if statements follow the given rules :
+             *          - less or equal than 26 -> we attribute to intermediary the latin alphabet
+             *          - less or equal than 26 -> we attribute to intermediary the characters of the numbers from 0 to 9
+             *          - 32 -> we attribute to intermediary the space bar character
+             * the values subtracted or added to b are for the corresponding values associated to the characters in ASCII
+             */
+            if (48 <= b) intermediary = (char) ((b - 48) + '0');
+            if (26 >= b) intermediary = (char) (b + 64);
+            if (32 == b) intermediary = 32;
             sign.append(intermediary);
         }
 
@@ -67,12 +75,16 @@ public record AircraftIdentificationMessage
 
         if (finishedSign.equals(strippedFinishedSign)) return null;
 
-        CallSign callSign1 = new CallSign(strippedFinishedSign);
-        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, callSign1);
+        CallSign AimCallSign = new CallSign(strippedFinishedSign);
+        return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, AimCallSign);
     }
 
     /**
-     * Checks whether a given ASCII character code is valid.
+     * Checks whether a given number is valid, meaning it's value corresponds to a given code such that it's value
+     * is in the following intervals:
+     *  - 1 (included) and 26 (included),
+     *  - 48 (included) and 57 (included)
+     *  - 32
      *
      * Valid character codes include alphanumeric characters and the space character.
      *
@@ -80,7 +92,7 @@ public record AircraftIdentificationMessage
      * @return true if the character code is valid, false otherwise
      */
     private static boolean isValidCharCode(int code) {
-        return (code >= 1 && code <= 26) || (code >= 48 && code <= 57) || code == 32;
+        return (1 <= code && 26 >= code) || (48 <= code && 57 >= code) || 32 == code;
     }
 }
 

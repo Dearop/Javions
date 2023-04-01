@@ -6,9 +6,8 @@ package ch.epfl.javions;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public class Bits {
-    private Bits() {
-    }
+public enum Bits {
+    ;
 
     /**
      * This static method extracts a range of bits from the 64-bit vector value, starting at bit index start and
@@ -23,13 +22,13 @@ public class Bits {
      * @throws IndexOutOfBoundsException if the bit range described by start and size is not completely contained
      *                                   within the range of bit indices from 0 (exclusive) to 64 (exclusive)
      */
-    public static int extractUInt(long value, int start, int size) {
+    public static int extractUInt(final long value, final int start, final int size) {
 
-        if (size <= 0 || size >= 32) throw new IllegalArgumentException();
-        else if (start < 0 || start + size > 64) throw new IndexOutOfBoundsException();
+        if (0 >= size || 32 <= size) throw new IllegalArgumentException();
+        else if (0 > start || 64 < start + size) throw new IndexOutOfBoundsException();
 
         long extractedValue = value >>> (start);
-        long changedValueSize = (long) (Math.pow(2, size) - 1);
+        final long changedValueSize = (long) (Math.pow(2, size) - 1);
         extractedValue &= changedValueSize;
         return (int) extractedValue;
     }
@@ -45,13 +44,12 @@ public class Bits {
      * @throws IndexOutOfBoundsException if the bit index is not within the range of valid bit indices
      *                                   from 0 (exclusive) to 64 (exclusive)
      */
-    public static boolean testBit(long value, int index) {
-        if (index < 0 || index > 63) throw new IndexOutOfBoundsException();
+    public static boolean testBit(final long value, final int index) {
+        if (0 > index || 63 < index) throw new IndexOutOfBoundsException();
 
         long extractedValue = value >>> index;
 
-        if ((extractedValue &= 1) == 1) return true;
-        return false;
+        return 1 == (extractedValue &= 1);
     }
 }
 

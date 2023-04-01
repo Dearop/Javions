@@ -13,15 +13,15 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @param bytes       representing the bytes that represent the messages
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
-    public final static int LENGTH = 14;
-    private final static int CASize = 3;
-    private final static int DFLocation = 0;
-    private final static int messageLength = 56;
-    private final static int typeCodeLength = 5;
-    private final static Crc24 crc = new Crc24(Crc24.GENERATOR);
+    public static final int LENGTH = 14;
+    private static final int CASize = 3;
+    private static final int DFLocation = 0;
+    private static final int messageLength = 56;
+    private static final int typeCodeLength = 5;
+    private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
 
-    public RawMessage(long timeStampNs, ByteString bytes) {
-        Preconditions.checkArgument(timeStampNs >= 0 && LENGTH == bytes.size());
+    public RawMessage(final long timeStampNs, final ByteString bytes) {
+        Preconditions.checkArgument(0 <= timeStampNs && RawMessage.LENGTH == bytes.size());
 
         this.timeStampNs = timeStampNs;
         this.bytes = bytes;
@@ -33,8 +33,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @param bytes       byte table containing the message.
      * @return RawMessage with the parameters given to the function if the crc of the message is 0 or null otherwise
      */
-    public static RawMessage of(long timeStampNs, byte[] bytes) {
-        return crc.crc(bytes) == 0 ? new RawMessage(timeStampNs, new ByteString(bytes)) : null;
+    public static RawMessage of(final long timeStampNs, final byte[] bytes) {
+        return 0 == crc.crc(bytes) ? new RawMessage(timeStampNs, new ByteString(bytes)) : null;
     }
 
     /**
@@ -42,36 +42,36 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing either the length of the message if the Down Link Format
      * is the expected value (17) or 0 if it isn't
      */
-    public static int size(byte byte0) {
-        return Byte.toUnsignedInt(byte0) >> 3 == 17 ? LENGTH : 0;
+    public static int size(final byte byte0) {
+        return 17 == Byte.toUnsignedInt(byte0) >> 3 ? RawMessage.LENGTH : 0;
     }
 
     /**
      * @param payload long value representing the heart of the message
      * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
      */
-    public static int typeCode(long payload) {
-        return Bits.extractUInt(payload, messageLength - typeCodeLength, typeCodeLength);
+    public static int typeCode(final long payload) {
+        return Bits.extractUInt(payload, RawMessage.messageLength - RawMessage.typeCodeLength, RawMessage.typeCodeLength);
     }
 
     /**
      * @return integer value representing the DF format of the message
      */
     public int downLinkFormat() {
-        return bytes.byteAt(DFLocation) >> CASize;
+        return this.bytes.byteAt(RawMessage.DFLocation) >> RawMessage.CASize;
     }
 
     /**
      * @return Icao address contained in the message
      */
     public IcaoAddress icaoAddress() {
-        byte[] byteAddress = new byte[3];
+        final byte[] byteAddress = new byte[3];
 
-        for (int i = 1; i < 4; ++i) {
-            byteAddress[i - 1] = (byte) bytes.byteAt(i);
+        for (int i = 1; 4 > i; ++i) {
+            byteAddress[i - 1] = (byte) this.bytes.byteAt(i);
         }
 
-        ByteString address = new ByteString(byteAddress);
+        final ByteString address = new ByteString(byteAddress);
         return new IcaoAddress(address.toString());
     }
 
@@ -79,7 +79,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return long value representing the crucial part of the ADS-B message
      */
     public long payload() {
-        return bytes.bytesInRange(4, 11);
+        return this.bytes.bytesInRange(4, 11);
     }
 
     /**
@@ -89,6 +89,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value with the expected bits
      */
     public int typeCode() {
-        return bytes.byteAt(4) >> 3;
+        return this.bytes.byteAt(4) >> 3;
     }
 }

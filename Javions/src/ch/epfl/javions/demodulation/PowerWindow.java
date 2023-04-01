@@ -17,9 +17,9 @@ public final class PowerWindow {
     public PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    public final static int batchSize = (int) Math.pow(2, 16);
+    public static final int batchSize = (int) Math.pow(2, 16);
     private int[] batchOne;
-    private int[] batchTwo;
+    private final int[] batchTwo;
     private final int availableStream;
 
     /**
@@ -32,34 +32,34 @@ public final class PowerWindow {
      * @param windowSize windowSize that defines how many numbers we can access from the batches.
      * @throws IOException Throws Exception when there is a problem reading the stream.
      */
-    public PowerWindow(InputStream stream, int windowSize) throws IOException {
-        if (windowSize <= 0 || windowSize > batchSize)
+    public PowerWindow(final InputStream stream, final int windowSize) throws IOException {
+        if (0 >= windowSize || windowSize > PowerWindow.batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
 
-        availableStream = stream.available();
+        this.availableStream = stream.available();
 
         this.windowSize = windowSize;
-        this.computer = new PowerComputer(stream, batchSize);
+        computer = new PowerComputer(stream, PowerWindow.batchSize);
 
-        batchOne = new int[batchSize];
-        batchTwo = new int[batchSize];
+        this.batchOne = new int[PowerWindow.batchSize];
+        this.batchTwo = new int[PowerWindow.batchSize];
 
-        computer.readBatch(batchOne);
-        computer.readBatch(batchTwo);
+        this.computer.readBatch(this.batchOne);
+        this.computer.readBatch(this.batchTwo);
     }
 
     /**
      * @return integer value representing size of the current instance of PowerWindow
      */
     public int size() {
-        return this.windowSize;
+        return windowSize;
     }
 
     /**
      * @return integer value corresponding to the current position of the window in reference to the table
      */
     public long position() {
-        return positionCounter;
+        return this.positionCounter;
     }
 
     /**
@@ -68,7 +68,7 @@ public final class PowerWindow {
      * Once the positionCounter + windowSize is bigger than the stream/4 then it return false.
      */
     public boolean isFull() {
-        return availableStream / 4 >= positionCounter + windowSize;
+        return this.availableStream / 4 >= this.positionCounter + this.windowSize;
     }
 
     /**
@@ -78,11 +78,11 @@ public final class PowerWindow {
      * @param i integer value representing the position in the window we want to get
      * @return PowerComputerValue computed at the ith spot of the window
      */
-    public int get(int i) {
-        if (i < 0 || i >= windowSize) throw new IllegalArgumentException();
+    public int get(final int i) {
+        if (0 > i || i >= this.windowSize) throw new IllegalArgumentException();
 
-        int positionInBatch = positionCounter % batchSize;
-        return positionInBatch + i < batchSize ? batchOne[positionInBatch + i] : batchTwo[(positionInBatch + i) % batchSize];
+        final int positionInBatch = this.positionCounter % PowerWindow.batchSize;
+        return positionInBatch + i < PowerWindow.batchSize ? this.batchOne[positionInBatch + i] : this.batchTwo[(positionInBatch + i) % PowerWindow.batchSize];
     }
 
     /**
@@ -91,18 +91,18 @@ public final class PowerWindow {
      * Power computer.
      */
     public void advance() throws IOException {
-        ++positionCounter;
-        int positionInsideBatch = positionCounter % batchSize;
+        ++this.positionCounter;
+        final int positionInsideBatch = this.positionCounter % PowerWindow.batchSize;
 
         // we check if the new position is at the end of the current priority batch.
-        if (positionInsideBatch == batchSize - 1) {
+        if (positionInsideBatch == PowerWindow.batchSize - 1) {
 
             /**
              * because batchTwo is now priority batch we can replace all values inside batchOne with
              * the new info from output
              */
-            batchOne = batchTwo.clone();
-            computer.readBatch(batchTwo);
+            this.batchOne = this.batchTwo.clone();
+            this.computer.readBatch(this.batchTwo);
         }
     }
 
@@ -112,9 +112,9 @@ public final class PowerWindow {
      *
      * @param offset integer value representing how much we are skipping forwards
      */
-    public void advanceBy(int offset) throws IOException {
-        if (offset <= 0) throw new IllegalArgumentException();
-        for (int i = 0; i < offset; i++) advance();
+    public void advanceBy(final int offset) throws IOException {
+        if (0 >= offset) throw new IllegalArgumentException();
+        for (int i = 0; i < offset; i++) this.advance();
     }
 
 }
