@@ -15,6 +15,8 @@ import java.util.Objects;
 public final class ByteString {
     private final byte[] bytes;
 
+    private final int byteFullOfOnes = 0xFF;
+
     public ByteString(final byte[] bytes) {
         this.bytes = bytes.clone();
     }
@@ -30,6 +32,8 @@ public final class ByteString {
      * @throws NumberFormatException    if the input string contains a non-hexadecimal character
      */
     public static ByteString ofHexadecimalString(final String hexString) {
+
+        // hexString length is odd then return Exception
         if (1 == hexString.length() % 2) throw new IllegalArgumentException();
         if (!hexString.matches("^[a-fA-F0-9]+$")) throw new NumberFormatException();
 
@@ -58,7 +62,7 @@ public final class ByteString {
         if (0 > index || index > this.bytes.length) throw new IndexOutOfBoundsException();
 
         final byte byteAtIndex = this.bytes[index];
-        return byteAtIndex & 0xFF;
+        return byteAtIndex & byteFullOfOnes;
     }
 
     /**
@@ -85,7 +89,7 @@ public final class ByteString {
         long result = 0;
         for (int i = fromIndex; i < toIndex; ++i) {
             result <<= Byte.SIZE;
-            result |= (bytes[i] & 0xFF);
+            result |= (bytes[i] & byteFullOfOnes);
         }
         return result;
     }

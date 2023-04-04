@@ -12,7 +12,7 @@ public enum Math2 {
 
     /**
      * This method returns the minimum if v is smaller than min or returns the maximum if v is bigger than max and
-     * returns v otherwise (3.5)
+     * returns v otherwise
      *
      * @param min int signifying greatest lower bound
      * @param v   int the value
@@ -35,6 +35,7 @@ public enum Math2 {
      * @return double value of arcsinh(x)
      */
     public static double asinh(double x) {
-        return Math.log(x + Math.sqrt(1 + Math.pow(x, 2)));
+        return Math.log(
+                x + Math.sqrt(1 + Math.pow(x, 2)));
     }
 }

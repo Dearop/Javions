@@ -8,6 +8,9 @@ package ch.epfl.javions;
  */
 public enum Bits {
     ;
+    private static final int MIN_SIZE = 0, MIN_START = 0,
+            MAX_SIZE = 32, MAX_START_PLUS_SIZE = 64,
+            MIN_INDEX = 0, MAX_INDEX = 63;
 
     /**
      * This static method extracts a range of bits from the 64-bit vector value, starting at bit index start and
@@ -24,11 +27,14 @@ public enum Bits {
      */
     public static int extractUInt(final long value, final int start, final int size) {
 
-        if (0 >= size || 32 <= size) throw new IllegalArgumentException();
-        else if (0 > start || 64 < start + size) throw new IndexOutOfBoundsException();
+        if (MIN_SIZE >= size || MAX_SIZE <= size)
+            throw new IllegalArgumentException();
+        else if (MIN_START > start || MAX_START_PLUS_SIZE < start + size)
+            throw new IndexOutOfBoundsException();
 
         long extractedValue = value >>> (start);
         final long changedValueSize = (long) (Math.pow(2, size) - 1);
+
         extractedValue &= changedValueSize;
         return (int) extractedValue;
     }
@@ -45,10 +51,11 @@ public enum Bits {
      *                                   from 0 (exclusive) to 64 (exclusive)
      */
     public static boolean testBit(final long value, final int index) {
-        if (0 > index || 63 < index) throw new IndexOutOfBoundsException();
+        if (MIN_INDEX > index || MAX_INDEX < index) throw new IndexOutOfBoundsException();
 
         long extractedValue = value >>> index;
 
+        // test if the LSB of extracted value is 1
         return 1 == (extractedValue &= 1);
     }
 }

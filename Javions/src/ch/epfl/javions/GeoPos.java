@@ -35,7 +35,8 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return true if the value checks out with our boundaries, false otherwise
      */
     public static boolean isValidLatitudeT32(final int latitudeT32) {
-        return (latitudeT32 >= -Math.pow(2, 30)) && (latitudeT32 <= Math.pow(2, 30));
+        return (latitudeT32 >= -Math.pow(2, 30))
+                && (latitudeT32 <= Math.pow(2, 30));
     }
 
     /**
