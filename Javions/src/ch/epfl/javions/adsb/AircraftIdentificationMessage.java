@@ -16,6 +16,18 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  */
 public record AircraftIdentificationMessage
         (long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
+
+    private static final int INVALID_VALUE = 0;
+    private static final int ALPHABET_A = 1;
+    private static final int ALPHABET_Z = 26;
+    private static final int CHAR_0 = 48;
+    private static final int CHAR_9 = 57;
+    private static final int CHAR_SPACE = 32;
+    private static final int ASCII_ALPHABET_A = 64;
+
+
+
+
     /**
      * Creates a new AircraftIdentificationMessage with the given timestamp, ICAO address, category and call sign.
      *
@@ -39,7 +51,7 @@ public record AircraftIdentificationMessage
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
         //computing the category
-        if (0 == rawMessage.typeCode()) return null;
+        if (INVALID_VALUE == rawMessage.typeCode()) return null;
 
         //computing the CallSign
         StringBuilder sign = new StringBuilder();
@@ -60,9 +72,9 @@ public record AircraftIdentificationMessage
              *          - 32 -> we attribute to intermediary the space bar character
              * the values subtracted or added to b are for the corresponding values associated to the characters in ASCII
              */
-            if (48 <= b) intermediary = (char) ((b - 48) + '0');
-            if (26 >= b) intermediary = (char) (b + 64);
-            if (32 == b) intermediary = 32;
+            if (CHAR_0 <= b) intermediary = (char) ((b - CHAR_0) + '0');
+            if (ALPHABET_Z >= b) intermediary = (char) (b + ASCII_ALPHABET_A);
+            if (CHAR_SPACE == b) intermediary = CHAR_SPACE;
             sign.append(intermediary);
         }
 
@@ -92,7 +104,9 @@ public record AircraftIdentificationMessage
      * @return true if the character code is valid, false otherwise
      */
     private static boolean isValidCharCode(int code) {
-        return (1 <= code && 26 >= code) || (48 <= code && 57 >= code) || 32 == code;
+        return (ALPHABET_A <= code && ALPHABET_Z >= code)
+                || (CHAR_0 <= code && CHAR_9 >= code)
+                || CHAR_SPACE == code;
     }
 }
 

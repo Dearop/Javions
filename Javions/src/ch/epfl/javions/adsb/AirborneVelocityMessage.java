@@ -16,6 +16,25 @@ import ch.epfl.javions.aircraft.IcaoAddress;
 public record AirborneVelocityMessage(long timeStampNs, IcaoAddress icaoAddress, double speed, double trackOrHeading)
 implements Message{
 
+    private static final int ST_START = 48;
+    private static final int ST_SIZE = 3;
+
+    private static final int BITS22_START = 21;
+    private static final int BITS_SIZE = 22;
+
+    private static final int DIRECTION_SIZE= 1;
+    private static final int SPEED_SIZE = 10;
+    private static final int DEW_START = 21;
+    private static final int VEW_START = 11;
+    private static final int DNS_START = 10;
+    private static final int VNS_START = 0;
+
+    private static final int SH_START = 21;
+    private static final int SH_SIZE = 1;
+
+    private static final int AS_START = 0;
+    private static final int AS_SIZE = 10;
+
     /**
      * The constructor checks if the given parameters are valid, if not then either a NullPointerException or a
      * IllegalArgumentException gets thrown.
@@ -44,21 +63,15 @@ implements Message{
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
         if(19 != rawMessage.typeCode()) return null;
-        final int BITS22_START = 21;
-        final int BITS_SIZE = 22;
+
         int bits22 = Bits.extractUInt(rawMessage.payload(), BITS22_START, BITS_SIZE);
-        int ST = Bits.extractUInt(rawMessage.payload(), 48, 3);
+        int ST = Bits.extractUInt(rawMessage.payload(), ST_START, ST_SIZE);
 
         if (1 > ST || 4 < ST) return null;
 
         double speed;
         double trackOrHeading;
-        final int DIRECTION_SIZE= 1;
-        final int SPEED_SIZE = 10;
-        final int DEW_START = 21;
-        final int VEW_START = 11;
-        final int DNS_START = 10;
-        final int VNS_START = 0;
+
         // Ground speed
         if (1 == ST || 2 == ST) {
             int Dew = Bits.extractUInt(bits22, DEW_START, DIRECTION_SIZE);
@@ -83,8 +96,7 @@ implements Message{
             }
 
         } else {
-            final int SH_START = 21;
-            final int SH_SIZE = 1;
+
             int SH = Bits.extractUInt(bits22, SH_START, SH_SIZE);
 
             // SH is not allowed to be zero, so null gets returned
@@ -92,8 +104,7 @@ implements Message{
 
             trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
                     Math.scalb(1, 10), Units.Angle.TURN);
-            final int AS_START = 0;
-            final int AS_SIZE = 10;
+
             final int AS = Bits.extractUInt(bits22, AS_START, AS_SIZE) - 1;
             if(-1 == AS) return null;
             if (3 == ST) {

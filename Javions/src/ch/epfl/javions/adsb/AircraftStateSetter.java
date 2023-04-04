@@ -2,7 +2,8 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 
-/**
+/** This interface describes all the methods that are needed to set and update the information for each aircraft
+ *
  * @author Paul Quesnot (347572)
  */
 public interface AircraftStateSetter {

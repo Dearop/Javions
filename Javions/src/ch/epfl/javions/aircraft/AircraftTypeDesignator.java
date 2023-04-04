@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
  * @author Paul Quesnot (347572)
  */
 public record AircraftTypeDesignator(String string) {
+    // {2,4} corresponds to the length of the TypeDesignator, which is between 2 and 4
     private static final Pattern pattern = Pattern.compile("[A-Z0-9]{2,4}");
 
     /**

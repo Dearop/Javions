@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AircraftStateAccumulatorTest {
+class AircraftStateAccumulatorTestNEW {
     @Test
     void aircraftStateAccumulatorConstructorThrowsIfStateSetterIsNull() {
         assertThrows(NullPointerException.class, () -> new AircraftStateAccumulator<>(null));

@@ -10,7 +10,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class MessageParserTest {
+class MessageParserTestNEW {
     // Code to generate the variants of the messages used below.
     List<String> rawMessageWithTypeCodes(String baseMessage, int... typeCodes) {
         var crcComputer = new Crc24(Crc24.GENERATOR);

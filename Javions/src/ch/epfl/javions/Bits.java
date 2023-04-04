@@ -6,8 +6,8 @@ package ch.epfl.javions;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public enum Bits {
-    ;
+public class Bits {
+
     private static final int MIN_SIZE = 0, MIN_START = 0,
             MAX_SIZE = 32, MAX_START_PLUS_SIZE = 64,
             MIN_INDEX = 0, MAX_INDEX = 63;

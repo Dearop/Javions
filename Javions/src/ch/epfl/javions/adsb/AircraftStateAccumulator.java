@@ -3,6 +3,7 @@ package ch.epfl.javions.adsb;
  * The AircraftStateAccumulator class accumulates and updates state information of an aircraft based
  * on the received ADS-B messages. It is used to maintain the current state of an aircraft,
  * which includes its position, velocity, altitude, category, and call sign.
+ *
  * @param <T> generic type for the stateSetter.
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
@@ -54,19 +55,22 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             }
             case AirbornePositionMessage apm -> {
                 this.stateSetter.setAltitude(apm.altitude());
+
                 if (0 == apm.parity()) {
                     this.latestEvenMessage = apm;
                 } else {
                     this.latestOddMessage = apm;
                 }
+
                 if (null != latestEvenMessage && null != latestOddMessage) {
-                    //this if works
-                    if (TIME_BETWEEN_TWO_MESSAGES >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
+                    if (TIME_BETWEEN_TWO_MESSAGES
+                            >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
 
                         final double x0 = this.latestEvenMessage.x();
                         final double y0 = this.latestEvenMessage.y();
                         final double x1 = this.latestOddMessage.x();
                         final double y1 = this.latestOddMessage.y();
+
                         if(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()) != null)
                             this.stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
                     }

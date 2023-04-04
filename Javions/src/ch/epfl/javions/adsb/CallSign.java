@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
  * @author Henri Antal (339444)
  */
 public record CallSign(String string) {
+
+    // {0,8} corresponds to the allowed length of the CallSign
     private static final Pattern pattern = Pattern.compile("[A-Z0-9 ]{0,8}");
 
     /**

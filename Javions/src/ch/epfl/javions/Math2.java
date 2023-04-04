@@ -7,8 +7,8 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  */
 
-public enum Math2 {
-    ;
+public class Math2 {
+
 
     /**
      * This method returns the minimum if v is smaller than min or returns the maximum if v is bigger than max and

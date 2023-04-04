@@ -6,8 +6,8 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  * @author Henri Antal (339444)
  */
-public enum Preconditions {
-    ;
+public class Preconditions {
+
 
     /**
      * Checks if a boolean has a true value, if not it throws an error

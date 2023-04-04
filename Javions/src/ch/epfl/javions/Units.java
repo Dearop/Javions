@@ -6,8 +6,8 @@ package ch.epfl.javions;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public enum Units {
-    ;
+public class Units {
+
 
     /**
      * Constant for the CENTI conversion, so 100*CENTI = 1

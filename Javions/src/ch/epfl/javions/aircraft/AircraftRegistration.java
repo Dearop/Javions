@@ -20,6 +20,8 @@ public record AircraftRegistration(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftRegistration {
-        if (string.isEmpty() || !AircraftRegistration.pattern.matcher(string).matches()) throw new IllegalArgumentException();
+        if (string.isEmpty()
+                || !AircraftRegistration.pattern.matcher(string).matches())
+            throw new IllegalArgumentException();
     }
 }

@@ -6,8 +6,8 @@ package ch.epfl.javions;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public enum WebMercator {
-    ;
+public class WebMercator {
+
 
     /**
      * Returns the coordinates of points given the zoomLevel as well as the longitude

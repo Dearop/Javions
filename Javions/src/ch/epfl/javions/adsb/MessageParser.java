@@ -7,8 +7,13 @@ package ch.epfl.javions.adsb;
  * or null if the rawMessage is not valid.
  * @author Henri Antal (339444)
  */
-public enum MessageParser {
-    ;
+public class MessageParser {
+
+    private static final int IDENTIFICATION_START = 0;
+    private static final int IDENTIFICATION_END = 5;
+    private static final int POSITION_START = 8;
+    private static final int POSITION_END = 23;
+    private static final int TYPE_19 = 19;
 
     /**
      * This static method takes a RawMessage object and returns a corresponding Message object,
@@ -21,11 +26,11 @@ public enum MessageParser {
     public static Message parse(RawMessage rawMessage) {
         final int checkValue = rawMessage.typeCode();
 
-        if (0 < checkValue && 5 > checkValue)
+        if (IDENTIFICATION_START < checkValue && IDENTIFICATION_END > checkValue)
             return AircraftIdentificationMessage.of(rawMessage);
-        if ((8 < checkValue && 19 > checkValue) || (19 < checkValue && 23 > checkValue))
+        if ((POSITION_START < checkValue && TYPE_19 > checkValue) || (TYPE_19 < checkValue && POSITION_END > checkValue))
             return AirbornePositionMessage.of(rawMessage);
-        if (19 == checkValue) return AirborneVelocityMessage.of(rawMessage);
+        if (TYPE_19 == checkValue) return AirborneVelocityMessage.of(rawMessage);
 
         // returns either one of the three Messages depending on type or null if all return null (makes it invalid)
         return null;

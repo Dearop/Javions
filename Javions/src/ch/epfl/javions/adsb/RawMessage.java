@@ -11,13 +11,18 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  *
  * @param timeStampNs
  * @param bytes       representing the bytes that represent the messages
+ * @author Paul Quesnot (347572)
+ * @author Henri Antal (339444)
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
     public static final int LENGTH = 14;
-    private static final int CASize = 3;
-    private static final int DFLocation = 0;
-    private static final int messageLength = 56;
-    private static final int typeCodeLength = 5;
+    private static final int CA_SIZE = 3;
+    private static final int DF_LOCATION = 0;
+    private static final int MESSAGE_LENGTH = 56;
+    private static final int TYPE_CODE_LENGTH = 5;
+    private static final int EXPECTED_VALUE = 17;
+    private static final int ADSB_ME_START = 4;
+    private static final int ADSB_ME_END = 11;
     private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
 
     public RawMessage(long timeStampNs, ByteString bytes) {
@@ -34,7 +39,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return RawMessage with the parameters given to the function if the crc of the message is 0 or null otherwise
      */
     public static RawMessage of(long timeStampNs, byte[] bytes) {
-        return 0 == crc.crc(bytes) ? new RawMessage(timeStampNs, new ByteString(bytes)) : null;
+        return (0 == crc.crc(bytes)) ? new RawMessage(timeStampNs, new ByteString(bytes)) : null;
     }
 
     /**
@@ -43,7 +48,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * is the expected value (17) or 0 if it isn't
      */
     public static int size(byte byte0) {
-        return 17 == Byte.toUnsignedInt(byte0) >> 3 ? RawMessage.LENGTH : 0;
+        // we shift here by 3 to the right, so we can read the 5 bits to check if the expected value is correct.
+        return (EXPECTED_VALUE == Byte.toUnsignedInt(byte0) >> 3) ? RawMessage.LENGTH : 0;
     }
 
     /**
@@ -51,14 +57,16 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
      */
     public static int typeCode(long payload) {
-        return Bits.extractUInt(payload, RawMessage.messageLength - RawMessage.typeCodeLength, RawMessage.typeCodeLength);
+        return Bits.extractUInt(payload
+                , RawMessage.MESSAGE_LENGTH - RawMessage.TYPE_CODE_LENGTH
+                , RawMessage.TYPE_CODE_LENGTH);
     }
 
     /**
      * @return integer value representing the DF format of the message
      */
     public int downLinkFormat() {
-        return this.bytes.byteAt(RawMessage.DFLocation) >> RawMessage.CASize;
+        return this.bytes.byteAt(RawMessage.DF_LOCATION) >> RawMessage.CA_SIZE;
     }
 
     /**
@@ -79,7 +87,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return long value representing the crucial part of the ADS-B message
      */
     public long payload() {
-        return this.bytes.bytesInRange(4, 11);
+        return this.bytes.bytesInRange(ADSB_ME_START, ADSB_ME_END);
     }
 
     /**
