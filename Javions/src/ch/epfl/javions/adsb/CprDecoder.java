@@ -98,7 +98,7 @@ public enum CprDecoder {
      * @param position      position that is given in the parameter of the method decodePosition.
      * @return return Phi0, Phi1, Lambda0 and Lambda1 depending on the parameters.
      */
-    private static double currentZone(final double numberOfZones, double currentZone, final double position) {
+    private static double currentZone(double numberOfZones, double currentZone, double position) {
         currentZone = (0 > currentZone) ? (currentZone + numberOfZones) : currentZone;
         final double angle = (currentZone + position) / numberOfZones;
         return Units.convertFrom(CprDecoder.center(angle), Units.Angle.TURN);

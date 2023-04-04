@@ -17,9 +17,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class AircraftDatabase {
     private final String fileName;
-    private String testName;
-    private WakeTurbulenceCategory WTCTest;
-
 
     /**
      * Stores the specified file name.
@@ -29,7 +26,7 @@ public final class AircraftDatabase {
      * @param fileName The name of the file containing the aircraft information.
      * @throws NullPointerException If the file name is null.
      */
-    public AircraftDatabase(final String fileName) {
+    public AircraftDatabase(String fileName) {
         if (null == fileName) throw new NullPointerException();
         this.fileName = fileName;
     }
@@ -44,16 +41,16 @@ public final class AircraftDatabase {
      * @return The aircraft data for the specified address, or null if no entry exists.
      * @throws IOException If there is an input/output error.
      */
-    public AircraftData get(final IcaoAddress address) throws IOException {
+    public AircraftData get(IcaoAddress address) throws IOException {
         String stringLineFiltered = "";
 
         /**
          * This try/catch gets the zip file that includes all the data that we have about the different aircraft
          */
-        try (final ZipFile zipFileUsed = new ZipFile(this.fileName);
-             final InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry(address.getLastChar() + ".csv"));
-             final Reader reader = new InputStreamReader(stream, UTF_8);
-             final BufferedReader buffer = new BufferedReader(reader)) {
+        try (ZipFile zipFileUsed = new ZipFile(this.fileName);
+             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry(address.getLastChar() + ".csv"));
+             Reader reader = new InputStreamReader(stream, UTF_8);
+             BufferedReader buffer = new BufferedReader(reader)) {
             while (null != (stringLineFiltered = buffer.readLine())) {
                 final String[] lines = stringLineFiltered.split(",", -1);
                 if (address.string().equals(lines[0]))
@@ -62,23 +59,5 @@ public final class AircraftDatabase {
             }
         }
         return null;
-    }
-
-    /**
-     * This method was written to test the class
-     *
-     * @return String created in the get method above that stores the name of the aircraft.
-     */
-    public String returnModelString() {
-        return testName;
-    }
-
-    /**
-     * This method was written to test the class
-     *
-     * @return WakeTurbulenceCategory created in the get method above.
-     */
-    public WakeTurbulenceCategory returnWTCValue() {
-        return WTCTest;
     }
 }

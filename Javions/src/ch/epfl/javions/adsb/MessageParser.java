@@ -18,7 +18,7 @@ public enum MessageParser {
      * @param rawMessage the raw message to be parsed into a corresponding Message object
      * @return a Message object corresponding to the type of the raw message, or null if the raw message is not valid
      */
-    public static Message parse(final RawMessage rawMessage) {
+    public static Message parse(RawMessage rawMessage) {
         final int checkValue = rawMessage.typeCode();
 
         if (0 < checkValue && 5 > checkValue)

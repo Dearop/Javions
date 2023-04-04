@@ -15,7 +15,7 @@ public final class AdsbDemodulator {
     private static final int ExpectedDF = 14;
     private static final int messageSize = 14;
 
-    public AdsbDemodulator(final InputStream samplesStream) throws IOException {
+    public AdsbDemodulator(InputStream samplesStream) throws IOException {
         window = new PowerWindow(samplesStream, AdsbDemodulator.windowSize);
     }
 

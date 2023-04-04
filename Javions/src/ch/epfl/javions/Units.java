@@ -78,7 +78,7 @@ public enum Units {
      *                 and the unit in which we want value to be expressed
      * @return the value in the unit toUnit
      */
-    public static double convert(final double value, final double fromUnit, final double toUnit) {
+    public static double convert(double value, double fromUnit, double toUnit) {
         return value * (fromUnit / toUnit);
     }
 
@@ -90,7 +90,7 @@ public enum Units {
      *                 and the unit in which value is expressed
      * @return double representing the value of value in the base units of the appropriate unit system.
      */
-    public static double convertFrom(final double value, final double fromUnit) {
+    public static double convertFrom(double value, double fromUnit) {
         return value * fromUnit;
     }
 
@@ -102,7 +102,7 @@ public enum Units {
      *               and the unit in which we want value to be expressed
      * @return double representing the value in the toUnit unit
      */
-    public static double convertTo(final double value, final double toUnit) {
+    public static double convertTo(double value, double toUnit) {
         return value / toUnit;
     }
 }

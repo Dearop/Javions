@@ -20,7 +20,7 @@ public enum Math2 {
      * @return int that only gets changed from the initial v if it is bigger than max or smaller than min
      * @throws IllegalArgumentException if min is bigger than max
      */
-    public static int clamp(final int min, final int v, final int max) {
+    public static int clamp(int min, int v, int max) {
         if (min > max) throw new IllegalArgumentException();
 
         else if (v < min) return min;
@@ -34,7 +34,7 @@ public enum Math2 {
      * @param x double to which we want to apply the function f(x) = arcsinh(x)
      * @return double value of arcsinh(x)
      */
-    public static double asinh(final double x) {
+    public static double asinh(double x) {
         return Math.log(x + Math.sqrt(1 + Math.pow(x, 2)));
     }
 }

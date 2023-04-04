@@ -16,7 +16,7 @@ public enum WebMercator {
      * @param longitude longitude given in degrees
      * @return coordinates in the cartesian coordinate system.
      */
-    public static double x(final int zoomLevel, final double longitude) {
+    public static double x(int zoomLevel, double longitude) {
         return Math.scalb(1, 8 + zoomLevel)
                 * (Units.convertTo(longitude, Units.Angle.TURN) + (0.5));
     }
@@ -28,7 +28,7 @@ public enum WebMercator {
      * @param latitude  latitude given in degrees
      * @return coordinates in the cartesian coordinate system.
      */
-    public static double y(final int zoomLevel, final double latitude) {
+    public static double y(int zoomLevel, double latitude) {
         return Math.scalb(1, 8 + zoomLevel)
                 * (-Units.convertTo(Math2.asinh(Math.tan(latitude)), Units.Angle.TURN) + 0.5);
     }

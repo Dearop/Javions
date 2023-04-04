@@ -28,7 +28,7 @@ public final class SamplesDecoder {
      * @throws IllegalArgumentException if the batch size is not positive
      * @throws NullPointerException     if the input stream is null
      */
-    public SamplesDecoder(final InputStream stream, final int batchSize) {
+    public SamplesDecoder(InputStream stream, final int batchSize) {
         if (0 >= batchSize) throw new IllegalArgumentException();
         if (null == stream) throw new NullPointerException();
 
@@ -46,7 +46,7 @@ public final class SamplesDecoder {
      * @throws IOException              if an I/O error occurs while reading from the input stream*
      * @throws IllegalArgumentException if the size of the batch array is not equal to the batch size
      */
-    public int readBatch(final short[] batch) throws IOException {
+    public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == this.batchSize);
 
         final int bytesRead = this.stream.readNBytes(this.bytes, 0, 2 * this.batchSize);

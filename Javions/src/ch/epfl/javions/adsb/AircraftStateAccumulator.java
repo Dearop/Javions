@@ -20,7 +20,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @param stateSetter the state setter to be used to update the aircraft state
      * @throws NullPointerException if the given state setter is null
      */
-    public AircraftStateAccumulator(final T stateSetter) {
+    public AircraftStateAccumulator(T stateSetter) {
         if (null == stateSetter) throw new NullPointerException();
         this.stateSetter = stateSetter;
     }
@@ -41,7 +41,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @param message the message containing the information to update the state
      * @throws NullPointerException if the given message is null
      */
-    public void update(final Message message) {
+    public void update(Message message) {
         this.stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
         switch (message) {
             case AircraftIdentificationMessage aim -> {
@@ -67,7 +67,8 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                         final double y0 = this.latestEvenMessage.y();
                         final double x1 = this.latestOddMessage.x();
                         final double y1 = this.latestOddMessage.y();
-                        this.stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
+                        if(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()) != null)
+                            this.stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
                     }
                 }
 

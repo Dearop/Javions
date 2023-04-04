@@ -14,7 +14,7 @@ public enum Preconditions {
      * @param shouldBeTrue boolean which should have the truth value true
      * @throws IllegalArgumentException if shouldBeTrue is false
      */
-    public static void checkArgument(final boolean shouldBeTrue) {
+    public static void checkArgument(boolean shouldBeTrue) {
         if (!shouldBeTrue) throw new IllegalArgumentException();
     }
 

@@ -36,7 +36,7 @@ public record AircraftIdentificationMessage
      * @param rawMessage the RawMessage to create the AircraftIdentificationMessage from
      * @return a new AircraftIdentificationMessage, or null if the RawMessage is invalid
      */
-    public static AircraftIdentificationMessage of(final RawMessage rawMessage) {
+    public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
         //computing the category
         if (0 == rawMessage.typeCode()) return null;

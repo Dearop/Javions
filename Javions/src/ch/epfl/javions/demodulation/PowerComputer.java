@@ -26,7 +26,7 @@ public final class PowerComputer {
      * @param batchSize The number of samples in each batch.
      * @throws IllegalArgumentException if batchSize is negative or not divisible by 8.
      */
-    public PowerComputer(final InputStream stream, final int batchSize) {
+    public PowerComputer(final InputStream stream, int batchSize) {
         if (0 != batchSize % 8) throw new IllegalArgumentException();
         if (0 > batchSize) throw new IllegalArgumentException();
 
@@ -44,7 +44,7 @@ public final class PowerComputer {
      * @throws IOException              if an I/O error occurs.
      * @throws IllegalArgumentException if the length of the batch array does not match the batch size.
      */
-    public int readBatch(final int[] batch) throws IOException {
+    public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == this.batchSize);
 
         final int bytesRead = this.decoder.readBatch(this.decodedBatch);

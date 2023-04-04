@@ -2,6 +2,11 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 
+/**
+ * Class letting us test the different methods of AircraftStateSetter, all implementations of AircraftStateSetter
+ * simply print
+ * @author Paul Quesnot (347572)
+ */
 public class AircraftState implements AircraftStateSetter {
     @Override
     public void setLastMessageTimeStampNs(final long timeStampNs) {

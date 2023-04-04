@@ -20,7 +20,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final int typeCodeLength = 5;
     private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
 
-    public RawMessage(final long timeStampNs, final ByteString bytes) {
+    public RawMessage(long timeStampNs, ByteString bytes) {
         Preconditions.checkArgument(0 <= timeStampNs && RawMessage.LENGTH == bytes.size());
 
         this.timeStampNs = timeStampNs;
@@ -33,7 +33,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @param bytes       byte table containing the message.
      * @return RawMessage with the parameters given to the function if the crc of the message is 0 or null otherwise
      */
-    public static RawMessage of(final long timeStampNs, final byte[] bytes) {
+    public static RawMessage of(long timeStampNs, byte[] bytes) {
         return 0 == crc.crc(bytes) ? new RawMessage(timeStampNs, new ByteString(bytes)) : null;
     }
 
@@ -42,7 +42,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing either the length of the message if the Down Link Format
      * is the expected value (17) or 0 if it isn't
      */
-    public static int size(final byte byte0) {
+    public static int size(byte byte0) {
         return 17 == Byte.toUnsignedInt(byte0) >> 3 ? RawMessage.LENGTH : 0;
     }
 
@@ -50,7 +50,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @param payload long value representing the heart of the message
      * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
      */
-    public static int typeCode(final long payload) {
+    public static int typeCode(long payload) {
         return Bits.extractUInt(payload, RawMessage.messageLength - RawMessage.typeCodeLength, RawMessage.typeCodeLength);
     }
 
@@ -71,7 +71,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
             byteAddress[i - 1] = (byte) this.bytes.byteAt(i);
         }
 
-        final ByteString address = new ByteString(byteAddress);
+        ByteString address = new ByteString(byteAddress);
         return new IcaoAddress(address.toString());
     }
 

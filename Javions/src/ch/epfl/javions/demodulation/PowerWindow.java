@@ -78,7 +78,7 @@ public final class PowerWindow {
      * @param i integer value representing the position in the window we want to get
      * @return PowerComputerValue computed at the ith spot of the window
      */
-    public int get(final int i) {
+    public int get(int i) {
         if (0 > i || i >= this.windowSize) throw new IllegalArgumentException();
 
         final int positionInBatch = this.positionCounter % PowerWindow.batchSize;
@@ -112,7 +112,7 @@ public final class PowerWindow {
      *
      * @param offset integer value representing how much we are skipping forwards
      */
-    public void advanceBy(final int offset) throws IOException {
+    public void advanceBy(int offset) throws IOException {
         if (0 >= offset) throw new IllegalArgumentException();
         for (int i = 0; i < offset; i++) this.advance();
     }

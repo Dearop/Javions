@@ -42,22 +42,29 @@ implements Message{
      * @param rawMessage The raw message to parse.
      * @return An AirborneVelocityMessage object, or null if the raw message is not a type 19 message.
      */
-    public static AirborneVelocityMessage of(final RawMessage rawMessage) {
+    public static AirborneVelocityMessage of(RawMessage rawMessage) {
         if(19 != rawMessage.typeCode()) return null;
-        final int bits22 = Bits.extractUInt(rawMessage.payload(), 21, 22);
-        final int ST = Bits.extractUInt(rawMessage.payload(), 48, 3);
+        final int BITS22_START = 21;
+        final int BITS_SIZE = 22;
+        int bits22 = Bits.extractUInt(rawMessage.payload(), BITS22_START, BITS_SIZE);
+        int ST = Bits.extractUInt(rawMessage.payload(), 48, 3);
 
         if (1 > ST || 4 < ST) return null;
 
         double speed;
         double trackOrHeading;
-
+        final int DIRECTION_SIZE= 1;
+        final int SPEED_SIZE = 10;
+        final int DEW_START = 21;
+        final int VEW_START = 11;
+        final int DNS_START = 10;
+        final int VNS_START = 0;
         // Ground speed
         if (1 == ST || 2 == ST) {
-            final int Dew = Bits.extractUInt(bits22, 21, 1);
-            int Vew = Bits.extractUInt(bits22, 11, 10) - 1;
-            final int Dns = Bits.extractUInt(bits22, 10, 1);
-            int Vns = Bits.extractUInt(bits22, 0, 10) - 1;
+            int Dew = Bits.extractUInt(bits22, DEW_START, DIRECTION_SIZE);
+            int Vew = Bits.extractUInt(bits22, VEW_START, SPEED_SIZE) - 1;
+            int Dns = Bits.extractUInt(bits22, DNS_START, DIRECTION_SIZE);
+            int Vns = Bits.extractUInt(bits22, VNS_START, SPEED_SIZE) - 1;
 
             // If Vns or Vew, which represent the speed of the aircraft, are zero the value is invalid and return null
             if (-1 == Vns || -1 == Vew) return null;
@@ -76,14 +83,18 @@ implements Message{
             }
 
         } else {
-            final int SH = Bits.extractUInt(bits22, 21, 1);
+            final int SH_START = 21;
+            final int SH_SIZE = 1;
+            int SH = Bits.extractUInt(bits22, SH_START, SH_SIZE);
 
             // SH is not allowed to be zero, so null gets returned
             if (0 == SH) return null;
 
             trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
                     Math.scalb(1, 10), Units.Angle.TURN);
-            final int AS = Bits.extractUInt(bits22, 0, 10) - 1;
+            final int AS_START = 0;
+            final int AS_SIZE = 10;
+            final int AS = Bits.extractUInt(bits22, AS_START, AS_SIZE) - 1;
             if(-1 == AS) return null;
             if (3 == ST) {
                 speed = Units.convertFrom(AS, Units.Speed.KNOT);

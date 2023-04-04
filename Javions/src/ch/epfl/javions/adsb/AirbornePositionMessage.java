@@ -43,7 +43,7 @@ public record AirbornePositionMessage
      * @param rawMessage The RawMessage object to create the AirbornePositionMessage from.
      * @return An instance of the AirbornePositionMessage class.
      */
-    public static AirbornePositionMessage of(final RawMessage rawMessage) {
+    public static AirbornePositionMessage of(RawMessage rawMessage) {
         if (9 > rawMessage.typeCode() || 22 < rawMessage.typeCode() || 19 == rawMessage.typeCode()) return null;
 
         // extracting Bits from the payload of the rawMessage
@@ -73,7 +73,7 @@ public record AirbornePositionMessage
      * @param ALT The altitude code.
      * @return The altitude of the aircraft in translated from feet to meters.
      */
-    public static double altitudeComputer(final int ALT) {
+    public static double altitudeComputer(int ALT) {
         //Q=1
         if (1 == Bits.extractUInt(ALT, 4, 1)) {
             final double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);

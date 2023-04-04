@@ -29,7 +29,7 @@ public enum WakeTurbulenceCategory {
      * @return the WakeTurbulenceCategory value that corresponds to the input string
      * @throws IllegalArgumentException if the input string is null or does not match any known category
      */
-    public static WakeTurbulenceCategory of(final String s) {
+    public static WakeTurbulenceCategory of(String s) {
         if ("L".equals(s)) return WakeTurbulenceCategory.LIGHT;
         if ("M".equals(s)) return WakeTurbulenceCategory.MEDIUM;
         if ("H".equals(s)) return WakeTurbulenceCategory.HEAVY;
