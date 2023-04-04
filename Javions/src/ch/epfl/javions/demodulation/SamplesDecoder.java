@@ -51,13 +51,12 @@ public final class SamplesDecoder {
 
         final int bytesRead = this.stream.readNBytes(this.bytes, 0, 2 * this.batchSize);
 
-        for (int i = 0; i < bytesRead / 2; ++i) {
+        for (int posInBatch = 0; posInBatch < bytesRead / 2; ++posInBatch) {
 
-            short higherWeight = this.bytes[2 * i + 1];
+            short higherWeight = this.bytes[2 * posInBatch + 1];
             higherWeight <<= 8;
 
-            batch[i] = (short) ((short) ((higherWeight & 0xF00) | (this.bytes[2 * i] & 0xFF)) - 2048);
-
+            batch[posInBatch] = (short) (((higherWeight & 0xF00) | (this.bytes[2 * posInBatch] & 0xFF)) - 2048);
         }
         return bytesRead / 2;
     }

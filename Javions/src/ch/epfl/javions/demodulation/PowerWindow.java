@@ -82,7 +82,9 @@ public final class PowerWindow {
         if (0 > i || i >= this.windowSize) throw new IllegalArgumentException();
 
         final int positionInBatch = this.positionCounter % PowerWindow.batchSize;
-        return positionInBatch + i < PowerWindow.batchSize ? this.batchOne[positionInBatch + i] : this.batchTwo[(positionInBatch + i) % PowerWindow.batchSize];
+        return positionInBatch + i < PowerWindow.batchSize
+                ? this.batchOne[positionInBatch + i]
+                : this.batchTwo[(positionInBatch + i) % PowerWindow.batchSize];
     }
 
     /**

@@ -15,9 +15,7 @@ import java.io.InputStream;
 public final class PowerComputer {
     private final int batchSize;
     private final SamplesDecoder decoder;
-    private final int[] powerCalculationTable = new int[8];
     private final short[] decodedBatch;
-
     /**
      * Creates a new PowerComputer object that also creates a calls a new SampleDecoder with the parameters stream and
      * two times the batchSize.
@@ -35,6 +33,7 @@ public final class PowerComputer {
         decoder = new SamplesDecoder(stream, 2 * batchSize);
     }
 
+
     /**
      * Reads the next batch of samples from the input stream, computes the power of each sample, and stores
      * the results in the provided batch table.
@@ -46,27 +45,26 @@ public final class PowerComputer {
      */
     public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == this.batchSize);
+        int[] powerCalculationTable = new int[8];
 
         final int bytesRead = this.decoder.readBatch(this.decodedBatch);
         int counter = 0;
 
         for (int i = 0; i < bytesRead; i += 2) {
-            this.powerCalculationTable[7] = this.powerCalculationTable[5];
-            this.powerCalculationTable[6] = this.powerCalculationTable[4];
-            this.powerCalculationTable[5] = this.powerCalculationTable[3];
-            this.powerCalculationTable[4] = this.powerCalculationTable[2];
-            this.powerCalculationTable[3] = this.powerCalculationTable[1];
-            this.powerCalculationTable[2] = this.powerCalculationTable[0];
 
-            this.powerCalculationTable[0] = this.decodedBatch[i + 1];
-            this.powerCalculationTable[1] = this.decodedBatch[i];
+            // shifting the values inside the calculationTable by two ([7] <- [5])
+            for (int j = 5; j >= 0; j--)
+                powerCalculationTable[2+j] = powerCalculationTable[j];
+
+            powerCalculationTable[0] = this.decodedBatch[i + 1];
+            powerCalculationTable[1] = this.decodedBatch[i];
 
 
-            batch[i / 2] = (int) (Math.pow(this.powerCalculationTable[1] - this.powerCalculationTable[3] +
-                    this.powerCalculationTable[5] - this.powerCalculationTable[7], 2) //even
+            batch[i / 2] = (int) (Math.pow(powerCalculationTable[1] - powerCalculationTable[3] +
+                    powerCalculationTable[5] - powerCalculationTable[7], 2) //even
                     +
-                    Math.pow(this.powerCalculationTable[0] - this.powerCalculationTable[2] + this.powerCalculationTable[4] -
-                            this.powerCalculationTable[6], 2)); //odd
+                    Math.pow(powerCalculationTable[0] - powerCalculationTable[2] + powerCalculationTable[4] -
+                            powerCalculationTable[6], 2)); //odd
             counter++;
         }
         return counter;
