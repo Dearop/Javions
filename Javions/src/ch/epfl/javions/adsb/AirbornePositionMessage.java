@@ -13,8 +13,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  * @author Henri Antal (339444)
  */
 public record AirbornePositionMessage
-        (long timeStampNs, IcaoAddress icaoAddress, double altitude,
-         int parity, double x, double y) implements Message {
+        (long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y) implements Message {
 
     /**
      * Constructs an instance of the AirbornePositionMessage class.
@@ -47,10 +46,11 @@ public record AirbornePositionMessage
         if (9 > rawMessage.typeCode() || 22 < rawMessage.typeCode() || 19 == rawMessage.typeCode()) return null;
 
         // extracting Bits from the payload of the rawMessage
-        final long payload = rawMessage.payload();
-        final double longitude = (Bits.extractUInt(payload, 0, 17)) / Math.pow(2, 17);
-        final double latitude = (Bits.extractUInt(payload, 17, 17)) / Math.pow(2, 17);
-        final int FORMAT = (int) ((payload >> 34) & 1);
+        long payload = rawMessage.payload();
+        double longitude = (Bits.extractUInt(payload, 0, 17)) / Math.pow(2, 17);
+        double latitude = (Bits.extractUInt(payload, 17, 17)) / Math.pow(2, 17);
+
+        int FORMAT = (int) ((payload >> 34) & 1);
         int ALT = Bits.extractUInt(payload, 36, 12);
         double computedAltitude = altitudeComputer(ALT);
 
@@ -88,13 +88,13 @@ public record AirbornePositionMessage
 
         // reorganising the bits
         for (int i = 0; 5 > i; i += 2) {
-            // D
+            // D part of the altitude bit expression
             MSBGray |= ((Bits.extractUInt(ALT, i, 1) << (6 + i / 2)));
-            // A
+            // A part of the altitude bit expression
             MSBGray |= ((Bits.extractUInt(ALT, 6 + i, 1) << (3 + i / 2)));
-            // B
+            // B part of the altitude bit expression
             MSBGray |= ((Bits.extractUInt(ALT, 1 + i, 1) << (i / 2)));
-            // C
+            // C part of the altitude bit expression
             LSBGray |= ((Bits.extractUInt(ALT, 7 + i, 1) << i / 2));
         }
 
@@ -121,7 +121,7 @@ public record AirbornePositionMessage
             gray >>= 1;
             binary ^= gray;
         }
-        
+
         return binary;
     }
 }
