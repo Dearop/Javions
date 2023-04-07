@@ -43,16 +43,16 @@ public class CprDecoder {
         // Latitude
         int zPhiLatitude = (int) Math.rint(y0 * zoneNumberLatitude1 - y1 * zoneNumberLatitude0);
 
-        final double phiEven = CprDecoder.currentZone(zoneNumberLatitude0, zPhiLatitude, y0);
+        double phiEven = currentZone(zoneNumberLatitude0, zPhiLatitude, y0);
         if (Math.PI / 2 < phiEven || -(Math.PI / 2) > phiEven)
             return null;
 
-        final double phiOdd = CprDecoder.currentZone(zoneNumberLatitude1, zPhiLatitude, y1);
+        double phiOdd = currentZone(zoneNumberLatitude1, zPhiLatitude, y1);
         if (Math.PI / 2 < phiOdd || -(Math.PI / 2) > phiOdd)
             return null;
 
-        double A0 = CprDecoder.AngleToZoneCalculator(zoneNumberLatitude0, phiEven);
-        double A1 = CprDecoder.AngleToZoneCalculator(zoneNumberLatitude0, phiOdd);
+        double A0 = AngleToZoneCalculator(zoneNumberLatitude0, phiEven);
+        double A1 = AngleToZoneCalculator(zoneNumberLatitude0, phiOdd);
 
         double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
         double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
@@ -72,8 +72,8 @@ public class CprDecoder {
         double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitudeOdd, x1);
 
         if (1 == evenZoneLocationLat0) {
-            lambdaEven = Units.convertFrom(CprDecoder.center(x0), Units.Angle.TURN);
-            lambdaOdd = Units.convertFrom(CprDecoder.center(x1), Units.Angle.TURN);
+            lambdaEven = Units.convertFrom(center(x0), Units.Angle.TURN);
+            lambdaOdd = Units.convertFrom(center(x1), Units.Angle.TURN);
         }
 
         // Getting the right Latitude or Longitude due to parity
@@ -93,7 +93,7 @@ public class CprDecoder {
      * @param currentAngle  Is either Phi-even or Phi-odd
      * @return returns the arccosinus of formula seen in the course.
      */
-    private static double AngleToZoneCalculator(final double numberOfZones, final double currentAngle) {
+    private static double AngleToZoneCalculator(double numberOfZones, double currentAngle) {
         return Math.acos(1 - ((1 - Math.cos(2 * Math.PI / numberOfZones))
                 / Math.pow(Math.cos(currentAngle), 2)));
     }
@@ -110,7 +110,7 @@ public class CprDecoder {
         currentZone = (0 > currentZone) ? (currentZone + numberOfZones) : currentZone;
 
         final double angle = (currentZone + position) / numberOfZones;
-        return Units.convertFrom(CprDecoder.center(angle), Units.Angle.TURN);
+        return Units.convertFrom(center(angle), Units.Angle.TURN);
     }
 
     private static double center(double angle){

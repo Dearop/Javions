@@ -54,21 +54,23 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
      */
     public static int typeCode(long payload) {
-        return Bits.extractUInt(payload, MESSAGE_LENGTH - TYPE_CODE_LENGTH, TYPE_CODE_LENGTH);
+        return Bits.extractUInt(payload
+                , MESSAGE_LENGTH - TYPE_CODE_LENGTH
+                , TYPE_CODE_LENGTH);
     }
 
     /**
      * @return integer value representing the DF format of the message
      */
     public int downLinkFormat() {
-        return this.bytes.byteAt(RawMessage.DF_LOCATION) >> RawMessage.CA_SIZE;
+        return this.bytes.byteAt(DF_LOCATION) >> CA_SIZE;
     }
 
     /**
      * @return Icao address contained in the message
      */
     public IcaoAddress icaoAddress() {
-        final byte[] byteAddress = new byte[3];
+        byte[] byteAddress = new byte[3];
 
         for (int i = 1; 4 > i; ++i) {
             byteAddress[i - 1] = (byte) this.bytes.byteAt(i);

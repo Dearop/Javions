@@ -17,7 +17,7 @@ public final class ByteString {
 
     private final int byteFullOfOnes = 0xFF;
 
-    public ByteString(final byte[] bytes) {
+    public ByteString(byte[] bytes) {
         this.bytes = bytes.clone();
     }
 
@@ -31,7 +31,7 @@ public final class ByteString {
      * @throws IllegalArgumentException if the input string has an odd length
      * @throws NumberFormatException    if the input string contains a non-hexadecimal character
      */
-    public static ByteString ofHexadecimalString(final String hexString) {
+    public static ByteString ofHexadecimalString(String hexString) {
 
         // hexString length is odd then return Exception
         if (1 == hexString.length() % 2)
@@ -61,7 +61,7 @@ public final class ByteString {
      * @return int representing the byte at the specified index, interpreted as an unsigned value
      * @throws IndexOutOfBoundsException if the index is negative or greater than the size of the ByteString
      */
-    public int byteAt(final int index) {
+    public int byteAt(int index) {
         if (0 > index || index > this.bytes.length)
             throw new IndexOutOfBoundsException();
 
@@ -83,7 +83,7 @@ public final class ByteString {
      * @throws IllegalArgumentException  If the range between fromIndex and toIndex is greater than or equal
      *                                   to the size of a long
      */
-    public long bytesInRange(final int fromIndex, final int toIndex) {
+    public long bytesInRange(int fromIndex, int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, bytes.length);
 
         if (Long.BYTES <= toIndex - fromIndex)
@@ -107,7 +107,7 @@ public final class ByteString {
      * @param that0 object to compare against the bytes attribute
      * @return boolean indicating whether that0 is equal to the attribute or not
      */
-    public boolean equals(final Object that0) {
+    public boolean equals(Object that0) {
         if (that0 instanceof ByteString that) return Arrays.equals(this.bytes, that.bytes);
         return false;
     }

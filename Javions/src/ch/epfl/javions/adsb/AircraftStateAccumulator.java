@@ -44,35 +44,35 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @throws NullPointerException if the given message is null
      */
     public void update(Message message) {
-        this.stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
+        stateSetter.setLastMessageTimeStampNs(message.timeStampNs());
         switch (message) {
             case AircraftIdentificationMessage aim -> {
-                this.stateSetter.setCategory(aim.category());
-                this.stateSetter.setCallSign(aim.callSign());
+                stateSetter.setCategory(aim.category());
+                stateSetter.setCallSign(aim.callSign());
             }
             case AirborneVelocityMessage avm -> {
-                this.stateSetter.setVelocity(avm.speed());
-                this.stateSetter.setTrackOrHeading(avm.trackOrHeading());
+                stateSetter.setVelocity(avm.speed());
+                stateSetter.setTrackOrHeading(avm.trackOrHeading());
             }
             case AirbornePositionMessage apm -> {
-                this.stateSetter.setAltitude(apm.altitude());
+                stateSetter.setAltitude(apm.altitude());
 
                 if (0 == apm.parity()) {
-                    this.latestEvenMessage = apm;
+                    latestEvenMessage = apm;
                 } else {
-                    this.latestOddMessage = apm;
+                    latestOddMessage = apm;
                 }
 
                 if (null != latestEvenMessage && null != latestOddMessage) {
                     if (TIME_BETWEEN_TWO_MESSAGES >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
 
-                        double x0 = this.latestEvenMessage.x();
-                        double y0 = this.latestEvenMessage.y();
-                        double x1 = this.latestOddMessage.x();
-                        double y1 = this.latestOddMessage.y();
+                        double x0 = latestEvenMessage.x();
+                        double y0 = latestEvenMessage.y();
+                        double x1 = latestOddMessage.x();
+                        double y1 = latestOddMessage.y();
 
                         if(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()) != null)
-                            this.stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
+                            stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));
                     }
                 }
 

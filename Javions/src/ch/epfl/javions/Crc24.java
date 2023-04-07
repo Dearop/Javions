@@ -25,8 +25,8 @@ public final class Crc24 {
      *                  used in the CRC24 calculation
      */
     public Crc24(int generator) {
-        int generatorMasked = generator & Crc24.mask;
-        Crc24.crc_b = Crc24.buildTable(generatorMasked);
+        int generatorMasked = generator & mask;
+        crc_b = buildTable(generatorMasked);
     }
 
     /**
@@ -37,18 +37,18 @@ public final class Crc24 {
      * @param bytes an array of bytes representing the data for which the CRC24 is to be calculated.
      * @return integer value representing the CRC24 of the input array.
      */
-    public int crc(final byte[] bytes) {
+    public int crc(byte[] bytes) {
         int crc = 0;
 
-        for (final byte o : bytes) {
-            crc = ((crc << CRC_SIZE) | Byte.toUnsignedInt(o)) ^ Crc24.crc_b[Bits.extractUInt(crc, CRC_START, CRC_SIZE)];
+        for (byte o : bytes) {
+            crc = ((crc << CRC_SIZE) | Byte.toUnsignedInt(o)) ^ crc_b[Bits.extractUInt(crc, CRC_START, CRC_SIZE)];
         }
 
         for (int j = 0; 3 > j; ++j) {
-            crc = (crc << CRC_SIZE) ^ Crc24.crc_b[Bits.extractUInt(crc, CRC_START, CRC_SIZE)];
+            crc = (crc << CRC_SIZE) ^ crc_b[Bits.extractUInt(crc, CRC_START, CRC_SIZE)];
         }
 
-        return crc & Crc24.mask;
+        return crc & mask;
     }
 
     /**
@@ -60,11 +60,11 @@ public final class Crc24 {
      * @param bytes     an array of bytes representing the data for which the CRC24 is to be calculated.
      * @return integer value representing the CRC24 of the input array.
      */
-    private static int crc_bitwise(final int generator, final byte[] bytes) {
-        final int[] table = {0, generator & Crc24.mask};
+    private static int crc_bitwise(int generator, byte[] bytes) {
+        int[] table = {0, generator & mask};
         int crc = 0;
 
-        for (final byte byteUsed : bytes) {
+        for (byte byteUsed : bytes) {
             for (int posInByte = 7; 0 <= posInByte; --posInByte) {
                 crc = ((crc << CRC_BITWISE_SIZE) | Bits.extractUInt(byteUsed, posInByte, CRC_BITWISE_SIZE))
                         ^ table[Bits.extractUInt(crc, CRC_BITWISE_START, CRC_BITWISE_SIZE)];
@@ -78,7 +78,7 @@ public final class Crc24 {
             }
         }
 
-        return crc & Crc24.mask;
+        return crc & mask;
     }
 
     /**
@@ -90,11 +90,11 @@ public final class Crc24 {
      *                  used in the CRC24 calculation.
      * @return table of bytes
      */
-    private static int[] buildTable(final int generator) {
-        final int[] table = new int[tableSize];
+    private static int[] buildTable(int generator) {
+        int[] table = new int[tableSize];
 
         for (int posInTable = 0; tableSize > posInTable; ++posInTable) {
-            table[posInTable] = Crc24.crc_bitwise(generator, new byte[]{(byte) posInTable});
+            table[posInTable] = crc_bitwise(generator, new byte[]{(byte) posInTable});
         }
 
         return table;

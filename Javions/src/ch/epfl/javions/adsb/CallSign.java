@@ -21,7 +21,7 @@ public record CallSign(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public CallSign {
-        if (null == string || !CallSign.pattern.matcher(string).matches())
+        if (null == string || !pattern.matcher(string).matches())
             throw new IllegalArgumentException();
     }
 }
