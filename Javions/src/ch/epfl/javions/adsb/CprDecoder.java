@@ -17,6 +17,8 @@ public class CprDecoder {
     private static final double zoneNumberLatitude0 = 60d;
     private static final double zoneNumberLatitude1 = 59d;
 
+    private CprDecoder(){}
+
     /**
      * Decodes the geographic position based on the provided parameters.
      * The method first checks that the mostRecent value is either 0 or 1, then calculates the
@@ -39,30 +41,32 @@ public class CprDecoder {
 
 
         // Latitude
-        final int zPhiLatitude = (int) Math.rint(y0 * zoneNumberLatitude1
-                - y1 * zoneNumberLatitude0);
+        int zPhiLatitude = (int) Math.rint(y0 * zoneNumberLatitude1 - y1 * zoneNumberLatitude0);
 
         final double phiEven = CprDecoder.currentZone(zoneNumberLatitude0, zPhiLatitude, y0);
-        if (Math.PI / 2 < phiEven || -(Math.PI / 2) > phiEven) return null;
+        if (Math.PI / 2 < phiEven || -(Math.PI / 2) > phiEven)
+            return null;
 
         final double phiOdd = CprDecoder.currentZone(zoneNumberLatitude1, zPhiLatitude, y1);
-        if (Math.PI / 2 < phiOdd || -(Math.PI / 2) > phiOdd) return null;
+        if (Math.PI / 2 < phiOdd || -(Math.PI / 2) > phiOdd)
+            return null;
 
-        final double A0 = CprDecoder.AngleToZoneCalculator(zoneNumberLatitude0, phiEven);
-        final double A1 = CprDecoder.AngleToZoneCalculator(zoneNumberLatitude0, phiOdd);
+        double A0 = CprDecoder.AngleToZoneCalculator(zoneNumberLatitude0, phiEven);
+        double A1 = CprDecoder.AngleToZoneCalculator(zoneNumberLatitude0, phiOdd);
 
-        final double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
-        final double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
+        double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
+        double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
 
         // The two even zone locations for latitude need to have the same value, else null gets returned
-        if (evenZoneLocationLat0 != evenZoneLocationLat1) return null;
-        final double oddZoneLocationLat = evenZoneLocationLat0 - 1;
+        if (evenZoneLocationLat0 != evenZoneLocationLat1)
+            return null;
+        double oddZoneLocationLat = evenZoneLocationLat0 - 1;
 
         //Longitude
-        final int zPhiLongitude = (int) Math.rint(x0 * oddZoneLocationLat - x1 * evenZoneLocationLat0);
+        int zPhiLongitude = (int) Math.rint(x0 * oddZoneLocationLat - x1 * evenZoneLocationLat0);
 
-        final double zPhiLongitudeEven = (0 > zPhiLongitude) ? zPhiLongitude + evenZoneLocationLat0 : zPhiLongitude;
-        final double zPhiLongitudeOdd = (0 > zPhiLongitude) ? zPhiLongitude + oddZoneLocationLat : zPhiLongitude;
+        double zPhiLongitudeEven = (0 > zPhiLongitude) ? zPhiLongitude + evenZoneLocationLat0 : zPhiLongitude;
+        double zPhiLongitudeOdd = (0 > zPhiLongitude) ? zPhiLongitude + oddZoneLocationLat : zPhiLongitude;
 
         double lambdaEven = currentZone(evenZoneLocationLat0, zPhiLongitudeEven, x0);
         double lambdaOdd = currentZone(oddZoneLocationLat, zPhiLongitudeOdd, x1);
@@ -73,11 +77,11 @@ public class CprDecoder {
         }
 
         // Getting the right Latitude or Longitude due to parity
-        final double finalLongAngle = (0 == mostRecent) ? lambdaEven : lambdaOdd;
-        final double finalLatAngle = (0 == mostRecent) ? phiEven : phiOdd;
+        double finalLongAngle = (0 == mostRecent) ? lambdaEven : lambdaOdd;
+        double finalLatAngle = (0 == mostRecent) ? phiEven : phiOdd;
 
-        final double actualLatT32 = Units.convertTo(finalLatAngle, Units.Angle.T32);
-        final double actualLongT32 = Units.convertTo(finalLongAngle, Units.Angle.T32);
+        double actualLatT32 = Units.convertTo(finalLatAngle, Units.Angle.T32);
+        double actualLongT32 = Units.convertTo(finalLongAngle, Units.Angle.T32);
 
         return new GeoPos((int) Math.rint(actualLongT32), (int) Math.rint(actualLatT32));
     }
@@ -110,7 +114,8 @@ public class CprDecoder {
     }
 
     private static double center(double angle){
-        if (0.5 <= angle) angle -= 1;
+        if (0.5 <= angle)
+            angle -= 1;
         return angle;
     }
 }

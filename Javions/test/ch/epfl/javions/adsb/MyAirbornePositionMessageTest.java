@@ -11,12 +11,12 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MyAirbornePositionMessageTest {
-    private final String f = "/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/samples_20230304_1442.bin";
+    private final String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
     @Test
     public void PrintFirstAibornePositionMessage() throws IOException {
         try (
-                final InputStream s = new FileInputStream(this.f)) {
-                final AdsbDemodulator d = new AdsbDemodulator(s);
+                InputStream s = new FileInputStream(this.f)) {
+                 AdsbDemodulator d = new AdsbDemodulator(s);
                 RawMessage m;
                 while (null != (m = d.nextMessage())) {
                     if (null != AirbornePositionMessage.of(m)) {

@@ -27,7 +27,8 @@ public final class AircraftDatabase {
      * @throws NullPointerException If the file name is null.
      */
     public AircraftDatabase(String fileName) {
-        if (null == fileName) throw new NullPointerException();
+        if (null == fileName)
+            throw new NullPointerException();
         this.fileName = fileName;
     }
 

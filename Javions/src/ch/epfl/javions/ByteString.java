@@ -34,10 +34,13 @@ public final class ByteString {
     public static ByteString ofHexadecimalString(final String hexString) {
 
         // hexString length is odd then return Exception
-        if (1 == hexString.length() % 2) throw new IllegalArgumentException();
-        if (!hexString.matches("^[a-fA-F0-9]+$")) throw new NumberFormatException();
+        if (1 == hexString.length() % 2)
+            throw new IllegalArgumentException();
 
-        final byte[] bytes = HexFormat.of().withUpperCase().parseHex(hexString);
+        if (!hexString.matches("^[a-fA-F0-9]+$"))
+            throw new NumberFormatException();
+
+        byte[] bytes = HexFormat.of().withUpperCase().parseHex(hexString);
         return new ByteString(bytes);
     }
 
@@ -59,9 +62,10 @@ public final class ByteString {
      * @throws IndexOutOfBoundsException if the index is negative or greater than the size of the ByteString
      */
     public int byteAt(final int index) {
-        if (0 > index || index > this.bytes.length) throw new IndexOutOfBoundsException();
+        if (0 > index || index > this.bytes.length)
+            throw new IndexOutOfBoundsException();
 
-        final byte byteAtIndex = this.bytes[index];
+        byte byteAtIndex = this.bytes[index];
         return byteAtIndex & byteFullOfOnes;
     }
 
@@ -82,15 +86,16 @@ public final class ByteString {
     public long bytesInRange(final int fromIndex, final int toIndex) {
         Objects.checkFromToIndex(fromIndex, toIndex, bytes.length);
 
-        if (Long.BYTES <= toIndex - fromIndex) {
+        if (Long.BYTES <= toIndex - fromIndex)
             throw new IllegalArgumentException();
-        }
 
         long result = 0;
+
         for (int i = fromIndex; i < toIndex; ++i) {
             result <<= Byte.SIZE;
             result |= (bytes[i] & byteFullOfOnes);
         }
+
         return result;
     }
 

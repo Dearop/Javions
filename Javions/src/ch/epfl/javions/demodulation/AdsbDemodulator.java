@@ -61,7 +61,6 @@ public final class AdsbDemodulator {
 
                             if (this.window.get(START_OF_BYTE +
                                     (START_OF_BYTE * byteUsed) + (BIT_TIME_INTERVAL * posInsideByte))
-
                                     >= this.window.get(START_OF_BYTE_CHECK +
                                     (START_OF_BYTE * byteUsed) + (BIT_TIME_INTERVAL * posInsideByte))) {
 
@@ -70,7 +69,7 @@ public final class AdsbDemodulator {
                         }
                     }
 
-                    final RawMessage checker
+                    RawMessage checker
                             = RawMessage.of(this.window.position() * TIMESTAMP_CONVERTER, table);
 
                     if (null != checker) {

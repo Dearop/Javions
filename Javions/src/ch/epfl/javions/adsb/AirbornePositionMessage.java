@@ -33,8 +33,6 @@ public record AirbornePositionMessage
 
     /**
      * Constructs an instance of the AirbornePositionMessage class.
-     * Throws a NullPointerException if the IcaoAddress is null.
-     * Throws an IllegalArgumentException if the given values do not meet the required constraints.
      *
      * @param timeStampNs The timestamp of the message in nanoseconds.
      * @param icaoAddress The ICAO address of the aircraft.
@@ -42,6 +40,8 @@ public record AirbornePositionMessage
      * @param parity      The parity bit of the message.
      * @param x           The longitude of the aircraft, between 0 and 1.
      * @param y           The latitude of the aircraft, between 0 and 1.
+     * @throws NullPointerException if the IcaoAddress is null.
+     * @throws IllegalArgumentException if the given values do not meet the required constraints.
      */
     public AirbornePositionMessage {
         if (null == icaoAddress) throw new NullPointerException();
@@ -53,15 +53,16 @@ public record AirbornePositionMessage
 
     /**
      * Creates an instance of the AirbornePositionMessage class from a RawMessage object.
-     * Returns null if the RawMessage object does not correspond to an airborne position message.
      *
-     * @param rawMessage The RawMessage object to create the AirbornePositionMessage from.
-     * @return An instance of the AirbornePositionMessage class.
+     * @param rawMessage The RawMessage object from which we will create the AirbornePositionMessage.
+     * @return An instance of the AirbornePositionMessage class with the data contained in the raw message.
+     * @return null if the RawMessage object does not correspond to an airborne position message.
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
         if (TYPE_CODE_TOO_SMALL > rawMessage.typeCode()
                 || TYPE_CODE_TOO_BIG < rawMessage.typeCode()
-                || TYPE_CODE_INVALID == rawMessage.typeCode()) return null;
+                || TYPE_CODE_INVALID == rawMessage.typeCode())
+            return null;
 
         // extracting Bits from the payload of the rawMessage
         long payload = rawMessage.payload();
@@ -73,7 +74,8 @@ public record AirbornePositionMessage
         double computedAltitude = altitudeComputer(ALT);
 
         // if the computedAltitude is invalid, it has the value of -0xFFFFF
-        if (-0xFFFFF == computedAltitude) return null;
+        if (-0xFFFFF == computedAltitude)
+            return null;
 
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
                 rawMessage.icaoAddress(), computedAltitude, FORMAT, longitude, latitude);
@@ -81,7 +83,6 @@ public record AirbornePositionMessage
 
     /**
      * Computes the altitude of the aircraft from the given altitude code.
-     * Returns -0xFFFFF if the computed altitude is invalid.
      * In this there are two cases how we compute the altitude.
      * Case one is that the bit with index 4 is equal to 1 then we use the first algorithm that is defined below the
      * comment with "// Q=1"
@@ -90,6 +91,7 @@ public record AirbornePositionMessage
      *
      * @param ALT The altitude code.
      * @return The altitude of the aircraft in translated from feet to meters.
+     * @return -0xFFFFF if the computed altitude is invalid.
      */
     public static double altitudeComputer(int ALT) {
         //Q=1
@@ -105,23 +107,26 @@ public record AirbornePositionMessage
 
         // reorganising the bits
         for (int i = 0; 5 > i; i += 2) {
-            // D part of the altitude bit expression
+            // part D of the altitude bit expression
             MSBGray |= ((Bits.extractUInt(ALT, i, 1) << (6 + i / 2)));
-            // A part of the altitude bit expression
+            // part A of the altitude bit expression
             MSBGray |= ((Bits.extractUInt(ALT, 6 + i, 1) << (3 + i / 2)));
-            // B part of the altitude bit expression
+            // part B of the altitude bit expression
             MSBGray |= ((Bits.extractUInt(ALT, 1 + i, 1) << (i / 2)));
-            // C part of the altitude bit expression
+            // part C of the altitude bit expression
             LSBGray |= ((Bits.extractUInt(ALT, 7 + i, 1) << i / 2));
         }
 
-        final double MSB = AirbornePositionMessage.grayToBinary(MSBGray);
-        double LSB = AirbornePositionMessage.grayToBinary(LSBGray);
+        double MSB = grayToBinary(MSBGray);
+        double LSB = grayToBinary(LSBGray);
 
         // these three lines handle special cases about the LSB
-        if (0 == LSB || 5 == LSB || 6 == LSB) return -0xFFFFF;
-        if (7 == LSB) LSB = 5;
-        if (1 == MSB % 2) LSB = (6 - LSB);
+        if (0 == LSB || 5 == LSB || 6 == LSB)
+            return -0xFFFFF;
+        if (7 == LSB)
+            LSB = 5;
+        if (1 == MSB % 2)
+            LSB = (6 - LSB);
 
         return Units.convertFrom(BASE_ALTITUDE_Q0 + (MSB * 500) + (LSB * 100), Units.Length.FOOT);
     }
@@ -132,7 +137,7 @@ public record AirbornePositionMessage
      * @param gray The Gray code to convert.
      * @return The binary code.
      */
-    public static int grayToBinary(int gray) {
+    private static int grayToBinary(int gray) {
         int binary = gray;
 
         while (0 < gray) {

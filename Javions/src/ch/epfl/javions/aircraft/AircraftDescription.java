@@ -20,8 +20,8 @@ public record AircraftDescription(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftDescription {
-        if (!AircraftDescription.pattern.matcher(string).matches()
-                && !string.isEmpty()) throw new IllegalArgumentException();
+        if (!AircraftDescription.pattern.matcher(string).matches() && !string.isEmpty())
+            throw new IllegalArgumentException();
     }
 
 }

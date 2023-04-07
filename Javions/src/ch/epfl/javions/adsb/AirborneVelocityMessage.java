@@ -46,7 +46,8 @@ implements Message{
      * @throws IllegalArgumentException if any of the parameters have invalid values.
      */
     public AirborneVelocityMessage{
-        if(null == icaoAddress) throw new NullPointerException();
+        if(null == icaoAddress)
+            throw new NullPointerException();
         Preconditions.checkArgument(0 <= timeStampNs && 0 <= speed && 0 <= trackOrHeading);
     }
 
@@ -62,12 +63,14 @@ implements Message{
      * @return An AirborneVelocityMessage object, or null if the raw message is not a type 19 message.
      */
     public static AirborneVelocityMessage of(RawMessage rawMessage) {
-        if(19 != rawMessage.typeCode()) return null;
+        if(19 != rawMessage.typeCode())
+            return null;
 
         int bits22 = Bits.extractUInt(rawMessage.payload(), BITS22_START, BITS_SIZE);
         int ST = Bits.extractUInt(rawMessage.payload(), ST_START, ST_SIZE);
 
-        if (1 > ST || 4 < ST) return null;
+        if (1 > ST || 4 < ST)
+            return null;
 
         double speed;
         double trackOrHeading;
@@ -80,7 +83,8 @@ implements Message{
             int Vns = Bits.extractUInt(bits22, VNS_START, SPEED_SIZE) - 1;
 
             // If Vns or Vew, which represent the speed of the aircraft, are zero the value is invalid and return null
-            if (-1 == Vns || -1 == Vew) return null;
+            if (-1 == Vns || -1 == Vew)
+                return null;
 
             speed = Math.hypot(Vns, Vew);
             Vns = (0 == Dns) ? Vns : -Vns;
@@ -96,17 +100,18 @@ implements Message{
             }
 
         } else {
-
             int SH = Bits.extractUInt(bits22, SH_START, SH_SIZE);
 
             // SH is not allowed to be zero, so null gets returned
-            if (0 == SH) return null;
+            if (0 == SH)
+                return null;
 
             trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
                     Math.scalb(1, 10), Units.Angle.TURN);
 
             final int AS = Bits.extractUInt(bits22, AS_START, AS_SIZE) - 1;
-            if(-1 == AS) return null;
+            if(-1 == AS)
+                return null;
             if (3 == ST) {
                 speed = Units.convertFrom(AS, Units.Speed.KNOT);
             } else {

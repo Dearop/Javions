@@ -49,7 +49,7 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == this.batchSize);
 
-        final int bytesRead = this.stream.readNBytes(this.bytes, 0, 2 * this.batchSize);
+        int bytesRead = this.stream.readNBytes(this.bytes, 0, 2 * this.batchSize);
 
         for (int posInBatch = 0; posInBatch < bytesRead / 2; ++posInBatch) {
 

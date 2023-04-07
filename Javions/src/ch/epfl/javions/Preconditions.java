@@ -6,8 +6,9 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  * @author Henri Antal (339444)
  */
-public class Preconditions {
+public final class Preconditions {
 
+    private Preconditions(){}
 
     /**
      * Checks if a boolean has a true value, if not it throws an error
@@ -16,7 +17,8 @@ public class Preconditions {
      * @throws IllegalArgumentException if shouldBeTrue is false
      */
     public static void checkArgument(boolean shouldBeTrue) {
-        if (!shouldBeTrue) throw new IllegalArgumentException();
+        if (!shouldBeTrue)
+            throw new IllegalArgumentException();
     }
 }
 

@@ -2,13 +2,63 @@ package ch.epfl.javions.adsb;
 
 import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import ch.epfl.javions.demodulation.AdsbDemodulator;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AircraftStateAccumulatorTestNEW {
+class AircraftStateAccumulatorTest {
+    private final String[] ACTUAL_VALUES_FIRST_ADDRESS = {"position : (5.620176717638969°, 45.71530147455633°)",
+            "position : (5.621292097494006°, 45.715926848351955°)",
+            "indicatif : CallSign[string=RYR7JD]",
+            "position : (5.62225341796875°, 45.71644593961537°)",
+            "position : (5.623420681804419°, 45.71704415604472°)",
+            "position : (5.624397089704871°, 45.71759032085538°)",
+            "position : (5.625617997720838°, 45.71820789948106°)",
+            "position : (5.626741759479046°, 45.718826316297054°)",
+            "position : (5.627952609211206°, 45.71946484968066°)",
+            "position : (5.629119873046875°, 45.72007002308965°)",
+            "position : (5.630081193521619°, 45.7205820735544°)",
+            "position : (5.631163045763969°, 45.72120669297874°)",
+            "indicatif : CallSign[string=RYR7JD]",
+            "position : (5.633909627795219°, 45.722671514377°)",
+            "position : (5.634819064289331°, 45.72314249351621°)"};
+    private final String[] ICAO_ADDRESS = {
+            "3C6481",
+            "4D2228",
+            "4B17E5",
+            "495299",
+            "39D300",
+            "4241A9",
+            "4B1A00",
+            "01024C"};
+
+
+        @Test
+        void updateSamplesWithDifferIcaoAddress() throws IOException {
+            String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
+            for(String k: ICAO_ADDRESS) {
+                System.out.println("Next address");
+                IcaoAddress expectedAddress = new IcaoAddress(k);
+                try (InputStream s = new FileInputStream(f)) {
+                    AdsbDemodulator d = new AdsbDemodulator(s);
+                    RawMessage m;
+                    AircraftStateAccumulator<AircraftState> a = new AircraftStateAccumulator<>(new AircraftState());
+                    while ((m = d.nextMessage()) != null) {
+                        if (!m.icaoAddress().equals(expectedAddress)) continue;
+                        Message pm = MessageParser.parse(m);
+                        if (pm != null) {
+                            a.update(pm);
+                        }
+
+                    }
+                }
+            }
+        }
     @Test
     void aircraftStateAccumulatorConstructorThrowsIfStateSetterIsNull() {
         assertThrows(NullPointerException.class, () -> new AircraftStateAccumulator<>(null));
@@ -26,7 +76,7 @@ class AircraftStateAccumulatorTestNEW {
     @Test
     void aircraftStateAccumulatorUpdateUpdatesCategoryAndCallSign() {
         var icao = new IcaoAddress("ABCDEF");
-        var stateSetter = new AircraftState();
+        var stateSetter = new AircraftState2();
         var accumulator = new AircraftStateAccumulator<>(stateSetter);
         var expectedLastMessageTimeStampNs = -1L;
         var expectedCategory = -1;
@@ -47,7 +97,7 @@ class AircraftStateAccumulatorTestNEW {
     @Test
     void aircraftStateAccumulatorUpdateUpdatesVelocityAndTrackOrHeading() {
         var icao = new IcaoAddress("ABCDEF");
-        var stateSetter = new AircraftState();
+        var stateSetter = new AircraftState2();
         var accumulator = new AircraftStateAccumulator<>(stateSetter);
         var expectedLastMessageTimeStampNs = -1L;
         var expectedVelocity = Double.NaN;
@@ -69,7 +119,7 @@ class AircraftStateAccumulatorTestNEW {
     void aircraftStateAccumulatorUpdateUpdatesAltitudeButNotPositionWhenParityIsConstant() {
         var icao = new IcaoAddress("ABCDEF");
         for (int parity = 0; parity <= 1; parity += 1) {
-            var stateSetter = new AircraftState();
+            var stateSetter = new AircraftState2();
             var accumulator = new AircraftStateAccumulator<>(stateSetter);
 
             var expectedLastMessageTimeStampNs = -1L;
@@ -93,7 +143,7 @@ class AircraftStateAccumulatorTestNEW {
     void aircraftStateAccumulatorUpdateUpdatesAltitudeButNotPositionWhenMessagesTooFarApart() {
         var icao = new IcaoAddress("ABCDEF");
         var moreThan10s = 10_000_000_001L;
-        var stateSetter = new AircraftState();
+        var stateSetter = new AircraftState2();
         var accumulator = new AircraftStateAccumulator<>(stateSetter);
 
         var x = 0.5;
@@ -122,7 +172,7 @@ class AircraftStateAccumulatorTestNEW {
     void aircraftStateAccumulatorUpdateUsesCorrectMessageToComputePosition() {
         var icao = new IcaoAddress("ABCDEF");
         var moreThan10s = 10_000_000_001L;
-        var stateSetter = new AircraftState();
+        var stateSetter = new AircraftState2();
         var accumulator = new AircraftStateAccumulator<>(stateSetter);
 
         var timeStampNs = 109L;
@@ -166,7 +216,7 @@ class AircraftStateAccumulatorTestNEW {
         };
 
         var icao = new IcaoAddress("ABCDEF");
-        var stateSetter = new AircraftState();
+        var stateSetter = new AircraftState2();
         var accumulator = new AircraftStateAccumulator<>(stateSetter);
 
         var timeStampNs = 113L;
@@ -186,7 +236,9 @@ class AircraftStateAccumulatorTestNEW {
         }
     }
 
-    private static final class AircraftState implements AircraftStateSetter {
+
+
+    private static final class AircraftState2 implements AircraftStateSetter {
         long lastMessageTimeStampNs = -1L;
         int category = -1;
         CallSign callSign = null;
@@ -230,4 +282,56 @@ class AircraftStateAccumulatorTestNEW {
             this.trackOrHeading = trackOrHeading;
         }
     }
+    public class AircraftState implements AircraftStateSetter {
+        long lastMessageTimeStampNs = -1L;
+        int category = -1;
+        CallSign callSign = null;
+        GeoPos position = null;
+        double altitude = Double.NaN;
+        double velocity = Double.NaN;
+        double trackOrHeading = Double.NaN;
+        @Override
+        public void setLastMessageTimeStampNs(long timeStampNs) {
+            //System.out.println("timeStampNs : " + timeStampNs);
+            this.lastMessageTimeStampNs = lastMessageTimeStampNs;
+        }
+
+        @Override
+        public void setCategory(int category) {
+            System.out.println("category : " + category);
+            this.category = category;
+        }
+
+        @Override
+        public void setCallSign(CallSign callSign) {
+            System.out.println("callsign : " + callSign);
+            this.callSign = callSign;
+        }
+
+
+        @Override
+        public void setAltitude(double altitude) {
+            System.out.println("altitude : " + altitude);
+            this.altitude = altitude;
+        }
+
+        @Override
+        public void setVelocity(double velocity) {
+            System.out.println("velocity : " + velocity);
+            this.velocity = velocity;
+        }
+
+        @Override
+        public void setTrackOrHeading(double trackOrHeading) {
+            System.out.println("track or heading : " + trackOrHeading);
+            this.trackOrHeading = trackOrHeading;
+        }
+
+        @Override
+        public void setPosition(final GeoPos position) {
+            System.out.println("position : " + position);
+        }
+
+    }
+
 }

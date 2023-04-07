@@ -7,8 +7,9 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  */
 
-public class Math2 {
+public final class Math2 {
 
+    private Math2(){}
 
     /**
      * This method returns the minimum if v is smaller than min or returns the maximum if v is bigger than max and
@@ -21,10 +22,12 @@ public class Math2 {
      * @throws IllegalArgumentException if min is bigger than max
      */
     public static int clamp(int min, int v, int max) {
-        if (min > max) throw new IllegalArgumentException();
-
-        else if (v < min) return min;
-        else if (v > max) return max;
+        if (min > max)
+            throw new IllegalArgumentException();
+        else if (v < min)
+            return min;
+        else if (v > max)
+            return max;
 
         return v;
     }
@@ -35,7 +38,6 @@ public class Math2 {
      * @return double value of arcsinh(x)
      */
     public static double asinh(double x) {
-        return Math.log(
-                x + Math.sqrt(1 + Math.pow(x, 2)));
+        return Math.log(x + Math.sqrt(1 + Math.pow(x, 2)));
     }
 }

@@ -28,14 +28,14 @@ import java.util.zip.ZipOutputStream;
 
 import static java.net.HttpURLConnection.*;
 
-public enum Submit {
+public class Submit {
     ;
     // CONFIGURATION
     // -------------
     // Jeton du premier membre du groupe
-    private static final String TOKEN_1 = "es2avooW";
+    private static final String TOKEN_1 = "Eitaef9e";
     // Jeton du second membre (identique au premier pour les personnes travaillant seules)
-    private static final String TOKEN_2 = "ka9lu1Ae";
+    private static final String TOKEN_2 = "goo2Dohz";
     // -------------
 
     private static final String ZIP_ENTRY_NAME_PREFIX = "Javions/";

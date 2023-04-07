@@ -94,7 +94,7 @@ public final class PowerWindow {
      */
     public void advance() throws IOException {
         ++this.positionCounter;
-        final int positionInsideBatch = this.positionCounter % PowerWindow.batchSize;
+        int positionInsideBatch = this.positionCounter % PowerWindow.batchSize;
 
         // we check if the new position is at the end of the current priority batch.
         if (positionInsideBatch == PowerWindow.batchSize - 1) {

@@ -8,6 +8,7 @@ package ch.epfl.javions;
  */
 public class WebMercator {
 
+    private WebMercator(){}
 
     /**
      * Returns the coordinates of points given the zoomLevel as well as the longitude

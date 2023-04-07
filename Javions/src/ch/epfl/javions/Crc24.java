@@ -11,8 +11,8 @@ public final class Crc24 {
     private static final int tableSize = 256;
     private static int[] crc_b = new int[tableSize];
     private static final int mask = 16777215;
-    private final int CRC_SIZE = 8;
-    private final int CRC_START = 16;
+    private static final int CRC_SIZE = 8;
+    private static final int CRC_START = 16;
     private static final int CRC_BITWISE_START = 23;
     private static final int CRC_BITWISE_SIZE = 1;
 
@@ -24,7 +24,7 @@ public final class Crc24 {
      * @param generator integer value that specifies the 24 least significant bits of the generator to be
      *                  used in the CRC24 calculation
      */
-    public Crc24(final int generator) {
+    public Crc24(int generator) {
         int generatorMasked = generator & Crc24.mask;
         Crc24.crc_b = Crc24.buildTable(generatorMasked);
     }

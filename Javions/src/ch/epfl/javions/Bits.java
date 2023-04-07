@@ -8,6 +8,7 @@ package ch.epfl.javions;
  */
 public class Bits {
 
+    private Bits(){}
     private static final int MIN_SIZE = 0, MIN_START = 0,
             MAX_SIZE = 32, MAX_START_PLUS_SIZE = 64,
             MIN_INDEX = 0, MAX_INDEX = 63;
@@ -33,7 +34,7 @@ public class Bits {
             throw new IndexOutOfBoundsException();
 
         long extractedValue = value >>> (start);
-        final long changedValueSize = (long) (Math.pow(2, size) - 1);
+        long changedValueSize = (long) (Math.pow(2, size) - 1);
 
         extractedValue &= changedValueSize;
         return (int) extractedValue;
@@ -51,7 +52,8 @@ public class Bits {
      *                                   from 0 (exclusive) to 64 (exclusive)
      */
     public static boolean testBit(final long value, final int index) {
-        if (MIN_INDEX > index || MAX_INDEX < index) throw new IndexOutOfBoundsException();
+        if (MIN_INDEX > index || MAX_INDEX < index)
+            throw new IndexOutOfBoundsException();
 
         long extractedValue = value >>> index;
 

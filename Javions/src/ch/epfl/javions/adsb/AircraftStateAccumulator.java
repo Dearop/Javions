@@ -4,7 +4,7 @@ package ch.epfl.javions.adsb;
  * on the received ADS-B messages. It is used to maintain the current state of an aircraft,
  * which includes its position, velocity, altitude, category, and call sign.
  *
- * @param <T> generic type for the stateSetter.
+ * @param <T> generic type for the stateSetter that must extend AircraftStateSetter.
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
@@ -22,7 +22,8 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @throws NullPointerException if the given state setter is null
      */
     public AircraftStateAccumulator(T stateSetter) {
-        if (null == stateSetter) throw new NullPointerException();
+        if (null == stateSetter)
+            throw new NullPointerException();
         this.stateSetter = stateSetter;
     }
     /**
@@ -63,13 +64,12 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 }
 
                 if (null != latestEvenMessage && null != latestOddMessage) {
-                    if (TIME_BETWEEN_TWO_MESSAGES
-                            >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
+                    if (TIME_BETWEEN_TWO_MESSAGES >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
 
-                        final double x0 = this.latestEvenMessage.x();
-                        final double y0 = this.latestEvenMessage.y();
-                        final double x1 = this.latestOddMessage.x();
-                        final double y1 = this.latestOddMessage.y();
+                        double x0 = this.latestEvenMessage.x();
+                        double y0 = this.latestEvenMessage.y();
+                        double x1 = this.latestOddMessage.x();
+                        double y1 = this.latestOddMessage.y();
 
                         if(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()) != null)
                             this.stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));

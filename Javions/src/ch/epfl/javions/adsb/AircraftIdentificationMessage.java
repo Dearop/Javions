@@ -39,7 +39,8 @@ public record AircraftIdentificationMessage
      */
     public AircraftIdentificationMessage {
         Preconditions.checkArgument(0 <= timeStampNs);
-        if (null == callSign || null == icaoAddress) throw new NullPointerException();
+        if (null == callSign || null == icaoAddress)
+            throw new NullPointerException();
     }
 
     /**
@@ -51,7 +52,8 @@ public record AircraftIdentificationMessage
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
         //computing the category
-        if (INVALID_VALUE == rawMessage.typeCode()) return null;
+        if (INVALID_VALUE == rawMessage.typeCode())
+            return null;
 
         //computing the CallSign
         StringBuilder sign = new StringBuilder();
@@ -63,7 +65,8 @@ public record AircraftIdentificationMessage
         for (int i = 42; 0 <= i; i -= 6) {
             b = Bits.extractUInt(payload, i, 6);
             // if b is an invalid chart null gets returned
-            if (!isValidCharCode(b)) return null;
+            if (!isValidCharCode(b))
+                return null;
 
             /**
              * The values that we check using if statements follow the given rules :
@@ -72,9 +75,12 @@ public record AircraftIdentificationMessage
              *          - 32 -> we attribute to intermediary the space bar character
              * the values subtracted or added to b are for the corresponding values associated to the characters in ASCII
              */
-            if (CHAR_0 <= b) intermediary = (char) ((b - CHAR_0) + '0');
-            if (ALPHABET_Z >= b) intermediary = (char) (b + ASCII_ALPHABET_A);
-            if (CHAR_SPACE == b) intermediary = CHAR_SPACE;
+            if (CHAR_0 <= b)
+                intermediary = (char) ((b - CHAR_0) + '0');
+            if (ALPHABET_Z >= b)
+                intermediary = (char) (b + ASCII_ALPHABET_A);
+            if (CHAR_SPACE == b)
+                intermediary = CHAR_SPACE;
             sign.append(intermediary);
         }
 
@@ -85,7 +91,8 @@ public record AircraftIdentificationMessage
         String finishedSign = sign.toString();
         String strippedFinishedSign = finishedSign.stripTrailing();
 
-        if (finishedSign.equals(strippedFinishedSign)) return null;
+        if (finishedSign.equals(strippedFinishedSign))
+            return null;
 
         CallSign AimCallSign = new CallSign(strippedFinishedSign);
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, AimCallSign);
