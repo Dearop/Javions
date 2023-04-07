@@ -9,6 +9,7 @@ package ch.epfl.javions;
 public class Bits {
 
     private Bits(){}
+
     private static final int MIN_SIZE = 0, MIN_START = 0,
             MAX_SIZE = 32, MAX_START_PLUS_SIZE = 64,
             MIN_INDEX = 0, MAX_INDEX = 63;
@@ -26,7 +27,7 @@ public class Bits {
      * @throws IndexOutOfBoundsException if the bit range described by start and size is not completely contained
      *                                   within the range of bit indices from 0 (exclusive) to 64 (exclusive)
      */
-    public static int extractUInt(final long value, final int start, final int size) {
+    public static int extractUInt(long value, int start, int size) {
 
         if (MIN_SIZE >= size || MAX_SIZE <= size)
             throw new IllegalArgumentException();
@@ -51,7 +52,7 @@ public class Bits {
      * @throws IndexOutOfBoundsException if the bit index is not within the range of valid bit indices
      *                                   from 0 (exclusive) to 64 (exclusive)
      */
-    public static boolean testBit(final long value, final int index) {
+    public static boolean testBit(long value, int index) {
         if (MIN_INDEX > index || MAX_INDEX < index)
             throw new IndexOutOfBoundsException();
 

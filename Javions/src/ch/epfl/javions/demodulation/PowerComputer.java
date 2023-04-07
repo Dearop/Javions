@@ -26,15 +26,15 @@ public final class PowerComputer {
      * @param batchSize The number of samples in each batch.
      * @throws IllegalArgumentException if batchSize is negative or not divisible by 8.
      */
-    public PowerComputer(final InputStream stream, int batchSize) {
+    public PowerComputer(InputStream stream, int batchSize) {
         if (0 != batchSize % 8)
             throw new IllegalArgumentException();
         if (0 > batchSize)
             throw new IllegalArgumentException();
 
         this.batchSize = batchSize;
-        decodedBatch = new short[2 * batchSize];
-        decoder = new SamplesDecoder(stream, 2 * batchSize);
+        this.decodedBatch = new short[2 * batchSize];
+        this.decoder = new SamplesDecoder(stream, 2 * batchSize);
     }
 
     /**
@@ -49,22 +49,22 @@ public final class PowerComputer {
     public int readBatch(int[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == this.batchSize);
 
-        int bytesRead = this.decoder.readBatch(this.decodedBatch);
+        int bytesRead = decoder.readBatch(decodedBatch);
         int counter = 0;
 
         for (int i = 0; i < bytesRead; i += 2) {
             for (int j = 5; j >= 0; j--)
-                this.powerCalculationTable[2+j] = this.powerCalculationTable[j];
+                powerCalculationTable[2+j] = powerCalculationTable[j];
 
-            this.powerCalculationTable[0] = this.decodedBatch[i + 1];
-            this.powerCalculationTable[1] = this.decodedBatch[i];
+            powerCalculationTable[0] = decodedBatch[i + 1];
+            powerCalculationTable[1] = decodedBatch[i];
 
 
-            batch[i / 2] = (int) (Math.pow(this.powerCalculationTable[1] - this.powerCalculationTable[3] +
-                    this.powerCalculationTable[5] - this.powerCalculationTable[7], 2) //even
+            batch[i / 2] = (int) (Math.pow(powerCalculationTable[1] - powerCalculationTable[3] +
+                    powerCalculationTable[5] - powerCalculationTable[7], 2) //even
                     +
-                    Math.pow(this.powerCalculationTable[0] - this.powerCalculationTable[2] + this.powerCalculationTable[4] -
-                            this.powerCalculationTable[6], 2)); //odd
+                    Math.pow(powerCalculationTable[0] - powerCalculationTable[2] + powerCalculationTable[4] -
+                            powerCalculationTable[6], 2)); //odd
             counter++;
         }
         return counter;

@@ -30,25 +30,25 @@ public final class AdsbDemodulator {
     public RawMessage nextMessage() throws IOException {
 
         // 0, 10, 35, 45 are the initial positions in the window for the sum of P
-        int sumP = this.window.get(0) + this.window.get(10) + this.window.get(35) + this.window.get(45);
+        int sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
         int sumV;
         int sumPNext;
         int beforeP = 0;
 
-        while (this.window.isFull()) {
+        while (window.isFull()) {
             // 1, 11, 36, 46 are the positions in the window for the next sum of P, all the values got shifted by one.
-            sumPNext = this.window.get(1) + this.window.get(11) + this.window.get(36) + this.window.get(46);
+            sumPNext = window.get(1) + window.get(11) + window.get(36) + window.get(46);
 
             // 5, 15, 20, 25, 30, 40 are the positions in the window for the sum of V
-            sumV = this.window.get(5) + this.window.get(15) + this.window.get(20)
-                    + this.window.get(25) + this.window.get(30) + this.window.get(40);
+            sumV = window.get(5) + window.get(15) + window.get(20)
+                    + window.get(25) + window.get(30) + window.get(40);
 
             if ((beforeP < sumP) && (sumPNext < sumP) && (sumP >= (2 * sumV))) {
-                final byte[] table = new byte[AdsbDemodulator.MESSAGE_SIZE];
+                byte[] table = new byte[MESSAGE_SIZE];
 
                 for (int byteIterator = 0; 8 > byteIterator; byteIterator++) {
-                    if (this.window.get(START_OF_BYTE + (BIT_TIME_INTERVAL * byteIterator))
-                            >= this.window.get(START_OF_BYTE_CHECK + (BIT_TIME_INTERVAL * byteIterator))) {
+                    if (window.get(START_OF_BYTE + (BIT_TIME_INTERVAL * byteIterator))
+                            >= window.get(START_OF_BYTE_CHECK + (BIT_TIME_INTERVAL * byteIterator))) {
 
                         table[0] |= (byte) (1 << (7 - byteIterator));
                     }
@@ -70,10 +70,10 @@ public final class AdsbDemodulator {
                     }
 
                     RawMessage checker
-                            = RawMessage.of(this.window.position() * TIMESTAMP_CONVERTER, table);
+                            = RawMessage.of(window.position() * TIMESTAMP_CONVERTER, table);
 
                     if (null != checker) {
-                        this.window.advanceBy(this.window.size());
+                        window.advanceBy(window.size());
                         return checker;
                     }
                 }
@@ -81,7 +81,7 @@ public final class AdsbDemodulator {
 
             beforeP = sumP;
             sumP = sumPNext;
-            this.window.advance();
+            window.advance();
         }
         return null;
     }

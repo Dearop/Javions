@@ -32,20 +32,20 @@ public final class PowerWindow {
      * @param windowSize windowSize that defines how many numbers we can access from the batches.
      * @throws IOException Throws Exception when there is a problem reading the stream.
      */
-    public PowerWindow(final InputStream stream, final int windowSize) throws IOException {
+    public PowerWindow(final InputStream stream, int windowSize) throws IOException {
         if (0 >= windowSize || windowSize > PowerWindow.batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
 
         this.availableStream = stream.available();
 
         this.windowSize = windowSize;
-        computer = new PowerComputer(stream, PowerWindow.batchSize);
+        this.computer = new PowerComputer(stream, PowerWindow.batchSize);
 
-        this.batchOne = new int[PowerWindow.batchSize];
-        this.batchTwo = new int[PowerWindow.batchSize];
+        this.batchOne = new int[batchSize];
+        this.batchTwo = new int[batchSize];
 
-        this.computer.readBatch(this.batchOne);
-        this.computer.readBatch(this.batchTwo);
+        computer.readBatch(batchOne);
+        computer.readBatch(batchTwo);
     }
 
     /**

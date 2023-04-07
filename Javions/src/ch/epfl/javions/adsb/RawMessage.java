@@ -25,11 +25,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final int ADSB_ME_END = 11;
     private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
 
-    public RawMessage(long timeStampNs, ByteString bytes) {
-        Preconditions.checkArgument(0 <= timeStampNs && RawMessage.LENGTH == bytes.size());
-
-        this.timeStampNs = timeStampNs;
-        this.bytes = bytes;
+    public RawMessage{
+        Preconditions.checkArgument(0 <= timeStampNs && LENGTH == bytes.size());
     }
 
     /**
@@ -49,7 +46,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      */
     public static int size(byte byte0) {
         // we shift here by 3 to the right, so we can read the 5 bits to check if the expected value is correct.
-        return (EXPECTED_VALUE == Byte.toUnsignedInt(byte0) >> 3) ? RawMessage.LENGTH : 0;
+        return (EXPECTED_VALUE == Byte.toUnsignedInt(byte0) >> 3) ? LENGTH : 0;
     }
 
     /**
@@ -57,9 +54,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing the typeCode (first 5 bits of the payload long value) of the message
      */
     public static int typeCode(long payload) {
-        return Bits.extractUInt(payload
-                , RawMessage.MESSAGE_LENGTH - RawMessage.TYPE_CODE_LENGTH
-                , RawMessage.TYPE_CODE_LENGTH);
+        return Bits.extractUInt(payload, MESSAGE_LENGTH - TYPE_CODE_LENGTH, TYPE_CODE_LENGTH);
     }
 
     /**

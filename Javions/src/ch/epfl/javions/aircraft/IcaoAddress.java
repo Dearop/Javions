@@ -22,12 +22,12 @@ public record IcaoAddress(String string) {
     public IcaoAddress {
 
         // {6} corresponds to the length of the IcaoAddress
-        IcaoAddress.pattern = Pattern.compile("[0-9A-F]{6}");
-        if (string.isEmpty() || !IcaoAddress.pattern.matcher(string).matches())
+        pattern = Pattern.compile("[0-9A-F]{6}");
+        if (string.isEmpty() || !pattern.matcher(string).matches())
             throw new IllegalArgumentException();
     }
 
     public String getLastChar() {
-        return this.string.substring(this.string.length() - 2);
+        return string.substring(string.length() - 2);
     }
 }

@@ -53,7 +53,7 @@ public final class AircraftDatabase {
              Reader reader = new InputStreamReader(stream, UTF_8);
              BufferedReader buffer = new BufferedReader(reader)) {
             while (null != (stringLineFiltered = buffer.readLine())) {
-                final String[] lines = stringLineFiltered.split(",", -1);
+                String[] lines = stringLineFiltered.split(",", -1);
                 if (address.string().equals(lines[0]))
                     return new AircraftData(new AircraftRegistration(lines[1]), new AircraftTypeDesignator(lines[2]),
                             lines[3], new AircraftDescription(lines[4]), WakeTurbulenceCategory.of(lines[5]));

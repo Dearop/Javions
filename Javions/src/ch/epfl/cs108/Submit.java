@@ -1,4 +1,3 @@
-package ch.epfl.cs108;
 
 import java.io.*;
 import java.net.URI;
@@ -30,7 +29,7 @@ import static java.net.HttpURLConnection.*;
 
 public class Submit {
     ;
-    // CONFIGURATION
+    // CONFIGURATIONpackage ch.epfl.cs108;
     // -------------
     // Jeton du premier membre du groupe
     private static final String TOKEN_1 = "Eitaef9e";
