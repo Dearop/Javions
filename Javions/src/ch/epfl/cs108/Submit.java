@@ -1,3 +1,4 @@
+package ch.epfl.cs108;
 
 import java.io.*;
 import java.net.URI;
