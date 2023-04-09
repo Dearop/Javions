@@ -4,22 +4,18 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
-import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
-public final class ObservableAircraftState implements AircraftStateSetter{
+// TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface. 
+public final class ObservableAircraftState extends Observable implements AircraftStateSetter{
     private AircraftStateAccumulator accumulator;
     private ObservableList<AirbornePos> trajectories = FXCollections.observableArrayList();
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
