@@ -28,6 +28,7 @@ public final class AircraftStateManager {
     }
 
     public void updateWithMessage(Message message) {
+        purge(message);
         ObservableAircraftState state = new ObservableAircraftState(message.icaoAddress());
         if(accumulators.contains(state)) {
             for (AircraftStateAccumulator<ObservableAircraftState> accumulator : accumulators) {
@@ -39,10 +40,10 @@ public final class AircraftStateManager {
         }
     }
 
-    public void purge(){
+    public void purge(Message message){
         Iterator<ObservableAircraftState> i = knownPositionStates.iterator();
         while(i.hasNext()){
-            if(i.next().getLastMessageTimeStampNs() >= 6e10){
+            if(Math.abs(i.next().getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10){
                 i.remove();
             }
         }
