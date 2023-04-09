@@ -4,8 +4,6 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
-import ch.epfl.javions.aircraft.AircraftData;
-import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -17,6 +15,7 @@ import java.io.IOException;
 // TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface. 
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter{
     private AircraftStateAccumulator accumulator;
+    private IcaoAddress icaoAddress;
     private ObservableList<AirbornePos> trajectories = FXCollections.observableArrayList();
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
     private IntegerProperty category = new SimpleIntegerProperty();
@@ -27,13 +26,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
 
     // TODO: 4/9/2023 this is bollocks 
-    public ObservableAircraftState(IcaoAddress icaoAddress) throws IOException {
-        try {
-            AircraftDatabase database = new AircraftDatabase("");
-            AircraftData data = database.get(icaoAddress);
-        } finally {
-            System.out.println("no corresponding aircraft was found");
-        }
+    public ObservableAircraftState(IcaoAddress icaoAddress) {
+        this.icaoAddress = icaoAddress;
    }
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
@@ -72,6 +66,10 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set(trackOrHeading);
+    }
+
+    public IcaoAddress icaoAddress(){
+        return icaoAddress;
     }
 
     public long getLastMessageTimeStampNs(){
