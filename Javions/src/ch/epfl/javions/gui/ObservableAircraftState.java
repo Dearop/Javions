@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public final class ObservableAircraftState implements AircraftStateSetter {
+public final class ObservableAircraftState implements AircraftStateSetter{
     private AircraftStateAccumulator accumulator;
     private ObservableList<AirbornePos> trajectories = FXCollections.observableArrayList();
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
@@ -110,7 +110,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
         return trackOrHeading.get();
     }
 
-    public ReadOnlyLongProperty lastMessageTimeStampNsProeprty(){
+    public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
         return lastMessageTimeStampNs;
     }
 
