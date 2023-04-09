@@ -30,6 +30,7 @@ public final class ObservableAircraftState implements AircraftStateSetter {
     private DoubleProperty velocity = new SimpleDoubleProperty();
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
 
+    // TODO: 4/9/2023 this is bollocks 
     public ObservableAircraftState(IcaoAddress icaoAddress) throws IOException {
         try {
             AircraftDatabase database = new AircraftDatabase("");
