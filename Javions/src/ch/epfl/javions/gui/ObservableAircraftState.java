@@ -4,16 +4,20 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
+import ch.epfl.javions.aircraft.AircraftData;
+import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.IOException;
 import java.util.*;
 
 // TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface. 
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter{
     private AircraftStateAccumulator accumulator;
+    private final AircraftData data;
     private IcaoAddress icaoAddress;
     private ObservableList<AirbornePos> trajectories = FXCollections.observableArrayList();
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
@@ -24,9 +28,10 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private DoubleProperty velocity = new SimpleDoubleProperty();
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
 
-    // TODO: 4/9/2023 this is bollocks 
-    public ObservableAircraftState(IcaoAddress icaoAddress) {
+    // TODO: 4/9/2023 actually am kinda puzzled about this, are we supposed to put AircraftData or AircraftDatabase??
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftDatabase database) throws IOException {
         this.icaoAddress = icaoAddress;
+        this.data = database.get(icaoAddress);
    }
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
@@ -46,16 +51,14 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setPosition(GeoPos position) {
         this.position.set(position);
-        if(trajectories.size() == 0 && altitude.get() != 0 || !trajectories.get(trajectories.size()-1).position().equals(position))
-            this.trajectories.add(new AirbornePos(position, altitude.get()));
+        setTrajectory(altitude.get(), position);
     }
 
     // TODO: 4/10/2023 Not sure about all this.
     @Override
     public void setAltitude(double altitude) {
         this.altitude.set(altitude);
-        if(trajectories.size() != 0 && position != null && trajectories.get(trajectories.size()-1).altitude() != altitude)
-            this.trajectories.add(new AirbornePos(position.get(), altitude));
+        setTrajectory(altitude, position.get());
     }
 
     @Override
@@ -66,6 +69,14 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set(trackOrHeading);
+    }
+
+    private void setTrajectory(double altitude, GeoPos position){
+        if(trajectories == null || !trajectories.get(trajectories.size() - 1).position().equals(position))
+            trajectories.add(new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
+        if(trajectories.get(trajectories.size() - 1).timeStampNs() == lastMessageTimeStampNs.get()){
+            trajectories.set(trajectories.size()-1, new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
+        }
     }
 
     public IcaoAddress icaoAddress(){
@@ -84,7 +95,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return callSign.get();
     }
 
-    public AirbornePos trajectory(){
+    public AirbornePos getTrajectory(){
         return trajectories.get(trajectories.size()-1);
     }
 
@@ -108,6 +119,10 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return lastMessageTimeStampNs;
     }
 
+    public ReadOnlyIntegerProperty categoryProperty(){
+        return category;
+    }
+
     public ReadOnlyObjectProperty<CallSign> callSignProperty(){
         return callSign;
     }
@@ -118,9 +133,18 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return trajectoriesProperty;
     }
 
-    public ReadOnlyIntegerProperty categoryProperty(){
-        return category;
+    public ReadOnlyDoubleProperty altitudeProperty(){
+        return altitude;
     }
 
-    record AirbornePos(GeoPos position,double altitude){}
+    public ReadOnlyDoubleProperty velocityProperty(){
+        return velocity;
+    }
+
+    public ReadOnlyDoubleProperty trackOrHeadingProperty(){
+        return trackOrHeading;
+    }
+
+    // TODO: 4/10/2023 adding the timeStamp is guesswork
+    private record AirbornePos(GeoPos position,double altitude, long timeStampNs){}
 }
