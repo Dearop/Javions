@@ -22,7 +22,7 @@ public final class AircraftStateManager {
     }
 
     // TODO: 4/9/2023 don't know if we should give it a copy or the set itself 
-    public ObservableSet states(){
+    public ObservableSet<AircraftStateAccumulator<ObservableAircraftState>> states(){
         return FXCollections.observableSet(Set.copyOf(knownPositionStates));
     }
 
