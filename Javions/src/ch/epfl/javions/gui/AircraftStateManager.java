@@ -46,6 +46,6 @@ public final class AircraftStateManager {
 
     public void purge(Message message){
         knownPositionStates.removeIf(observableAircraftState ->
-                Math.abs(observableAircraftState.getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10);
+                Math.abs(observableAircraftState.stateSetter().getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10);
     }
 }
