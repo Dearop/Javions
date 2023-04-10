@@ -1,8 +1,8 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.adsb.AirbornePositionMessage;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.Message;
-import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.util.*;
 
 public final class AircraftStateManager {
+    // TODO: 4/10/2023 might be illegal
     private List <AircraftStateAccumulator<ObservableAircraftState>> accumulators = new ArrayList<>();
-    private Set<ObservableAircraftState> knownPositionStates = new HashSet<>();
+    private Set<AircraftStateAccumulator<ObservableAircraftState>> knownPositionStates = new HashSet<>();
     private AircraftDatabase database;
 
     // TODO: 4/9/2023 I don't get what we're supposed to do in the Constructor
@@ -28,19 +29,23 @@ public final class AircraftStateManager {
     public void updateWithMessage(Message message) throws IOException {
         purge(message);
         ObservableAircraftState state = new ObservableAircraftState(message.icaoAddress(), this.database);
-        if(accumulators.contains(state)) {
+        if(accumulators.contains(state) && knownPositionStates.contains(state)) {
             accumulators.get(accumulators.indexOf(state)).update(message);
+            if(message instanceof AirbornePositionMessage){
+                Iterator<AircraftStateAccumulator<ObservableAircraftState>> i = knownPositionStates.iterator();
+                while(i.hasNext()){
+                    if(i.next().equals(state))
+                        i.next().update(message);
+                }
+            }
         } else {
             accumulators.add(new AircraftStateAccumulator<>(state));
+            knownPositionStates.add(new AircraftStateAccumulator<>(state));
         }
     }
 
     public void purge(Message message){
-        Iterator<ObservableAircraftState> i = knownPositionStates.iterator();
-        while(i.hasNext()){
-            if(Math.abs(i.next().getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10){
-                i.remove();
-            }
-        }
+        knownPositionStates.removeIf(observableAircraftState ->
+                Math.abs(observableAircraftState.getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10);
     }
 }
