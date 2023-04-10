@@ -1,23 +1,18 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
-import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.Message;
+import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.aircraft.AircraftDatabase;
-import javafx.beans.Observable;
-import javafx.beans.binding.ObjectExpression;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
-
-import java.io.IOException;
 import java.util.*;
 
 public final class AircraftStateManager {
     private List <AircraftStateAccumulator<ObservableAircraftState>> accumulators = new ArrayList<>();
-    // TODO: 4/9/2023 This is guess work but because TreeSet orders things in increasing order it doesn't really
-    // make sense to have it as our set
     private Set<ObservableAircraftState> knownPositionStates = new HashSet<>();
 
+    // TODO: 4/9/2023 I don't get what we're supposed to do in the Constructor
     public AircraftStateManager(AircraftDatabase database){
 
     }
@@ -31,10 +26,8 @@ public final class AircraftStateManager {
         purge(message);
         ObservableAircraftState state = new ObservableAircraftState(message.icaoAddress());
         if(accumulators.contains(state)) {
-            for (AircraftStateAccumulator<ObservableAircraftState> accumulator : accumulators) {
-                if (message.icaoAddress().equals(accumulator.stateSetter().icaoAddress()))
-                    accumulator.update(message);
-            }
+                accumulators.get(accumulators.indexOf(state)).update(message);
+
         } else {
             accumulators.add(new AircraftStateAccumulator<>(state));
         }

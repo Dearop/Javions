@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.*;
-import java.io.IOException;
 
 // TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface. 
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter{
@@ -51,10 +50,11 @@ public final class ObservableAircraftState extends Observable implements Aircraf
             this.trajectories.add(new AirbornePos(position, altitude.get()));
     }
 
+    // TODO: 4/10/2023 Not sure about all this.
     @Override
     public void setAltitude(double altitude) {
         this.altitude.set(altitude);
-        if(trajectories.size() == 0 && position != null || trajectories.get(trajectories.size()-1).altitude() != altitude)
+        if(trajectories.size() != 0 && position != null && trajectories.get(trajectories.size()-1).altitude() != altitude)
             this.trajectories.add(new AirbornePos(position.get(), altitude));
     }
 
