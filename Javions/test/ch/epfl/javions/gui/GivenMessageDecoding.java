@@ -9,10 +9,10 @@ public class GivenMessageDecoding {
 
     // TODO: 4/10/2023 OK this all works 
     @Test
-    public void Test() {
+    public void PrintingOutValues() {
         try (DataInputStream s = new DataInputStream(
-                    new BufferedInputStream(
-                            new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")))){
+                                    new BufferedInputStream(
+                                    new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             int i = 0;
             while (i < 4) {
@@ -23,10 +23,12 @@ public class GivenMessageDecoding {
                 System.out.printf("%13d: %s\n", timeStampNs, message);
                 i+=1;
             }
-        } catch (EOFException e) { /* nothing to do */ } catch (FileNotFoundException e) {
+        } catch (EOFException e) { /* nothing to do */ }
+        catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
 }
