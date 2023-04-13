@@ -75,10 +75,11 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
     private void setTrajectory(double altitude, GeoPos position){
-        if(trajectories == null || !trajectories.get(trajectories.size() - 1).position().equals(position))
-            trajectories.add(new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
-        if(trajectories.get(trajectories.size() - 1).timeStampNs() == lastMessageTimeStampNs.get()){
-            trajectories.set(trajectories.size()-1, new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
+        if(!trajectories.isEmpty()){
+            if(trajectories == null || !trajectories.get(trajectories.size() - 1).position().equals(position))
+                trajectories.add(new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
+            if(trajectories.get(trajectories.size() - 1).timeStampNs() == lastMessageTimeStampNs.get())
+                trajectories.set(trajectories.size()-1, new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
         }
     }
 

@@ -53,7 +53,7 @@ public final class AircraftStateManager {
         return Collections.unmodifiableList(accumulators);
     }
 
-    public String toString(){
-
+    public String toString(int index){
+        return accumulators.get(index).toString();
     }
 }

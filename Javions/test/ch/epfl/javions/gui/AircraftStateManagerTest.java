@@ -32,6 +32,7 @@ public class AircraftStateManagerTest {
             throw new RuntimeException(e);
         }
     }
+
     @Test
     public void AircraftStateManagerTestWindow(){
         AircraftDatabase database = new AircraftDatabase("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin");
@@ -41,22 +42,16 @@ public class AircraftStateManagerTest {
                                             new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             int i = 0;
-            while (i < 4) {
+            while (true) {
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                 assert bytesRead == RawMessage.LENGTH;
                 ByteString message = new ByteString(bytes);
                 System.out.printf("%13d: %s\n", timeStampNs, message);
                 aircraftStateManager.updateWithMessage(MessageParser.parse(new RawMessage(timeStampNs, message)));
-                System.out.println(aircraftStateManager.toString());
-                i+=1;
+                aircraftStateManager.toString(i);
+                i++;
             }
-        } catch (EOFException e) { /* nothing to do */ }
-        catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        } catch (IOException ignored) {}
     }
-
 }
