@@ -17,7 +17,7 @@ import java.util.*;
 // TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface. 
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter{
     private AircraftStateAccumulator accumulator;
-    private final AircraftData data;
+    private AircraftData data;
     private IcaoAddress icaoAddress;
     private ObservableList<AirbornePos> trajectories = FXCollections.observableArrayList();
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
@@ -29,10 +29,13 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
 
     // TODO: 4/9/2023 actually am kinda puzzled about this, are we supposed to put AircraftData or AircraftDatabase??
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftDatabase database) throws IOException {
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftDatabase database){
         this.icaoAddress = icaoAddress;
-        this.data = database.get(icaoAddress);
-   }
+        try{this.data = database.get(icaoAddress);} catch (IOException e) {
+            data = null;
+        }
+
+    }
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
         this.lastMessageTimeStampNs.set(timeStampNs);

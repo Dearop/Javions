@@ -1,8 +1,6 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.adsb.AirbornePositionMessage;
-import ch.epfl.javions.adsb.AircraftStateAccumulator;
-import ch.epfl.javions.adsb.Message;
+import ch.epfl.javions.adsb.*;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -26,12 +24,12 @@ public final class AircraftStateManager {
         return FXCollections.observableSet(Set.copyOf(knownPositionStates));
     }
 
-    public void updateWithMessage(Message message) throws IOException {
+    public void updateWithMessage(Message message){
         purge(message);
         ObservableAircraftState state = new ObservableAircraftState(message.icaoAddress(), this.database);
-        if(accumulators.contains(state) && knownPositionStates.contains(state)) {
+        if(accumulators.contains(state)) {
             accumulators.get(accumulators.indexOf(state)).update(message);
-            if(message instanceof AirbornePositionMessage){
+            if(message instanceof AirbornePositionMessage && knownPositionStates.contains(state)){
                 Iterator<AircraftStateAccumulator<ObservableAircraftState>> i = knownPositionStates.iterator();
                 while(i.hasNext()){
                     if(i.next().equals(state))
@@ -39,13 +37,23 @@ public final class AircraftStateManager {
                 }
             }
         } else {
-            accumulators.add(new AircraftStateAccumulator<>(state));
-            knownPositionStates.add(new AircraftStateAccumulator<>(state));
+            AircraftStateAccumulator<ObservableAircraftState> accumulator = new AircraftStateAccumulator<>(state);
+            accumulator.update(message);
+            accumulators.add(accumulator);
+            knownPositionStates.add(accumulator);
         }
     }
 
     public void purge(Message message){
         knownPositionStates.removeIf(observableAircraftState ->
                 Math.abs(observableAircraftState.stateSetter().getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10);
+    }
+
+    public List<AircraftStateAccumulator<ObservableAircraftState>> getAccumulators(){
+        return Collections.unmodifiableList(accumulators);
+    }
+
+    public String toString(){
+
     }
 }
