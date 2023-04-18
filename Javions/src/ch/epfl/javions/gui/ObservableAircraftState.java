@@ -5,7 +5,6 @@ import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftData;
-import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -15,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 // TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface. 
-public final class ObservableAircraftState extends Observable implements AircraftStateSetter{
+public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
     private AircraftStateAccumulator accumulator;
     private AircraftData data;
     private IcaoAddress icaoAddress;
@@ -30,7 +29,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private long previousMessageTimeStampNs;
 
     // TODO: 4/9/2023 actually am kinda puzzled about this, are we supposed to put AircraftData or AircraftDatabase??
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data){
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
         this.data = data;
     }
@@ -73,89 +72,90 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         this.trackOrHeading.set(trackOrHeading);
     }
 
-    private void setTrajectory(double altitude, GeoPos position){
-        if(!trajectories.isEmpty()){
-            if(trajectories.isEmpty() || !trajectories.get(trajectories.size() - 1).position().equals(position))
+    private void setTrajectory(double altitude, GeoPos position) {
+        if (!trajectories.isEmpty()) {
+            if (trajectories.isEmpty() || !trajectories.get(trajectories.size() - 1).position().equals(position))
                 trajectories.add(new AirbornePos(position, altitude));
-            else if(previousMessageTimeStampNs == lastMessageTimeStampNs.get())
-                trajectories.set(trajectories.size()-1, new AirbornePos(position, altitude));
+            else if (previousMessageTimeStampNs == lastMessageTimeStampNs.get())
+                trajectories.set(trajectories.size() - 1, new AirbornePos(position, altitude));
         }
         previousMessageTimeStampNs = lastMessageTimeStampNs.get();
     }
 
-    public IcaoAddress icaoAddress(){
+    public IcaoAddress icaoAddress() {
         return icaoAddress;
     }
 
-    public long getLastMessageTimeStampNs(){
+    public long getLastMessageTimeStampNs() {
         return lastMessageTimeStampNs.get();
     }
 
-    public int getCategory(){
+    public int getCategory() {
         return category.get();
     }
 
-    public CallSign getCallSign(){
+    public CallSign getCallSign() {
         return callSign.get();
     }
 
-    public AirbornePos getTrajectory(){
-        if(trajectories.size() != 0)
+    public AirbornePos getTrajectory() {
+        if (trajectories.size() != 0)
             return trajectories.get(trajectories.size());
         return null;
     }
 
-    public GeoPos getPosition(){
+    public GeoPos getPosition() {
         return position.get();
     }
 
-    public double getAltitude(){
+    public double getAltitude() {
         return altitude.get();
     }
 
-    public double getVelocity(){
+    public double getVelocity() {
         return velocity.get();
     }
 
-    public double getTrackOrHeading(){
+    public double getTrackOrHeading() {
         return trackOrHeading.get();
     }
 
-    public ReadOnlyLongProperty lastMessageTimeStampNsProperty(){
+    public ReadOnlyLongProperty lastMessageTimeStampNsProperty() {
         return lastMessageTimeStampNs;
     }
 
-    public ReadOnlyIntegerProperty categoryProperty(){
+    public ReadOnlyIntegerProperty categoryProperty() {
         return category;
     }
 
-    public ReadOnlyObjectProperty<CallSign> callSignProperty(){
+    public ReadOnlyObjectProperty<CallSign> callSignProperty() {
         return callSign;
     }
 
     // TODO: 4/8/2023 I feel by not making the unmodifiableObservableList an attribute the code is cleaner, lmk. 
-    public ObservableList<AirbornePos> trajectoryProperty(){
-        ObservableList<AirbornePos> trajectoriesProperty = FXCollections.unmodifiableObservableList(trajectories);
-        return trajectoriesProperty;
+    public ObservableList<AirbornePos> trajectoryProperty() {
+        return FXCollections.unmodifiableObservableList(trajectories);
     }
 
-    public ReadOnlyDoubleProperty altitudeProperty(){
+    public ReadOnlyDoubleProperty altitudeProperty() {
         return altitude;
     }
 
-    public ReadOnlyDoubleProperty velocityProperty(){
+    public ReadOnlyDoubleProperty velocityProperty() {
         return velocity;
     }
 
-    public ReadOnlyDoubleProperty trackOrHeadingProperty(){
+    public ReadOnlyDoubleProperty trackOrHeadingProperty() {
         return trackOrHeading;
     }
 
     // TODO: 4/13/2023 delete this when we figure out how to do the test correctly
-    public String toString(){
+    public String toString() {
         StringBuilder b = new StringBuilder();
         return b.append(getLastMessageTimeStampNs()).append(getCategory()).append(getCallSign()).append(getTrajectory()).append(getVelocity()).append(getTrackOrHeading()).toString();
     }
+
     // TODO: 4/10/2023 adding the timeStamp is guesswork
-    private record AirbornePos(GeoPos position,double altitude){}
+    private record AirbornePos(GeoPos position, double altitude) {
+    }
 }
