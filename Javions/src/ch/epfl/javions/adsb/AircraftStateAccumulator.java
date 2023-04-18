@@ -80,4 +80,8 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
             default -> throw new Error();
         }
     }
+
+    public String toString(){
+        return stateSetter.toString();
+    }
 }

@@ -27,15 +27,14 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private DoubleProperty altitude = new SimpleDoubleProperty();
     private DoubleProperty velocity = new SimpleDoubleProperty();
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
+    private long previousMessageTimeStampNs;
 
     // TODO: 4/9/2023 actually am kinda puzzled about this, are we supposed to put AircraftData or AircraftDatabase??
-    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftDatabase database){
+    public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data){
         this.icaoAddress = icaoAddress;
-        try{this.data = database.get(icaoAddress);} catch (IOException e) {
-            data = null;
-        }
-
+        this.data = data;
     }
+
     @Override
     public void setLastMessageTimeStampNs(long timeStampNs) {
         this.lastMessageTimeStampNs.set(timeStampNs);
@@ -76,11 +75,12 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     private void setTrajectory(double altitude, GeoPos position){
         if(!trajectories.isEmpty()){
-            if(trajectories == null || !trajectories.get(trajectories.size() - 1).position().equals(position))
-                trajectories.add(new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
-            if(trajectories.get(trajectories.size() - 1).timeStampNs() == lastMessageTimeStampNs.get())
-                trajectories.set(trajectories.size()-1, new AirbornePos(position, altitude, lastMessageTimeStampNs.get()));
+            if(trajectories.isEmpty() || !trajectories.get(trajectories.size() - 1).position().equals(position))
+                trajectories.add(new AirbornePos(position, altitude));
+            else if(previousMessageTimeStampNs == lastMessageTimeStampNs.get())
+                trajectories.set(trajectories.size()-1, new AirbornePos(position, altitude));
         }
+        previousMessageTimeStampNs = lastMessageTimeStampNs.get();
     }
 
     public IcaoAddress icaoAddress(){
@@ -100,7 +100,9 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
     public AirbornePos getTrajectory(){
-        return trajectories.get(trajectories.size()-1);
+        if(trajectories.size() != 0)
+            return trajectories.get(trajectories.size());
+        return null;
     }
 
     public GeoPos getPosition(){
@@ -149,6 +151,11 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return trackOrHeading;
     }
 
+    // TODO: 4/13/2023 delete this when we figure out how to do the test correctly
+    public String toString(){
+        StringBuilder b = new StringBuilder();
+        return b.append(getLastMessageTimeStampNs()).append(getCategory()).append(getCallSign()).append(getTrajectory()).append(getVelocity()).append(getTrackOrHeading()).toString();
+    }
     // TODO: 4/10/2023 adding the timeStamp is guesswork
-    private record AirbornePos(GeoPos position,double altitude, long timeStampNs){}
+    private record AirbornePos(GeoPos position,double altitude){}
 }

@@ -42,14 +42,14 @@ public class AircraftStateManagerTest {
                                             new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             int i = 0;
-            while (true) {
+            while (i < 100) {
                 long timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                 assert bytesRead == RawMessage.LENGTH;
                 ByteString message = new ByteString(bytes);
                 System.out.printf("%13d: %s\n", timeStampNs, message);
                 aircraftStateManager.updateWithMessage(MessageParser.parse(new RawMessage(timeStampNs, message)));
-                aircraftStateManager.toString(i);
+                System.out.println(aircraftStateManager.toString(i));
                 i++;
             }
         } catch (IOException ignored) {}

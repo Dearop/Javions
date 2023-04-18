@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.adsb.*;
+import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -9,12 +10,10 @@ import java.io.IOException;
 import java.util.*;
 
 public final class AircraftStateManager {
-    // TODO: 4/10/2023 might be illegal
     private List <AircraftStateAccumulator<ObservableAircraftState>> accumulators = new ArrayList<>();
     private Set<AircraftStateAccumulator<ObservableAircraftState>> knownPositionStates = new HashSet<>();
     private AircraftDatabase database;
 
-    // TODO: 4/9/2023 I don't get what we're supposed to do in the Constructor
     public AircraftStateManager(AircraftDatabase database){
         this.database = database;
     }
@@ -24,9 +23,10 @@ public final class AircraftStateManager {
         return FXCollections.observableSet(Set.copyOf(knownPositionStates));
     }
 
-    public void updateWithMessage(Message message){
+    public void updateWithMessage(Message message)throws IOException {
         purge(message);
-        ObservableAircraftState state = new ObservableAircraftState(message.icaoAddress(), this.database);
+        AircraftData data = database.get(message.icaoAddress());
+        ObservableAircraftState state = new ObservableAircraftState(message.icaoAddress(), data);
         if(accumulators.contains(state)) {
             accumulators.get(accumulators.indexOf(state)).update(message);
             if(message instanceof AirbornePositionMessage && knownPositionStates.contains(state)){
@@ -37,16 +37,16 @@ public final class AircraftStateManager {
                 }
             }
         } else {
-            AircraftStateAccumulator<ObservableAircraftState> accumulator = new AircraftStateAccumulator<>(state);
-            accumulator.update(message);
-            accumulators.add(accumulator);
-            knownPositionStates.add(accumulator);
+            AircraftStateAccumulator<ObservableAircraftState> newAccumulator = new AircraftStateAccumulator<>(state);
+            newAccumulator.update(message);
+            accumulators.add(newAccumulator);
+            knownPositionStates.add(newAccumulator);
         }
     }
 
     public void purge(Message message){
         knownPositionStates.removeIf(observableAircraftState ->
-                Math.abs(observableAircraftState.stateSetter().getLastMessageTimeStampNs() - message.timeStampNs()) >= 6e10);
+                Math.abs(observableAircraftState.stateSetter().getLastMessageTimeStampNs() - message.timeStampNs()) > 6e10);
     }
 
     public List<AircraftStateAccumulator<ObservableAircraftState>> getAccumulators(){
