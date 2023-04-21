@@ -10,6 +10,8 @@ import javafx.collections.ObservableSet;
 import java.io.IOException;
 import java.util.*;
 
+import static javafx.collections.FXCollections.observableSet;
+
 public final class AircraftStateManager {
     private Map <IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> accumulatorMap ;
     private ObservableSet<ObservableAircraftState> knownPositionStates;
@@ -17,7 +19,7 @@ public final class AircraftStateManager {
 
     public AircraftStateManager(AircraftDatabase database){
         this.database = database;
-        this.knownPositionStates = FXCollections.observableSet();
+        this.knownPositionStates = observableSet();
         this.accumulatorMap = new HashMap<>();
     }
 
@@ -26,18 +28,20 @@ public final class AircraftStateManager {
         return (ObservableSet<ObservableAircraftState>) Set.copyOf(knownPositionStates);
     }
 
-    public void updateWithMessage(Message message)throws IOException {;
-        purge(message);
-        IcaoAddress messageIcaoddress = message.icaoAddress();
-        AircraftData data = database.get(messageIcaoddress);
-        if(!accumulatorMap.containsKey(messageIcaoddress)) {
-            ObservableAircraftState state = new ObservableAircraftState(messageIcaoddress, data);
-            accumulatorMap.put(messageIcaoddress,new AircraftStateAccumulator<>(state));
-        }
+    public void updateWithMessage(Message message)throws IOException {
+        if(message != null){
+            purge(message);
+            IcaoAddress messageIcaoddress = message.icaoAddress();
+            AircraftData data = database.get(messageIcaoddress);
+            if(!accumulatorMap.containsKey(messageIcaoddress)) {
+                ObservableAircraftState state = new ObservableAircraftState(messageIcaoddress, data);
+                accumulatorMap.put(messageIcaoddress,new AircraftStateAccumulator<>(state));
+            }
             AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator = accumulatorMap.get(messageIcaoddress);
             desiredAccumulator.update(message);
-        if(desiredAccumulator.stateSetter().getPosition() != null)
-            knownPositionStates.add(desiredAccumulator.stateSetter());
+            if(desiredAccumulator.stateSetter().getPosition() != null)
+                knownPositionStates.add(desiredAccumulator.stateSetter());
+        }
     }
 
     public void purge(Message message){
@@ -47,6 +51,10 @@ public final class AircraftStateManager {
 
     public Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> getAccumulatorMap(){
         return Collections.unmodifiableMap(accumulatorMap);
+    }
+
+    public ObservableSet<ObservableAircraftState> getKnownPositionStates() {
+        return observableSet(this.knownPositionStates);
     }
 
     public String toString(IcaoAddress adress){

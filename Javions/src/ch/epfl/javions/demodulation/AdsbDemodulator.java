@@ -69,8 +69,7 @@ public final class AdsbDemodulator {
                         }
                     }
 
-                    RawMessage checker
-                            = RawMessage.of(window.position() * TIMESTAMP_CONVERTER, table);
+                    RawMessage checker = RawMessage.of(window.position() * TIMESTAMP_CONVERTER, table);
 
                     if (null != checker) {
                         window.advanceBy(window.size());

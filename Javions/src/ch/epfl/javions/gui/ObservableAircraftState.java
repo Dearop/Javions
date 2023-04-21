@@ -149,13 +149,10 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return trackOrHeading;
     }
 
-    // TODO: 4/13/2023 delete this when we figure out how to do the test correctly
-    public String toString() {
-        StringBuilder b = new StringBuilder();
-        return b.append(getLastMessageTimeStampNs()).append(getCategory()).append(getCallSign()).append(getTrajectory()).append(getVelocity()).append(getTrackOrHeading()).toString();
+    public AircraftData getData(){
+        return this.data;
     }
 
     // TODO: 4/10/2023 adding the timeStamp is guesswork
-    private record AirbornePos(GeoPos position, double altitude) {
-    }
+    private record AirbornePos(GeoPos position, double altitude) { }
 }

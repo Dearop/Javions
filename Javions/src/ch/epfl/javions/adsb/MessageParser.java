@@ -27,14 +27,12 @@ public class MessageParser {
      */
     public static Message parse(RawMessage rawMessage) {
         int checkValue = rawMessage.typeCode();
-
         if (IDENTIFICATION_START < checkValue && IDENTIFICATION_END > checkValue)
-            return AircraftIdentificationMessage.of(rawMessage);
+            return  AircraftIdentificationMessage.of(rawMessage);
         if ((POSITION_START < checkValue && TYPE_19 > checkValue) || (TYPE_19 < checkValue && POSITION_END > checkValue))
             return AirbornePositionMessage.of(rawMessage);
         if (TYPE_19 == checkValue)
             return AirborneVelocityMessage.of(rawMessage);
-
         // returns either one of the three Messages depending on type or null if all return null (makes it invalid)
         return null;
     }

@@ -32,7 +32,7 @@ public final class PowerWindow {
      * @param windowSize windowSize that defines how many numbers we can access from the batches.
      * @throws IOException Throws Exception when there is a problem reading the stream.
      */
-    public PowerWindow(final InputStream stream, int windowSize) throws IOException {
+    public PowerWindow(InputStream stream, int windowSize) throws IOException {
         if (0 >= windowSize || windowSize > PowerWindow.batchSize)
             throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
 

@@ -109,7 +109,7 @@ public class CprDecoder {
     private static double currentZone(double numberOfZones, double currentZone, double position) {
         currentZone = (0 > currentZone) ? (currentZone + numberOfZones) : currentZone;
 
-        final double angle = (currentZone + position) / numberOfZones;
+        double angle = (currentZone + position) / numberOfZones;
         return Units.convertFrom(center(angle), Units.Angle.TURN);
     }
 

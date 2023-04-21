@@ -30,4 +30,8 @@ public record IcaoAddress(String string) {
     public String getLastChar() {
         return string.substring(string.length() - 2);
     }
+
+    public String toString(){
+        return string;
+    }
 }

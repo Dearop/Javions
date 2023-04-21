@@ -1,11 +1,11 @@
 package ch.epfl.javions.gui;
 import ch.epfl.javions.ByteString;
+import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import org.junit.jupiter.api.Test;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -61,19 +61,34 @@ public class AircraftStateManagerTest {
                 if(startTime == 0){
                     startTime = System.nanoTime();
                 }
-                if(aircraftStateManager.getAccumulatorMap().containsKey(realMessage.icaoAddress())){
-                    goatManager.set(goatManager.indexOf(aircraftStateManager.getAccumulatorMap().get(realMessage.icaoAddress()).stateSetter()), aircraftStateManager.getAccumulatorMap().get(realMessage.icaoAddress()).stateSetter());
-                } else
-                    goatManager.add(aircraftStateManager.getAccumulatorMap().get(realMessage.icaoAddress()).stateSetter());
-                if(System.nanoTime() - startTime > 1e9){
+
+                if (realMessage != null) {
+                    ObservableAircraftState state = aircraftStateManager.getAccumulatorMap().get(realMessage.icaoAddress()).stateSetter();
+                    if(goatManager.contains(state))
+                        goatManager.set(goatManager.indexOf(state), state);
+                     else if(aircraftStateManager.getKnownPositionStates().contains(state))
+                        goatManager.add(state);
                     goatManager.sort(comparator); //do something
-                    System.out.println(goatManager);
+                    System.out.printf("%-8s %-13s %-4s %-10s %-30s %-4s %-5s %-5s %n",
+                            "ICAO", "TimeStampNs", "category", "Callsign", "Model", "Velocity", "Longitude", "Latitude");
+                    System.out.printf("__________________________________________________________________________________________ %n");
+                    for(ObservableAircraftState oas : goatManager){
+                        if(oas.getCallSign() == null || oas.getData() == null){
+                            System.out.printf("%-8s %-13s %-4s %-10s %-30s %-4f %-5f %-5f %n", oas.icaoAddress().toString(),
+                                    oas.getLastMessageTimeStampNs(), oas.getCategory(),
+                                    "null" , "null" , oas.getVelocity(), Units.convertTo(oas.getPosition().longitude(), Units.Angle.DEGREE),
+                                    Units.convertTo(oas.getPosition().latitude(), Units.Angle.DEGREE));
+                        } else
+                            System.out.printf("%-8s %-13s %-4s %-10s %-30s %-4f %-5f %-5f %n", oas.icaoAddress().toString(),
+                                    oas.getLastMessageTimeStampNs(), oas.getCategory(),
+                                    oas.getCallSign().toString(), oas.getData().model(), oas.getVelocity(),
+                                    Units.convertTo(oas.getPosition().longitude(), Units.Angle.DEGREE),
+                                    Units.convertTo(oas.getPosition().latitude(), Units.Angle.DEGREE));
+                    }
                     String CSI = "\u001B[";
                     String CLEAR_SCREEN = CSI + "2J";
                     System.out.print(CLEAR_SCREEN);
                 }
-                System.out.println(System.nanoTime() + "NanoTime");
-
                 i++;
             }
         } catch (IOException ignored) {

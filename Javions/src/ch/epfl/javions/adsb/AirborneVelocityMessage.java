@@ -89,7 +89,6 @@ implements Message{
             speed = Math.hypot(Vns, Vew);
             Vns = (0 == Dns) ? Vns : -Vns;
             Vew = (0 == Dew) ? Vew : -Vew;
-
             trackOrHeading = Math.atan2(Vew, Vns);
             trackOrHeading = (0 > trackOrHeading) ? trackOrHeading + 2 * Math.PI : trackOrHeading;
 

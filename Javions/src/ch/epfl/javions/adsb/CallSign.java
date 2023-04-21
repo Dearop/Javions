@@ -24,4 +24,9 @@ public record CallSign(String string) {
         if (null == string || !pattern.matcher(string).matches())
             throw new IllegalArgumentException();
     }
+
+    // TODO: 4/18/2023 For AircraftStateManager Test
+    public String toString(){
+        return string;
+    }
 }
