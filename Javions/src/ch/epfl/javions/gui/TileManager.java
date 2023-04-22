@@ -17,7 +17,6 @@ public final class TileManager {
     // not sure if loadFactor is true
     private LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(100, 1, true);
     private static final String FILE_SEPERATOR = System.getProperty("file.seperator");
-    private Path filePath;
     public TileManager(Path path, String serverAddress) {
         this.path = path;
         this.serverAddress = serverAddress;
@@ -28,17 +27,18 @@ public final class TileManager {
         Image image = memoryCache.get(tileId);
         if(image != null){
             return image;
-            // TODO: 4/22/2023 might need to take off the ".bin" 
+            // TODO: 4/22/2023 might need to take off the ".bin"
         } else if(Files.exists(Paths.get(tileId.zoom + FILE_SEPERATOR+tileId.x + FILE_SEPERATOR+tileId.y +".bin"))){
             //I think we have to write this in an InputStream so the images are in a file in the resources, what do you think?
             InputStream i = new FileInputStream(Paths.get(tileId.zoom 
                     + FILE_SEPERATOR+tileId.x 
                     + FILE_SEPERATOR+tileId.y).toFile());
-            return new Image(new ByteArrayInputStream(i.readAllBytes()));
+            image =  new Image(new ByteArrayInputStream(i.readAllBytes()));
+            memoryCache.put(tileId, image);
         } else {
             //here we go and get the image from the url, then we create an inputStream to read the bytes
             URL u = new URL(
-                    "https://tile.openstreetmap.org/"+ tileId.zoom +"/"+ tileId.x +"/"+ tileId.y +".png");
+                    "https://tile.openstreetmap.org/"+ tileId.zoom + "/" + tileId.x + "/" + tileId.y +".png");
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "Javions");
             InputStream i = c.getInputStream();
@@ -48,14 +48,21 @@ public final class TileManager {
             image = new Image(new ByteArrayInputStream(bytes));
             memoryCache.put(tileId, image);
             //adding to disk Memory
+            Path directoryPath = Paths.get(tileId.zoom + FILE_SEPERATOR + tileId.x);
+            Path filePath = directoryPath.resolve(String.valueOf(tileId.y));
             if(Files.exists(Paths.get(String.valueOf(tileId.zoom)))){
-                Files.createDirectories(Paths.get(tileId.zoom+FILE_SEPERATOR+))
+                if(!Files.exists(directoryPath)) {
+                    Files.createDirectory(directoryPath);
+                }
+            } else {
+                Files.createDirectories(directoryPath);
             }
+            OutputStream stream = new FileOutputStream(filePath.toFile());
+            stream.write(bytes);
         }
         // else if (found in disk memory) put in memory cache and returned
         // else we get it from the tile server place it in disk memory and place it in memory cache and return
-        Image coc = new Image("https://play-lh.googleusercontent.com/LByrur1mTmPeNr0ljI-uAUcct1rzmTve5Esau1SwoAzjBXQUby6uHIfHbF9TAT51mgHm");
-        return coc;
+        return image;
     }
 
     public record TileId(int zoom, int x, int y){
