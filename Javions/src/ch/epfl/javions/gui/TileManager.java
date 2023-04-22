@@ -3,19 +3,22 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.WebMercator;
 import javafx.scene.image.Image;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 
 public final class TileManager {
     private Path path;
     private String serverAddress;
     // not sure if loadFactor is true
-    LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(100, 1, true);
-    public TileManager(Path path, String serverAddress){
+    private LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(100, 1, true);
+    private static final String FILE_SEPERATOR = System.getProperty("file.seperator");
+    private Path filePath;
+    public TileManager(Path path, String serverAddress) {
         this.path = path;
         this.serverAddress = serverAddress;
     }
@@ -25,19 +28,33 @@ public final class TileManager {
         Image image = memoryCache.get(tileId);
         if(image != null){
             return image;
-        } else if(){
-            //I think we have to write this in an InputStream so the images are in a file in the ressources, what do you think?
-
+            // TODO: 4/22/2023 might need to take off the ".bin" 
+        } else if(Files.exists(Paths.get(tileId.zoom + FILE_SEPERATOR+tileId.x + FILE_SEPERATOR+tileId.y +".bin"))){
+            //I think we have to write this in an InputStream so the images are in a file in the resources, what do you think?
+            InputStream i = new FileInputStream(Paths.get(tileId.zoom 
+                    + FILE_SEPERATOR+tileId.x 
+                    + FILE_SEPERATOR+tileId.y).toFile());
+            return new Image(new ByteArrayInputStream(i.readAllBytes()));
         } else {
+            //here we go and get the image from the url, then we create an inputStream to read the bytes
             URL u = new URL(
-                    "https://tile.openstreetmap.org/"+ tileId.zoom() +"/"+ tileId.x +"/"+ tileId.y +".png");
+                    "https://tile.openstreetmap.org/"+ tileId.zoom +"/"+ tileId.x +"/"+ tileId.y +".png");
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "Javions");
             InputStream i = c.getInputStream();
+            byte[] bytes = i.readAllBytes();
+            i.close();
+            //adding to Memorycache
+            image = new Image(new ByteArrayInputStream(bytes));
+            memoryCache.put(tileId, image);
+            //adding to disk Memory
+            if(Files.exists(Paths.get(String.valueOf(tileId.zoom)))){
+                Files.createDirectories(Paths.get(tileId.zoom+FILE_SEPERATOR+))
+            }
         }
         // else if (found in disk memory) put in memory cache and returned
         // else we get it from the tile server place it in disk memory and place it in memory cache and return
-        Image coc = new Image("https://play-lh.googleusercontent.com/LByrur1mTmPeNr0ljI-uAUcct1rzmTve5Esau1SwoAzjBXQUby6uHIfHbF9TAT51mgHm")
+        Image coc = new Image("https://play-lh.googleusercontent.com/LByrur1mTmPeNr0ljI-uAUcct1rzmTve5Esau1SwoAzjBXQUby6uHIfHbF9TAT51mgHm");
         return coc;
     }
 
