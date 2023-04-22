@@ -30,15 +30,17 @@ public final class AircraftStateManager {
 
     public void updateWithMessage(Message message)throws IOException {
         if(message != null){
-            purge(message);
             IcaoAddress messageIcaoddress = message.icaoAddress();
             AircraftData data = database.get(messageIcaoddress);
             if(!accumulatorMap.containsKey(messageIcaoddress)) {
+
                 ObservableAircraftState state = new ObservableAircraftState(messageIcaoddress, data);
                 accumulatorMap.put(messageIcaoddress,new AircraftStateAccumulator<>(state));
             }
+
             AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator = accumulatorMap.get(messageIcaoddress);
             desiredAccumulator.update(message);
+
             if(desiredAccumulator.stateSetter().getPosition() != null)
                 knownPositionStates.add(desiredAccumulator.stateSetter());
         }
