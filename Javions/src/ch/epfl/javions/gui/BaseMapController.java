@@ -1,19 +1,21 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+
+import java.io.IOException;
 
 public final class BaseMapController {
     private TileManager tileManager;
-    private MapParameter parameter;
+    private MapParameters parameter;
     private boolean redrawNeeded;
     private Canvas canvas;
-    private int currentPositionX;
-    private int currentPositionY;
 
-    public BaseMapController(TileManager tileManager, MapParameter parameter) {
+    public BaseMapController(TileManager tileManager, MapParameters parameter) {
         this.tileManager = tileManager;
         this.parameter = parameter;
         canvas = new Canvas();
@@ -23,12 +25,22 @@ public final class BaseMapController {
         });
     }
 
-    public void pane() {
-        Pane mapPane = new Pane(canvas);
+    public Pane pane() throws IOException {
+
+        Pane mapPane = new Pane();
         canvas.widthProperty().bind(mapPane.widthProperty());
         canvas.heightProperty().bind(mapPane.heightProperty());
+
         GraphicsContext graphics = canvas.getGraphicsContext2D();
-        //graphics.drawImage();
+        Image image = tileManager.imageForTileAt(
+                new TileManager.TileId(14,
+                        3090,
+                        6331));
+        System.out.println(image);
+        graphics.drawImage(image, 0,0);
+
+        mapPane.getChildren().add(canvas);
+        return mapPane;
     }
 
     public void centerOn(GeoPos pos) {

@@ -23,23 +23,21 @@ public final class TileManager {
     }
 
     public Image imageForTileAt(TileId tileId) throws IOException {
-
         // search in memory cache if found return
         Image image = memoryCache.get(tileId);
         if(image != null){
             return image;
             // TODO: 4/22/2023 might need to take off the ".bin"
-        } else if(Files.exists(path) &&
-                Files.exists(Paths.get(tileId.zoom + FILE_SEPERATOR+tileId.x + FILE_SEPERATOR+tileId.y))){
+        } else if(Files.exists(path.resolve(Paths.get(tileId.zoom + "/" +tileId.x + "/" +tileId.y)))){
 
             //I think we have to write this in an InputStream so the images are in a file in the resources, what do you think?
             InputStream i = new FileInputStream(Paths.get(tileId.zoom 
-                    + FILE_SEPERATOR+tileId.x 
-                    + FILE_SEPERATOR+tileId.y).toFile());
+                    + "/" +tileId.x
+                    + "/"+tileId.y).toFile());
 
             image =  new Image(new ByteArrayInputStream(i.readAllBytes()));
             memoryCache.put(tileId, image);
-
+            return image;
         } else {
 
             //here we go and get the image from the url, then we create an inputStream to read the bytes
@@ -59,22 +57,16 @@ public final class TileManager {
 
             //adding to disk Memory
             Path directoryPath = path.resolve(Paths.get(tileId.zoom +"/" +tileId.x));
-            Path filePath = directoryPath.resolve(String.valueOf(tileId.y));
+            Path filePath = directoryPath.resolve(tileId.y + ".png");
 
-            if(Files.exists(Paths.get(String.valueOf(tileId.zoom)))){
-                if(!Files.exists(directoryPath)) {
-                    Files.createDirectory(directoryPath);
-                }
-            } else {
-                Files.createDirectories(directoryPath);
-            }
+            Files.createDirectories(directoryPath);
 
             OutputStream stream = new FileOutputStream(filePath.toFile());
             stream.write(bytes);
+            return image;
         }
         // else if (found in disk memory) put in memory cache and returned
         // else we get it from the tile server place it in disk memory and place it in memory cache and return
-        return image;
     }
 
     public record TileId(int zoom, int x, int y){
