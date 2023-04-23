@@ -28,9 +28,9 @@ public final class TileManager {
         Image image = memoryCache.get(tileId);
         if(image != null){
             return image;
-
             // TODO: 4/22/2023 might need to take off the ".bin"
-        } else if(Files.exists(Paths.get(tileId.zoom + FILE_SEPERATOR+tileId.x + FILE_SEPERATOR+tileId.y +".bin"))){
+        } else if(Files.exists(path) &&
+                Files.exists(Paths.get(tileId.zoom + FILE_SEPERATOR+tileId.x + FILE_SEPERATOR+tileId.y))){
 
             //I think we have to write this in an InputStream so the images are in a file in the resources, what do you think?
             InputStream i = new FileInputStream(Paths.get(tileId.zoom 
@@ -44,7 +44,7 @@ public final class TileManager {
 
             //here we go and get the image from the url, then we create an inputStream to read the bytes
             URL u = new URL(
-                    "https://tile.openstreetmap.org/"+ tileId.zoom + "/" + tileId.x + "/" + tileId.y +".png");
+                    "https://"+ serverAddress + "/" + tileId.zoom + "/" + tileId.x + "/" + tileId.y +".png");
 
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "Javions");
@@ -58,7 +58,7 @@ public final class TileManager {
             memoryCache.put(tileId, image);
 
             //adding to disk Memory
-            Path directoryPath = Paths.get(tileId.zoom + FILE_SEPERATOR + tileId.x);
+            Path directoryPath = path.resolve(Paths.get(tileId.zoom +"/" +tileId.x));
             Path filePath = directoryPath.resolve(String.valueOf(tileId.y));
 
             if(Files.exists(Paths.get(String.valueOf(tileId.zoom)))){

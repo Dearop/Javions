@@ -10,8 +10,10 @@ public final class BaseMapController {
     private MapParameter parameter;
     private boolean redrawNeeded;
     private Canvas canvas;
+    private int currentPositionX;
+    private int currentPositionY;
 
-    public BaseMapController(TileManager tileManager, MapParameter parameter){
+    public BaseMapController(TileManager tileManager, MapParameter parameter) {
         this.tileManager = tileManager;
         this.parameter = parameter;
         canvas = new Canvas();
@@ -21,16 +23,15 @@ public final class BaseMapController {
         });
     }
 
-    public void pane(){
+    public void pane() {
         Pane mapPane = new Pane(canvas);
         canvas.widthProperty().bind(mapPane.widthProperty());
         canvas.heightProperty().bind(mapPane.heightProperty());
         GraphicsContext graphics = canvas.getGraphicsContext2D();
-
-        graphics.drawImage();
+        //graphics.drawImage();
     }
 
-    public void centerOn(GeoPos pos){
+    public void centerOn(GeoPos pos) {
 
     }
 
@@ -40,4 +41,5 @@ public final class BaseMapController {
 
         // … à faire : dessin de la carte
     }
+
 }
