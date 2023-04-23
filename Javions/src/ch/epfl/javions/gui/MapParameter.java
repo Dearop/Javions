@@ -56,7 +56,7 @@ public final class MapParameter {
         zoom.set(Math2.clamp(MIN_ZOOM, zoom.get()+zoomDifference , MAX_ZOOM));
 
         // TODO: 23.04.23 we not sure!
-        minX.set(Math.scalb(1, 8+zoom.get()));
-        minY.set(Math.scalb(1, 8+zoom.get()));
+        minX.set((minX.get()/Math.scalb(1, 8+zoom.get()-zoomDifference))*Math.scalb(1, 8+zoom.get()));
+        minY.set((minY.get()/Math.scalb(1, 8+zoom.get() - zoomDifference))*Math.scalb(1, 8+zoom.get()));
     }
 }
