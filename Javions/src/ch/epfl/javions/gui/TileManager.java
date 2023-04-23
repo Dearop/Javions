@@ -78,6 +78,12 @@ public final class TileManager {
     }
 
     public record TileId(int zoom, int x, int y){
+
+        public TileId{
+            if(!isValid(zoom, x ,y)){
+                throw new IllegalArgumentException();
+            }
+        }
         public static boolean isValid(int zoom, int x, int y){// i am not sure if 19 is the highest value that zoomLevel can have but i tried it on this https://tile.openstreetmap.org/20/0/0.png
             return (x>=0 && y>=0) && (x <= Math.scalb(1, 8+zoom) && (y <= Math.scalb(1, 8 + zoom))) && (0 < zoom && zoom < 20);
         }
