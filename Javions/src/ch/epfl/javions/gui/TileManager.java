@@ -23,33 +23,44 @@ public final class TileManager {
     }
 
     public Image imageForTileAt(TileId tileId) throws IOException {
+
         // search in memory cache if found return
         Image image = memoryCache.get(tileId);
         if(image != null){
             return image;
+
             // TODO: 4/22/2023 might need to take off the ".bin"
         } else if(Files.exists(Paths.get(tileId.zoom + FILE_SEPERATOR+tileId.x + FILE_SEPERATOR+tileId.y +".bin"))){
+
             //I think we have to write this in an InputStream so the images are in a file in the resources, what do you think?
             InputStream i = new FileInputStream(Paths.get(tileId.zoom 
                     + FILE_SEPERATOR+tileId.x 
                     + FILE_SEPERATOR+tileId.y).toFile());
+
             image =  new Image(new ByteArrayInputStream(i.readAllBytes()));
             memoryCache.put(tileId, image);
+
         } else {
+
             //here we go and get the image from the url, then we create an inputStream to read the bytes
             URL u = new URL(
                     "https://tile.openstreetmap.org/"+ tileId.zoom + "/" + tileId.x + "/" + tileId.y +".png");
+
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "Javions");
             InputStream i = c.getInputStream();
+
             byte[] bytes = i.readAllBytes();
             i.close();
+
             //adding to Memorycache
             image = new Image(new ByteArrayInputStream(bytes));
             memoryCache.put(tileId, image);
+
             //adding to disk Memory
             Path directoryPath = Paths.get(tileId.zoom + FILE_SEPERATOR + tileId.x);
             Path filePath = directoryPath.resolve(String.valueOf(tileId.y));
+
             if(Files.exists(Paths.get(String.valueOf(tileId.zoom)))){
                 if(!Files.exists(directoryPath)) {
                     Files.createDirectory(directoryPath);
@@ -57,6 +68,7 @@ public final class TileManager {
             } else {
                 Files.createDirectories(directoryPath);
             }
+
             OutputStream stream = new FileOutputStream(filePath.toFile());
             stream.write(bytes);
         }
@@ -67,7 +79,7 @@ public final class TileManager {
 
     public record TileId(int zoom, int x, int y){
         public static boolean isValid(int zoom, int x, int y){// i am not sure if 19 is the highest value that zoomLevel can have but i tried it on this https://tile.openstreetmap.org/20/0/0.png
-            return (x>=0 && y>=0) && (x <= Math.scalb(1, 8+zoom) && (y <= Math.scalb(1, 8 + zoom))) && (0 < zoom && zoom <= 19);
+            return (x>=0 && y>=0) && (x <= Math.scalb(1, 8+zoom) && (y <= Math.scalb(1, 8 + zoom))) && (0 < zoom && zoom < 20);
         }
     }
 }
