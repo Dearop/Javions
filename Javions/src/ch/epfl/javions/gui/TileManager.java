@@ -60,8 +60,7 @@ public final class TileManager {
 
             Files.createDirectories(directoryPath);
 
-            OutputStream stream = new FileOutputStream(filePath.toFile());
-            stream.write(bytes);
+            Files.write(filePath, bytes);
             return image;
         }
         // else if (found in disk memory) put in memory cache and returned
