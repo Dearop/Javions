@@ -12,11 +12,10 @@ import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 
 public final class TileManager {
-    private Path path;
-    private String serverAddress;
+    private final Path path;
+    private final String serverAddress;
     // not sure if loadFactor is true
     private LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(100, 1, true);
-    private static final String FILE_SEPERATOR = System.getProperty("file.seperator");
     public TileManager(Path path, String serverAddress) {
         this.path = path;
         this.serverAddress = serverAddress;
