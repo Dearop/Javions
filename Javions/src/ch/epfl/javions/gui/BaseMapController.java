@@ -1,11 +1,13 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
-import javafx.scene.Scene;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+
 
 import java.io.IOException;
 
@@ -16,6 +18,8 @@ public final class BaseMapController {
     private Canvas canvas;
     private Pane mapPane;
     private static final int TILE_SIZE = 256;
+    private double clickedXPosition;
+    private double clickedYPosition;
 
     public BaseMapController(TileManager tileManager, MapParameters parameter) {
         this.tileManager = tileManager;
@@ -23,19 +27,41 @@ public final class BaseMapController {
         canvas = new Canvas();
         mapPane = new Pane(canvas);
 
-        canvas.widthProperty().bind(mapPane.widthProperty());
-        canvas.heightProperty().bind(mapPane.heightProperty());
+        addBindings();
+        addListeners();
+        addEventManagers();
 
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+    }
 
-        canvas.widthProperty().addListener(e-> setRedrawNeeded());
+    private void addBindings(){
+        canvas.widthProperty().bind(mapPane.widthProperty());
+        canvas.heightProperty().bind(mapPane.heightProperty());
+
+    }
+
+    private void addListeners(){
+        canvas.widthProperty().addListener(e -> setRedrawNeeded());
         canvas.heightProperty().addListener(e -> setRedrawNeeded());
     }
 
-    private void setRedrawNeeded(){
+    private void addEventManagers(){
+        mapPane.setOnScroll(e -> changeZoom());
+        mapPane.setOnMousePressed(e -> {
+            clickedXPosition = e.getX();
+            clickedYPosition = e.getY();
+        });
+        mapPane.setOnMouseDragged(e -> {
+            parameter.scroll((int) Math.rint((clickedXPosition - e.getX())/2), (int) Math.rint((clickedYPosition - e.getY())/2));
+            redrawNeeded = true;
+        });
+        mapPane.setOnMouseReleased(e -> redrawNeeded = true);
+    }
+
+    private void setRedrawNeeded() {
         redrawNeeded = true;
     }
 
@@ -60,7 +86,7 @@ public final class BaseMapController {
 
         int minTileY = tilePositionCalculator(parameter.getMinY());
         int maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
-        System.out.println(parameter.getZoom()+"zooooom");
+        System.out.println(parameter.getZoom() + "zooooom");
 
 
         int windowX = 0;
@@ -69,8 +95,6 @@ public final class BaseMapController {
             windowY = (y == minTileY) ? 0 : windowY + 256;
             for (int x = minTileX; x < maxTileX; x++) {
                 windowX = (x == minTileX) ? 0 : windowX + 256;
-//                if (viewPositionX >= 0 || viewPositionX <= Math.scalb(1, (int) (8 + currentZoomLevel)) &&
-//                        viewPositionY >= 0 || viewPositionX <= Math.scalb(1, (int) (8 + currentZoomLevel)))
                 try {
                     Image image = tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y));
                     graphics.drawImage(image, windowX, windowY);
@@ -78,13 +102,27 @@ public final class BaseMapController {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                //}
             }
         }
     }
 
     private int tilePositionCalculator(double screenPosition) {
         return (int) Math.rint(screenPosition / TILE_SIZE);
+    }
+
+    private void changeZoom(){
+        LongProperty minScrollTime = new SimpleLongProperty();
+        mapPane.setOnScroll(e -> {
+            int zoomDelta = (int) Math.signum(e.getDeltaY());
+            if (zoomDelta == 0) return;
+
+            long currentTime = System.currentTimeMillis();
+            if (currentTime < minScrollTime.get()) return;
+            minScrollTime.set(currentTime + 200);
+
+            parameter.changeZoomLevel(zoomDelta);
+            redrawNeeded = true;
+        });
     }
 
 }
