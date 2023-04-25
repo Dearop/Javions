@@ -21,7 +21,7 @@ public final class TileManager {
         this.serverAddress = serverAddress;
     }
 
-    public Image imageForTileAt(TileId tileId) throws IOException {
+    public Image imageForTileAt(TileId tileId) throws IOException{
         Path directoryPath = path.resolve(Paths.get(tileId.zoom +"/" +tileId.x));
         Path filePath = directoryPath.resolve(tileId.y + ".png");
 

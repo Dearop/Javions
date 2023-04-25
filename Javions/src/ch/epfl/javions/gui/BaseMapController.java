@@ -15,41 +15,27 @@ public final class BaseMapController {
     private MapParameters parameter;
     private boolean redrawNeeded;
     private Canvas canvas;
-    public BaseMapController(TileManager tileManager, MapParameters parameter) {
+    private Pane mapPane;
+    private static final int TILE_SIZE = 256;
+
+    public BaseMapController(TileManager tileManager, MapParameters parameter){
         this.tileManager = tileManager;
         this.parameter = parameter;
         canvas = new Canvas();
+        mapPane = new Pane(canvas);
+
+        canvas.widthProperty().bind(mapPane.widthProperty());
+        canvas.heightProperty().bind(mapPane.heightProperty());
+
+        redrawNeeded = true;
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
     }
 
-    public Pane pane() throws IOException {
-        Pane mapPane = new Pane();
-        BorderPane root = new BorderPane(mapPane);
-
-        canvas.widthProperty().bind(mapPane.widthProperty());
-        canvas.heightProperty().bind(mapPane.heightProperty());
-
-        root.setCenter(mapPane);
-        GraphicsContext graphics = canvas.getGraphicsContext2D();
-
-        double currentZoomLevel = parameter.getZoom();
-        double viewPositionX = parameter.getMinX();
-        double viewPositionY = parameter.getMinY();
-        int tileCoordinateX = (int) Math.rint(parameter.getMinX() / 256);
-        int tileCoordinateY = (int) Math.rint(parameter.getMinY() / 256);
-
-        if(viewPositionX >= 0 || viewPositionX <= Math.scalb(1,(int) (8 + currentZoomLevel)) &&
-            viewPositionY >= 0 || viewPositionX <= Math.scalb(1,(int) (8 + currentZoomLevel))) {
-            graphics.drawImage(tileManager.imageForTileAt(
-                    new TileManager.TileId(parameter.getZoom(),tileCoordinateX, tileCoordinateY)),
-                    0 , 0, canvas.getWidth(), canvas.getHeight());
-        }
-
-        mapPane.getChildren().add(canvas);
-        return root;
+    public Pane pane() {
+        return mapPane;
     }
 
     public void centerOn(GeoPos pos) {
@@ -60,8 +46,32 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
+        GraphicsContext graphics = canvas.getGraphicsContext2D();
 
-        // … à faire : dessin de la carte
+        int minTileX = tilePositionCalculator(parameter.getMinX());
+        int maxTileX = tilePositionCalculator(parameter.getMinX() + mapPane.getWidth());
+
+        int minTileY = tilePositionCalculator(parameter.getMinY());
+        int maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
+
+        for (int y = minTileY; y < maxTileY; y ++) {
+            for (int x = minTileX; x < maxTileX; x ++) {
+                //if (viewPositionX >= 0 || viewPositionX <= Math.scalb(1, (int) (8 + currentZoomLevel)) &&
+                        //viewPositionY >= 0 || viewPositionX <= Math.scalb(1, (int) (8 + currentZoomLevel))) {
+                    System.out.println("bitch");
+                    try{
+                        Image image = tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y));
+                        graphics.drawImage(image, x * TILE_SIZE, y * TILE_SIZE);
+                    }catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                //}
+            }
+        }
     }
 
-}
+        private int tilePositionCalculator(double screenPosition){
+            return (int) Math.rint(screenPosition / TILE_SIZE);
+        }
+
+    }
