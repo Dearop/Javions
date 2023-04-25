@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
+import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.scene.canvas.Canvas;
@@ -22,7 +23,7 @@ public final class BaseMapController {
     private double clickedYPosition;
     private boolean dragging = false;
     private long lastRedrawTime = 0;
-    private static final long MIN_REDRAW_INTERVAL = 16; // Minimum redraw interval in milliseconds (60 FPS)
+    private static final long MIN_REDRAW_INTERVAL = 32; // Minimum redraw interval in milliseconds (60 FPS)
 
 
     public BaseMapController(TileManager tileManager, MapParameters parameter) {
@@ -34,11 +35,6 @@ public final class BaseMapController {
         addBindings();
         addListeners();
         addEventManagers();
-
-        canvas.sceneProperty().addListener((p, oldS, newS) -> {
-            assert oldS == null;
-            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
-        });
     }
 
     private void addBindings(){
@@ -48,8 +44,15 @@ public final class BaseMapController {
     }
 
     private void addListeners(){
-        canvas.widthProperty().addListener(e -> setRedrawNeeded());
-        canvas.heightProperty().addListener(e -> setRedrawNeeded());
+        canvas.widthProperty().addListener(e -> redrawOnNextPulse());
+        canvas.heightProperty().addListener(e -> redrawOnNextPulse());
+        canvas.sceneProperty().addListener((p, oldS, newS) -> {
+            assert oldS == null;
+            newS.addPreLayoutPulseListener(this::redrawIfNeeded);
+        });
+        parameter.zoomProperty().addListener(e -> redrawOnNextPulse());
+        parameter.minXProperty().addListener(e-> redrawOnNextPulse());
+        parameter.minYProperty().addListener(e -> redrawOnNextPulse());
     }
 
     private void addEventManagers(){
@@ -61,19 +64,12 @@ public final class BaseMapController {
         });
 
         mapPane.setOnMouseDragged(e -> {
-            if (dragging) {
-                parameter.scroll((int) Math.rint((clickedXPosition - e.getX())/20), (int) Math.rint((clickedYPosition - e.getY())/20));
-                redrawNeeded = true;
-            }
+            parameter.scroll((int) Math.rint((clickedXPosition - e.getX())/20), (int) Math.rint((clickedYPosition - e.getY())/20));
         });
 
         mapPane.setOnMouseReleased(e -> {
             dragging = false;
         });
-    }
-
-    private void setRedrawNeeded() {
-        redrawNeeded = true;
     }
 
     public Pane pane() {
@@ -87,13 +83,6 @@ public final class BaseMapController {
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
         redrawNeeded = false;
-
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastRedrawTime < MIN_REDRAW_INTERVAL) {
-            return; // Skip redraw if minimum interval is not met
-        }
-
-        lastRedrawTime = currentTime;
 
         GraphicsContext graphics = canvas.getGraphicsContext2D();
 
@@ -133,10 +122,13 @@ public final class BaseMapController {
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
             if(TileManager.TileId.isValid(parameter.getZoom() + zoomDelta,
-                    (int) parameter.getMinX(), (int) parameter.getMinY()));
-            parameter.changeZoomLevel(zoomDelta);
-            redrawNeeded = true;
-        });
+                    (int) parameter.getMinX(), (int) parameter.getMinY())){
+                parameter.changeZoomLevel(zoomDelta);
+            }});
     }
 
+    private void redrawOnNextPulse() {
+        redrawNeeded = true;
+        Platform.requestNextPulse();
+    }
 }

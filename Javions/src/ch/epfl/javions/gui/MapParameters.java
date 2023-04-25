@@ -52,8 +52,9 @@ public final class MapParameters {
     public void changeZoomLevel(int zoomDifference) {
         zoom.set(Math2.clamp(MIN_ZOOM, zoom.get() + zoomDifference, MAX_ZOOM + 1));
 
-        // TODO: 23.04.23 we not sure!
         minX.set(minX.get() * Math.scalb(1, zoomDifference));
         minY.set(minY.get() * Math.scalb(1, zoomDifference));
+
+
     }
 }
