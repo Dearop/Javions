@@ -22,19 +22,17 @@ public final class TileManager {
     }
 
     public Image imageForTileAt(TileId tileId) throws IOException {
+        Path directoryPath = path.resolve(Paths.get(tileId.zoom +"/" +tileId.x));
+        Path filePath = directoryPath.resolve(tileId.y + ".png");
+
         // search in memory cache if found return
         Image image = memoryCache.get(tileId);
         if(image != null){
             return image;
             // TODO: 4/22/2023 might need to take off the ".bin"
-        } else if(Files.exists(path.resolve(Paths.get(tileId.zoom + "/" +tileId.x + "/" +tileId.y)))){
+        } else if(Files.exists(filePath)){
 
-            //I think we have to write this in an InputStream so the images are in a file in the resources, what do you think?
-            InputStream i = new FileInputStream(Paths.get(tileId.zoom 
-                    + "/" +tileId.x
-                    + "/"+tileId.y).toFile());
-
-            image =  new Image(new ByteArrayInputStream(i.readAllBytes()));
+            image =  new Image(new ByteArrayInputStream(Files.readAllBytes(filePath)));
             memoryCache.put(tileId, image);
             return image;
         } else {
@@ -55,9 +53,6 @@ public final class TileManager {
             memoryCache.put(tileId, image);
 
             //adding to disk Memory
-            Path directoryPath = path.resolve(Paths.get(tileId.zoom +"/" +tileId.x));
-            Path filePath = directoryPath.resolve(tileId.y + ".png");
-
             Files.createDirectories(directoryPath);
 
             Files.write(filePath, bytes);
