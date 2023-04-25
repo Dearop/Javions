@@ -9,58 +9,21 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 
 public final class TileManager {
     private final Path path;
     private final String serverAddress;
-    // not sure if loadFactor is true
+    private final static int MAX_SIZE = 100;
     private LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(100, 1, true);
+    private Iterator<Image> iterator = this.memoryCache.values().iterator();
     public TileManager(Path path, String serverAddress) {
         this.path = path;
         this.serverAddress = serverAddress;
     }
 
-    public Image imageForTileAt(TileId tileId) throws IOException{
-        Path directoryPath = path.resolve(Paths.get(tileId.zoom +"/" +tileId.x));
-        Path filePath = directoryPath.resolve(tileId.y + ".png");
 
-        // search in memory cache if found return
-        Image image = memoryCache.get(tileId);
-        if(image != null){
-            return image;
-            // TODO: 4/22/2023 might need to take off the ".bin"
-        } else if(Files.exists(filePath)){
-
-            image =  new Image(new ByteArrayInputStream(Files.readAllBytes(filePath)));
-            memoryCache.put(tileId, image);
-            return image;
-        } else {
-
-            //here we go and get the image from the url, then we create an inputStream to read the bytes
-            URL u = new URL(
-                    "https://"+ serverAddress + "/" + tileId.zoom + "/" + tileId.x + "/" + tileId.y +".png");
-
-            URLConnection c = u.openConnection();
-            c.setRequestProperty("User-Agent", "Javions");
-            InputStream i = c.getInputStream();
-
-            byte[] bytes = i.readAllBytes();
-            i.close();
-
-            //adding to Memorycache
-            image = new Image(new ByteArrayInputStream(bytes));
-            memoryCache.put(tileId, image);
-
-            //adding to disk Memory
-            Files.createDirectories(directoryPath);
-
-            Files.write(filePath, bytes);
-            return image;
-        }
-        // else if (found in disk memory) put in memory cache and returned
-        // else we get it from the tile server place it in disk memory and place it in memory cache and return
-    }
 
     public record TileId(int zoom, int x, int y){
 
@@ -72,5 +35,45 @@ public final class TileManager {
         public static boolean isValid(int zoom, int x, int y){// i am not sure if 19 is the highest value that zoomLevel can have but i tried it on this https://tile.openstreetmap.org/20/0/0.png
             return (x>=0 && y>=0) && (x <= Math.scalb(1, 8+zoom) && (y <= Math.scalb(1, 8 + zoom))) && (0 < zoom && zoom < 20);
         }
+    }
+
+    public Image imageForTileAt(TileId id) throws IOException {
+        if(!memoryCache.containsKey(id)){
+            if(memoryCache.size() == MAX_SIZE)
+                memoryCache.remove(memoryCache.keySet().iterator().next());
+        }
+        refreshCacheIterator();
+        memoryCache.put(id, getFromFilesOrAdd(id));
+        return memoryCache.get(id);
+    }
+
+    private void refreshCacheIterator(){
+        if(!iterator.hasNext()){
+            iterator = memoryCache.values().iterator();
+        }
+    }
+
+    private Image getFromFilesOrAdd(TileId tileId) throws IOException{
+        Path imagePath = tildIdPath(tileId);
+        if(Files.exists(imagePath)){
+            return new Image(new ByteArrayInputStream(Files.readAllBytes(imagePath)));
+        }
+        URL u = new URL("https://"+ serverAddress + "/" + tileId.zoom + "/" + tileId.x + "/" + tileId.y +".png");
+        URLConnection c = u.openConnection();
+        c.setRequestProperty("User-Agent", "Javions");
+        InputStream i = c.getInputStream();
+        byte[] bytes = i.readAllBytes();
+        i.close();
+        Files.createDirectories(directoryPath(tileId));
+        Files.write(imagePath, bytes);
+        return new Image(new ByteArrayInputStream(bytes));
+    }
+
+    private Path tildIdPath(TileId id){
+        return path.resolve(Paths.get(id.zoom +"/" +id.x+ "/" + id.y + ".png"));
+    }
+
+    private Path directoryPath(TileId id){
+        return path.resolve(Paths.get(id.zoom +"/" +id.x));
     }
 }

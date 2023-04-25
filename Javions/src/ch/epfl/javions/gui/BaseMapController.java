@@ -5,7 +5,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ public final class BaseMapController {
     private Pane mapPane;
     private static final int TILE_SIZE = 256;
 
-    public BaseMapController(TileManager tileManager, MapParameters parameter){
+    public BaseMapController(TileManager tileManager, MapParameters parameter) {
         this.tileManager = tileManager;
         this.parameter = parameter;
         canvas = new Canvas();
@@ -27,11 +26,17 @@ public final class BaseMapController {
         canvas.widthProperty().bind(mapPane.widthProperty());
         canvas.heightProperty().bind(mapPane.heightProperty());
 
-        redrawNeeded = true;
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
+
+        canvas.widthProperty().addListener(e-> setRedrawNeeded());
+        canvas.heightProperty().addListener(e -> setRedrawNeeded());
+    }
+
+    private void setRedrawNeeded(){
+        redrawNeeded = true;
     }
 
     public Pane pane() {
@@ -50,28 +55,23 @@ public final class BaseMapController {
 
         int minTileX = tilePositionCalculator(parameter.getMinX());
         int maxTileX = tilePositionCalculator(parameter.getMinX() + mapPane.getWidth());
-
+        System.out.println(mapPane.getWidth());
         int minTileY = tilePositionCalculator(parameter.getMinY());
-        int maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
+        int maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getHeight());
 
-        for (int y = minTileY; y < maxTileY; y ++) {
-            for (int x = minTileX; x < maxTileX; x ++) {
-                //if (viewPositionX >= 0 || viewPositionX <= Math.scalb(1, (int) (8 + currentZoomLevel)) &&
-                        //viewPositionY >= 0 || viewPositionX <= Math.scalb(1, (int) (8 + currentZoomLevel))) {
-                    System.out.println("bitch");
-                    try{
-                        Image image = tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y));
-                        graphics.drawImage(image, x * TILE_SIZE, y * TILE_SIZE);
-                    }catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                //}
+        System.out.printf("%d->%d, %d->%d", minTileX, maxTileX, minTileY, maxTileY);
+        for (int y = minTileY; y < maxTileY; y++) {
+            for (int x = minTileX; x < maxTileX; x++) {
+                try {
+                    Image image = tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y));
+                    graphics.drawImage(image, x * TILE_SIZE, y * TILE_SIZE);
+                } catch (IOException ignored) {}
             }
         }
     }
 
-        private int tilePositionCalculator(double screenPosition){
-            return (int) Math.rint(screenPosition / TILE_SIZE);
-        }
-
+    private int tilePositionCalculator(double screenPosition) {
+        return (int) Math.rint(screenPosition / TILE_SIZE);
     }
+
+}
