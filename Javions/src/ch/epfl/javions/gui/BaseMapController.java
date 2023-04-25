@@ -20,6 +20,10 @@ public final class BaseMapController {
     private static final int TILE_SIZE = 256;
     private double clickedXPosition;
     private double clickedYPosition;
+    private boolean dragging = false;
+    private long lastRedrawTime = 0;
+    private static final long MIN_REDRAW_INTERVAL = 16; // Minimum redraw interval in milliseconds (60 FPS)
+
 
     public BaseMapController(TileManager tileManager, MapParameters parameter) {
         this.tileManager = tileManager;
@@ -53,12 +57,19 @@ public final class BaseMapController {
         mapPane.setOnMousePressed(e -> {
             clickedXPosition = e.getX();
             clickedYPosition = e.getY();
+            dragging = true;
         });
+
         mapPane.setOnMouseDragged(e -> {
-            parameter.scroll((int) Math.rint((clickedXPosition - e.getX())/2), (int) Math.rint((clickedYPosition - e.getY())/2));
-            redrawNeeded = true;
+            if (dragging) {
+                parameter.scroll((int) Math.rint((clickedXPosition - e.getX())/20), (int) Math.rint((clickedYPosition - e.getY())/20));
+                redrawNeeded = true;
+            }
         });
-        mapPane.setOnMouseReleased(e -> redrawNeeded = true);
+
+        mapPane.setOnMouseReleased(e -> {
+            dragging = false;
+        });
     }
 
     private void setRedrawNeeded() {
@@ -77,28 +88,30 @@ public final class BaseMapController {
         if (!redrawNeeded) return;
         redrawNeeded = false;
 
-        GraphicsContext graphics = canvas.getGraphicsContext2D();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastRedrawTime < MIN_REDRAW_INTERVAL) {
+            return; // Skip redraw if minimum interval is not met
+        }
 
-        System.out.println(mapPane.getWidth());
+        lastRedrawTime = currentTime;
+
+        GraphicsContext graphics = canvas.getGraphicsContext2D();
 
         int minTileX = tilePositionCalculator(parameter.getMinX());
         int maxTileX = tilePositionCalculator(parameter.getMinX() + mapPane.getWidth());
 
         int minTileY = tilePositionCalculator(parameter.getMinY());
         int maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
-        System.out.println(parameter.getZoom() + "zooooom");
-
 
         int windowX = 0;
         int windowY = 0;
-        for (int y = minTileY; y < maxTileY; y++) {
+        for (int y = minTileY -1 ; y < maxTileY + 1; y++) {
             windowY = (y == minTileY) ? 0 : windowY + 256;
-            for (int x = minTileX; x < maxTileX; x++) {
+            for (int x = minTileX - 1; x < maxTileX + 1; x++) {
                 windowX = (x == minTileX) ? 0 : windowX + 256;
                 try {
                     Image image = tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y));
                     graphics.drawImage(image, windowX, windowY);
-                    System.out.println(x + "x and " + y + " y");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -119,7 +132,8 @@ public final class BaseMapController {
             long currentTime = System.currentTimeMillis();
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
-
+            if(TileManager.TileId.isValid(parameter.getZoom() + zoomDelta,
+                    (int) parameter.getMinX(), (int) parameter.getMinY()));
             parameter.changeZoomLevel(zoomDelta);
             redrawNeeded = true;
         });
