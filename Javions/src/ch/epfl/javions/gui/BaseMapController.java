@@ -85,7 +85,19 @@ public final class BaseMapController {
 
         mapPane.setOnMouseDragged(e -> {
             parameter.scroll((int) (clickedXPosition - e.getX()), (int)(clickedYPosition - e.getY()));
-            safeTheShift((int) (clickedXPosition - e.getX()), (int) (clickedYPosition - e.getY()));
+
+            if((int)parameter.getMinX() % 256 > 128){
+                xshift = ((int)parameter.getMinX() % 256) -128;
+            } else {
+                xshift = ((int)parameter.getMinX() % 256) +128;
+            }
+
+            if((int)parameter.getMinY() % 256 > 128){
+                yshift = ((int)parameter.getMinY() % 256) -128;
+            } else {
+                yshift = ((int)parameter.getMinY() % 256) +128;
+            }
+
             clickedXPosition = e.getX();
             clickedYPosition = e.getY();
         });
@@ -120,10 +132,10 @@ public final class BaseMapController {
 
 
 
-        for (double y = minTileY - 1; y < maxTileY + 1; y++) {
-            windowY = (y == minTileY - 1) ? -128 : windowY + 256;
-            for (double x = minTileX - 1; x < maxTileX + 1; x++) {
-                windowX = (x == minTileX-1) ? -128 : windowX + 256;
+        for (double y = minTileY - 1; y < maxTileY + 2; y++) {
+            windowY = (y == minTileY ) ? 0 : windowY + 256;
+            for (double x = minTileX - 1; x < maxTileX + 2; x++) {
+                windowX = (x == minTileX) ? 0 : windowX + 256;
                 try {
                     TileManager.TileId id = new TileManager.TileId(parameter.getZoom(), (int) x, (int) y);
                     if (id.isValid(id)) {
@@ -144,12 +156,6 @@ public final class BaseMapController {
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
-    }
-    // TODO the shift grid and the windowtile grid are not on top of eachother yet we need to synchronise them
-    private void safeTheShift(int x, int y){
-        xshift = (x + xshift + windowX) % 128;
-        System.out.println(xshift);
-        yshift = (y + yshift + windowY) % 128;
     }
 
 }
