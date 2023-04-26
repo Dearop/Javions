@@ -22,6 +22,13 @@ public final class BaseMapController {
     private boolean redrawNeeded;
     private Canvas canvas;
     private Pane mapPane;
+
+    private int xshift;
+    private int yshift;
+
+    private int windowX = -128;
+    private int windowY = -128;
+
     private static final int TILE_SIZE = 256;
     private double clickedXPosition;
     private double clickedYPosition;
@@ -31,6 +38,9 @@ public final class BaseMapController {
         this.parameter = parameter;
         canvas = new Canvas();
         mapPane = new Pane(canvas);
+
+        this.xshift = 0;
+        this.yshift = 0;
 
         addBindings();
         addListeners();
@@ -45,13 +55,13 @@ public final class BaseMapController {
     private void addListeners() {
         canvas.widthProperty().addListener(e -> redrawOnNextPulse());
         canvas.heightProperty().addListener(e -> redrawOnNextPulse());
+        parameter.zoomProperty().addListener(e -> redrawOnNextPulse());
+        parameter.minXProperty().addListener(e ->{redrawOnNextPulse();});
+        parameter.minYProperty().addListener(e ->{redrawOnNextPulse();});
         canvas.sceneProperty().addListener((p, oldS, newS) -> {
             assert oldS == null;
             newS.addPreLayoutPulseListener(this::redrawIfNeeded);
         });
-        parameter.zoomProperty().addListener(e -> redrawOnNextPulse());
-        parameter.minXProperty().addListener(e ->{redrawOnNextPulse();});
-        parameter.minYProperty().addListener(e ->{redrawOnNextPulse();});
     }
 
     private void addEventManagers() {
@@ -74,11 +84,14 @@ public final class BaseMapController {
         });
 
         mapPane.setOnMouseDragged(e -> {
-            parameter.scroll(clickedXPosition - e.getX(), clickedYPosition - e.getY());
+            parameter.scroll((int) (clickedXPosition - e.getX()), (int)(clickedYPosition - e.getY()));
+            safeTheShift((int) (clickedXPosition - e.getX()), (int) (clickedYPosition - e.getY()));
+            clickedXPosition = e.getX();
+            clickedYPosition = e.getY();
         });
 
         mapPane.setOnMouseReleased(e -> {
-            parameter.scroll(clickedXPosition - e.getX(), clickedYPosition - e.getY());
+
         });
 
     }
@@ -90,7 +103,7 @@ public final class BaseMapController {
     public void centerOn(GeoPos pos) {
         double xTopPositon = WebMercator.x(parameter.getZoom(), pos.longitude());
         double yTopPosition = WebMercator.y(parameter.getZoom(), pos.latitude());
-        parameter.scroll((xTopPositon + mapPane.getWidth() / 2), (yTopPosition + mapPane.getHeight() / 2));
+        parameter.scroll((int)((xTopPositon + mapPane.getWidth() / 2)),(int) ((yTopPosition + mapPane.getHeight() / 2)));
     }
 
     private void redrawIfNeeded() {
@@ -105,17 +118,17 @@ public final class BaseMapController {
         double minTileY = tilePositionCalculator(parameter.getMinY());
         double maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
 
-        double windowX = 0;
-        double windowY = 0;
+
+
         for (double y = minTileY - 1; y < maxTileY + 1; y++) {
-            windowY = (y == minTileY) ? 0 : windowY + 256;
+            windowY = (y == minTileY - 1) ? -128 : windowY + 256;
             for (double x = minTileX - 1; x < maxTileX + 1; x++) {
-                windowX = (x == minTileX) ? 0 : windowX + 256;
+                windowX = (x == minTileX-1) ? -128 : windowX + 256;
                 try {
                     TileManager.TileId id = new TileManager.TileId(parameter.getZoom(), (int) x, (int) y);
                     if (id.isValid(id)) {
                         Image image = tileManager.imageForTileAt(id);
-                        graphics.drawImage(image, windowX, windowY);
+                        graphics.drawImage(image, windowX - xshift, windowY - yshift);
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -131,6 +144,12 @@ public final class BaseMapController {
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
+    }
+    // TODO the shift grid and the windowtile grid are not on top of eachother yet we need to synchronise them
+    private void safeTheShift(int x, int y){
+        xshift = (x + xshift + windowX) % 128;
+        System.out.println(xshift);
+        yshift = (y + yshift + windowY) % 128;
     }
 
 }
