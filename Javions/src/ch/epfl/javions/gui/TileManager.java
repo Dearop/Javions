@@ -1,6 +1,8 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.WebMercator;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.image.Image;
 
 import java.io.*;
@@ -11,6 +13,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class TileManager {
     private final Path path;
@@ -23,17 +26,9 @@ public final class TileManager {
         this.serverAddress = serverAddress;
     }
 
-
-
     public record TileId(int zoom, int x, int y){
-
-        public TileId{
-            if(!isValid(zoom, x ,y)){
-                throw new IllegalArgumentException();
-            }
-        }
-        public static boolean isValid(int zoom, int x, int y){// i am not sure if 19 is the highest value that zoomLevel can have but i tried it on this https://tile.openstreetmap.org/20/0/0.png
-            return (x>=0 && y>=0) && (x <= Math.scalb(1, 8+zoom) && (y <= Math.scalb(1, 8 + zoom))) && (0 < zoom && zoom < 20);
+        public static boolean isValid(TileId id){// i am not sure if 19 is the highest value that zoomLevel can have but i tried it on this https://tile.openstreetmap.org/20/0/0.png
+            return (id.x>=0 && id.y>=0) && (id.x <= Math.scalb(1, 8+id.zoom) && (id.y <= Math.scalb(1, 8 + id.zoom))) && (5 < id.zoom && id.zoom < 20);
         }
     }
 
@@ -76,4 +71,5 @@ public final class TileManager {
     private Path directoryPath(TileId id){
         return path.resolve(Paths.get(id.zoom +"/" +id.x));
     }
+
 }
