@@ -55,7 +55,7 @@ public final class MapParameters {
         if (zoom.get() + zoomDifference <= 19 && zoom.get() + zoomDifference >= 6) {
             zoom.set(Math2.clamp(MIN_ZOOM, zoom.get() + zoomDifference, MAX_ZOOM));
             minX.set((minX.get()) * Math.scalb(1, zoomDifference));
-            minY.set((minY.get()) * Math.scalb(1, zoomDifference));
+            minY.set((minY.get()) * Math.scalb(1, zoomDifference)); // 
         }
 
     }
