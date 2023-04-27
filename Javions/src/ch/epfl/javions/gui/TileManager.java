@@ -16,7 +16,7 @@ public final class TileManager {
     private final static int MAX_SIZE = 100;
     private LinkedHashMap<TileId, Image> memoryCache = new LinkedHashMap<>(100, 1, true);
     private Iterator<Image> iterator = this.memoryCache.values().iterator();
-
+    private Image image;
     public TileManager(Path path, String serverAddress) {
         this.path = path;
         this.serverAddress = serverAddress;
@@ -36,11 +36,11 @@ public final class TileManager {
                 memoryCache.remove(memoryCache.keySet().iterator().next());
         }
         refreshCacheIterator();
+
         if (TileId.isValid(id)) {
-            memoryCache.put(id, getFromFilesOrAdd(id));
+            image = getFromFilesOrAdd(id);
         }
-
-
+        memoryCache.put(id, image);
         return memoryCache.get(id);
     }
 
