@@ -26,6 +26,7 @@ public final class TileManager {
 
         public static boolean isValid(TileId id) {// i am not sure if 19 is the highest value that zoomLevel can have but i tried it on this https://tile.openstreetmap.org/20/0/0.png
             return (id.x >= 0 && id.y >= 0) && (id.x <= Math.scalb(1, 8 + id.zoom) && (id.y <= Math.scalb(1, 8 + id.zoom))) && (5 < id.zoom && id.zoom < 20);
+
         }
     }
 

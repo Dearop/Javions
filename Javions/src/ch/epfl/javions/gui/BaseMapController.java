@@ -133,14 +133,17 @@ public final class BaseMapController {
                 windowX = (x == minTileX) ? 0 : windowX + 256;
                 try {
                     TileManager.TileId id = new TileManager.TileId(parameter.getZoom(), (int) x, (int) y);
+
                     if(TileManager.TileId.isValid(id)){
                         Image image = tileManager.imageForTileAt(id);
                         graphics.drawImage(image, windowX - xshift, windowY - yshift);
                     }
-                } catch (IOException ignored) {}
+                } catch (IOException ignored) {
+                    System.out.println("GINGER");
+                }
             }
         }
-        System.out.println(parameter.getZoom());
+
     }
 
     private double tilePositionCalculator(double screenPosition) {
