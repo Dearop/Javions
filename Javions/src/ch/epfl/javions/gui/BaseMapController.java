@@ -5,16 +5,12 @@ import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
-
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 public final class BaseMapController {
     private TileManager tileManager;
@@ -75,7 +71,9 @@ public final class BaseMapController {
             if (currentTime < minScrollTime.get()) return;
             minScrollTime.set(currentTime + 200);
 
+            parameter.scroll(e.getSceneX() + xshift, e.getSceneY() + yshift);
             parameter.changeZoomLevel(zoomDelta);
+            parameter.scroll(-e.getSceneX() - xshift, -e.getSceneY() - yshift);
         });
 
         mapPane.setOnMousePressed(e -> {
@@ -87,9 +85,9 @@ public final class BaseMapController {
             parameter.scroll((int) (clickedXPosition - e.getX()), (int)(clickedYPosition - e.getY()));
 
             if((int)parameter.getMinX() % 256 > 128){
-                xshift = ((int)parameter.getMinX() % 256) -128;
+                xshift = ((int)parameter.getMinX() % 256) - 128;
             } else {
-                xshift = ((int)parameter.getMinX() % 256) +128;
+                xshift = ((int)parameter.getMinX() % 256) + 128;
             }
 
             if((int)parameter.getMinY() % 256 > 128){
@@ -102,10 +100,7 @@ public final class BaseMapController {
             clickedYPosition = e.getY();
         });
 
-        mapPane.setOnMouseReleased(e -> {
-
-        });
-
+        mapPane.setOnMouseReleased(e -> {});
     }
 
     public Pane pane() {
@@ -138,15 +133,14 @@ public final class BaseMapController {
                 windowX = (x == minTileX) ? 0 : windowX + 256;
                 try {
                     TileManager.TileId id = new TileManager.TileId(parameter.getZoom(), (int) x, (int) y);
-                    if (id.isValid(id)) {
+                    if(TileManager.TileId.isValid(id)){
                         Image image = tileManager.imageForTileAt(id);
                         graphics.drawImage(image, windowX - xshift, windowY - yshift);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                } catch (IOException ignored) {}
             }
         }
+        System.out.println(parameter.getZoom());
     }
 
     private double tilePositionCalculator(double screenPosition) {
