@@ -18,7 +18,7 @@ public final class AdsbDemodulator {
     private static final int START_OF_BYTE = 80;
     private static final int START_OF_BYTE_CHECK = 85;
     private static final int TIMESTAMP_CONVERTER = 100;
-
+    
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         window = new PowerWindow(samplesStream, AdsbDemodulator.WINDOW_SIZE);
     }
@@ -53,7 +53,7 @@ public final class AdsbDemodulator {
                         table[0] |= (byte) (1 << (7 - byteIterator));
                     }
                 }
-
+                // TODO: 4/28/2023 need to change this 
                 if (EXPECTED_DF == RawMessage.size(table[0])) {
 
                     for (int byteUsed = 1; 14 > byteUsed; byteUsed++) {

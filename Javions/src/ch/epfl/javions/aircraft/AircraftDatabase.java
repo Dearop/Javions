@@ -1,6 +1,7 @@
 package ch.epfl.javions.aircraft;
 
 import java.io.*;
+import java.util.Objects;
 import java.util.zip.ZipFile;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -27,11 +28,11 @@ public final class AircraftDatabase {
      * @throws NullPointerException If the file name is null.
      */
     public AircraftDatabase(String fileName) {
-        if (null == fileName)
-            throw new NullPointerException();
+        Objects.requireNonNull(fileName);
         this.fileName = fileName;
     }
 
+    // TODO: 4/28/2023 this has to be more efficient
     /**
      * Returns the aircraft data for the specified ICAO address.
      * Searches the sorted file for the address and returns the corresponding data.

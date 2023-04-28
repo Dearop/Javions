@@ -23,7 +23,6 @@ public final class AircraftStateManager {
         this.accumulatorMap = new HashMap<>();
     }
 
-    // TODO: 4/9/2023 don't know if we should give it a copy or the set itself 
     public ObservableSet<ObservableAircraftState> states(){
         return (ObservableSet<ObservableAircraftState>) Set.copyOf(knownPositionStates);
     }
@@ -53,10 +52,6 @@ public final class AircraftStateManager {
 
     public Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> getAccumulatorMap(){
         return Collections.unmodifiableMap(accumulatorMap);
-    }
-
-    public ObservableSet<ObservableAircraftState> getKnownPositionStates() {
-        return observableSet(this.knownPositionStates);
     }
 
     public String toString(IcaoAddress adress){

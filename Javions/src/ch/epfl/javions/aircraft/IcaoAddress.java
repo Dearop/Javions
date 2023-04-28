@@ -1,5 +1,7 @@
 package ch.epfl.javions.aircraft;
 
+import ch.epfl.javions.Preconditions;
+
 import java.util.regex.Pattern;
 
 /**
@@ -11,8 +13,8 @@ import java.util.regex.Pattern;
  * @author Paul Quesnot (347572)
  */
 public record IcaoAddress(String string) {
-    private static Pattern pattern;
-
+    // {6} corresponds to the length of the IcaoAddress
+    private static Pattern pattern = Pattern.compile("[0-9A-F]{6}");;
     /**
      * Checks if the given input string matches the IcaoAddress format.
      *
@@ -20,13 +22,12 @@ public record IcaoAddress(String string) {
      *                                  or does not match the expected format (i.e. six hexadecimal digits)
      */
     public IcaoAddress {
-
-        // {6} corresponds to the length of the IcaoAddress
-        pattern = Pattern.compile("[0-9A-F]{6}");
-        if (string.isEmpty() || !pattern.matcher(string).matches())
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(!string.isEmpty() && pattern.matcher(string).matches());
     }
 
+    /**
+     * @return last character of icaoadress
+     */
     public String getLastChar() {
         return string.substring(string.length() - 2);
     }

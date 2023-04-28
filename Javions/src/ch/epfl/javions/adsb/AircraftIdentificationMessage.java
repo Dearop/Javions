@@ -25,9 +25,6 @@ public record AircraftIdentificationMessage
     private static final int CHAR_SPACE = 32;
     private static final int ASCII_ALPHABET_A = 64;
 
-
-
-
     /**
      * Creates a new AircraftIdentificationMessage with the given timestamp, ICAO address, category and call sign.
      *

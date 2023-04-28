@@ -7,11 +7,11 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  */
 public final class Crc24 {
+    // Constant representing the generator of the crc
     public static final int GENERATOR = 0xFFF409;
     private static final int tableSize = 256;
     private static int[] crc_b = new int[tableSize];
     private static final int mask = 16777215;
-    private static final int CRC_SIZE = 8;
     private static final int CRC_START = 16;
     private static final int CRC_BITWISE_START = 23;
     private static final int CRC_BITWISE_SIZE = 1;
@@ -41,11 +41,11 @@ public final class Crc24 {
         int crc = 0;
 
         for (byte o : bytes) {
-            crc = ((crc << CRC_SIZE) | Byte.toUnsignedInt(o)) ^ crc_b[Bits.extractUInt(crc, CRC_START, CRC_SIZE)];
+            crc = ((crc << Byte.SIZE) | Byte.toUnsignedInt(o)) ^ crc_b[Bits.extractUInt(crc, CRC_START, Byte.SIZE)];
         }
 
         for (int j = 0; 3 > j; ++j) {
-            crc = (crc << CRC_SIZE) ^ crc_b[Bits.extractUInt(crc, CRC_START, CRC_SIZE)];
+            crc = (crc << Byte.SIZE) ^ crc_b[Bits.extractUInt(crc, CRC_START, Byte.SIZE)];
         }
 
         return crc & mask;

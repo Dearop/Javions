@@ -14,11 +14,12 @@ import java.util.Objects;
  */
 public final class ByteString {
     private final byte[] bytes;
-
+    private final String hexString;
     private final int byteFullOfOnes = 0xFF;
 
     public ByteString(byte[] bytes) {
         this.bytes = bytes.clone();
+        hexString = HexFormat.of().withUpperCase().formatHex(this.bytes);
     }
 
     /**
@@ -108,8 +109,7 @@ public final class ByteString {
      * @return boolean indicating whether that0 is equal to the attribute or not
      */
     public boolean equals(Object that0) {
-        if (that0 instanceof ByteString that) return Arrays.equals(this.bytes, that.bytes);
-        return false;
+        return (that0 instanceof ByteString that) && Arrays.equals(this.bytes, that.bytes);
     }
 
     /**
@@ -129,6 +129,6 @@ public final class ByteString {
      * @return String value representing the bytes in the ByteString in hexadecimal format
      */
     public String toString() {
-        return HexFormat.of().withUpperCase().formatHex(this.bytes);
+        return hexString;
     }
 }

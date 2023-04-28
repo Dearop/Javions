@@ -23,7 +23,7 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @throws IllegalArgumentException if the given latitude is not valid
      */
     public GeoPos {
-        if (!isValidLatitudeT32(latitudeT32)) throw new IllegalArgumentException();
+        Preconditions.checkArgument(isValidLatitudeT32(latitudeT32));
     }
 
     /**
@@ -42,14 +42,14 @@ public record GeoPos(int longitudeT32, int latitudeT32) {
      * @return longitude in radians
      */
     public double longitude() {
-        return convert(this.longitudeT32, Angle.T32, Angle.RADIAN);
+        return convertFrom(this.longitudeT32, Angle.T32);
     }
 
     /**
      * @return latitude in radians
      */
     public double latitude() {
-        return convert(this.latitudeT32, Angle.T32, Angle.RADIAN);
+        return convertFrom(this.latitudeT32, Angle.T32);
     }
 
     /**

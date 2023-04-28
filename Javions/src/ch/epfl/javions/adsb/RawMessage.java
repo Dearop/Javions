@@ -16,8 +16,9 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  */
 public record RawMessage(long timeStampNs, ByteString bytes) {
     public static final int LENGTH = 14;
-    private static final int CA_SIZE = 3;
     private static final int DF_LOCATION = 0;
+    private static final int DF_START = 3;
+    private static final int DF_SIZE = 5;
     private static final int MESSAGE_LENGTH = 56;
     private static final int TYPE_CODE_LENGTH = 5;
     private static final int EXPECTED_VALUE = 17;
@@ -63,7 +64,7 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
      * @return integer value representing the DF format of the message
      */
     public int downLinkFormat() {
-        return this.bytes.byteAt(DF_LOCATION) >> CA_SIZE;
+        return Bits.extractUInt(this.bytes.byteAt(DF_LOCATION), DF_START, DF_START + DF_SIZE);
     }
 
     /**
@@ -75,7 +76,6 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
         for (int i = 1; 4 > i; ++i) {
             byteAddress[i - 1] = (byte) this.bytes.byteAt(i);
         }
-
         ByteString address = new ByteString(byteAddress);
         return new IcaoAddress(address.toString());
     }

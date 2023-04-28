@@ -22,14 +22,8 @@ public final class Math2 {
      * @throws IllegalArgumentException if min is bigger than max
      */
     public static int clamp(int min, int v, int max) {
-        if (min > max)
-            throw new IllegalArgumentException();
-        else if (v < min)
-            return min;
-        else if (v > max)
-            return max;
-
-        return v;
+        Preconditions.checkArgument(min < max);
+        return Math.min(Math.max(min, v), max);
     }
 
 
@@ -38,6 +32,6 @@ public final class Math2 {
      * @return double value of arcsinh(x)
      */
     public static double asinh(double x) {
-        return Math.log(x + Math.sqrt(1 + Math.pow(x, 2)));
+        return Math.log(x + Math.hypot(1, x));
     }
 }

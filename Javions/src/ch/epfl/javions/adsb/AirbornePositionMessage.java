@@ -14,11 +14,7 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  */
 public record AirbornePositionMessage
         (long timeStampNs, IcaoAddress icaoAddress, double altitude, int parity, double x, double y) implements Message {
-
-    private static final int TYPE_CODE_TOO_SMALL = 9;
-    private static final int TYPE_CODE_TOO_BIG = 22;
-    private static final int TYPE_CODE_INVALID = 19;
-
+    
     private static final int LON_CPR_START = 0;
     private static final int LON_CPR_SIZE = 17;
     private static final int LAT_CPR_START = 17;
@@ -59,22 +55,18 @@ public record AirbornePositionMessage
      * @return null if the RawMessage object does not correspond to an airborne position message.
      */
     public static AirbornePositionMessage of(RawMessage rawMessage) {
-        if (TYPE_CODE_TOO_SMALL > rawMessage.typeCode()
-                || TYPE_CODE_TOO_BIG < rawMessage.typeCode()
-                || TYPE_CODE_INVALID == rawMessage.typeCode())
-            return null;
 
         // extracting Bits from the payload of the rawMessage
         long payload = rawMessage.payload();
-        double longitude = (Bits.extractUInt(payload, LON_CPR_START, LON_CPR_SIZE)) / Math.pow(2, 17);
-        double latitude = (Bits.extractUInt(payload, LAT_CPR_START, LAT_CPR_SIZE)) / Math.pow(2, 17);
+        double longitude = (Bits.extractUInt(payload, LON_CPR_START, LON_CPR_SIZE)) / Math.scalb(1, 17);
+        double latitude = (Bits.extractUInt(payload, LAT_CPR_START, LAT_CPR_SIZE)) / Math.scalb(1, 17);
 
         int FORMAT = (int) ((payload >> FORMAT_START) & 1);
         int ALT = Bits.extractUInt(payload, ALT_START, ALT_SIZE);
         double computedAltitude = altitudeComputer(ALT);
 
         // if the computedAltitude is invalid, it has the value of -0xFFFFF
-        if (-0xFFFFF == computedAltitude)
+        if (Double.isNaN(computedAltitude))
             return null;
 
         return new AirbornePositionMessage(rawMessage.timeStampNs(),
@@ -97,7 +89,6 @@ public record AirbornePositionMessage
         //Q=1
         if (1 == Bits.extractUInt(ALT, 4, 1)) {
             final double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
-
             return Units.convertFrom(altitudeInFeet * 25 + BASE_ALTITUDE_Q1, Units.Length.FOOT);
         }
 
@@ -122,7 +113,7 @@ public record AirbornePositionMessage
 
         // these three lines handle special cases about the LSB
         if (0 == LSB || 5 == LSB || 6 == LSB)
-            return -0xFFFFF;
+            return Double.NaN;
         if (7 == LSB)
             LSB = 5;
         if (1 == MSB % 2)
@@ -137,6 +128,7 @@ public record AirbornePositionMessage
      * @param gray The Gray code to convert.
      * @return The binary code.
      */
+    // TODO: 4/28/2023 apparently gray to binary should handle negative numbers  
     private static int grayToBinary(int gray) {
         int binary = gray;
 

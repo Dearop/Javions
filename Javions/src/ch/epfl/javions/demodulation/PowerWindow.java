@@ -1,5 +1,7 @@
 package ch.epfl.javions.demodulation;
 
+import ch.epfl.javions.Preconditions;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -14,13 +16,14 @@ import java.io.InputStream;
  * @author Paul Quesnot (347572)
  */
 public final class PowerWindow {
-    public PowerComputer computer;
+    private PowerComputer computer;
     private final int windowSize;
     private int positionCounter;
-    public static final int batchSize = (int) Math.pow(2, 16);
-    private int[] batchOne;
+      private int[] batchOne;
     private final int[] batchTwo;
     private final int availableStream;
+    private final int LAST_WINDOW_INDEX;
+    private static final int LOT_SIZE = 1 << 16;
 
     /**
      * this constructor first checks that the window size is smaller or equal to the batch size. If not an
@@ -33,16 +36,16 @@ public final class PowerWindow {
      * @throws IOException Throws Exception when there is a problem reading the stream.
      */
     public PowerWindow(InputStream stream, int windowSize) throws IOException {
-        if (0 >= windowSize || windowSize > PowerWindow.batchSize)
-            throw new IllegalArgumentException("windowSize out of bound, size : " + windowSize);
+        Preconditions.checkArgument(windowSize > 0 && windowSize <= LOT_SIZE);
 
         this.availableStream = stream.available();
 
         this.windowSize = windowSize;
-        this.computer = new PowerComputer(stream, PowerWindow.batchSize);
+        this.computer = new PowerComputer(stream, LOT_SIZE);
+        LAST_WINDOW_INDEX = windowSize - 1;
 
-        this.batchOne = new int[batchSize];
-        this.batchTwo = new int[batchSize];
+        this.batchOne = new int[LOT_SIZE];
+        this.batchTwo = new int[LOT_SIZE];
 
         computer.readBatch(batchOne);
         computer.readBatch(batchTwo);
@@ -67,6 +70,7 @@ public final class PowerWindow {
      * This statement is true as long as all the inputs are coming from within the stream size.
      * Once the positionCounter + windowSize is bigger than the stream/4 then it return false.
      */
+    // TODO: 4/28/2023 Go ask
     public boolean isFull() {
         return this.availableStream / 4 >= this.positionCounter + this.windowSize;
     }
@@ -81,10 +85,10 @@ public final class PowerWindow {
     public int get(int i) {
         if (0 > i || i >= this.windowSize) throw new IllegalArgumentException();
 
-        final int positionInBatch = this.positionCounter % PowerWindow.batchSize;
-        return positionInBatch + i < PowerWindow.batchSize
+        final int positionInBatch = this.positionCounter % LOT_SIZE;
+        return positionInBatch + i < LOT_SIZE
                 ? this.batchOne[positionInBatch + i]
-                : this.batchTwo[(positionInBatch + i) % PowerWindow.batchSize];
+                : this.batchTwo[(positionInBatch + i) % LOT_SIZE];
     }
 
     /**
@@ -94,10 +98,10 @@ public final class PowerWindow {
      */
     public void advance() throws IOException {
         ++this.positionCounter;
-        int positionInsideBatch = this.positionCounter % PowerWindow.batchSize;
+        int positionInsideBatch = this.positionCounter % PowerWindow.LOT_SIZE;
 
         // we check if the new position is at the end of the current priority batch.
-        if (positionInsideBatch == PowerWindow.batchSize - 1) {
+        if (positionInsideBatch == LOT_SIZE - 1) {
 
             /**
              * because batchTwo is now priority batch we can replace all values inside batchOne with

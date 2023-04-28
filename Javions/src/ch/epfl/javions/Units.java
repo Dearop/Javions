@@ -7,8 +7,7 @@ package ch.epfl.javions;
  * @author Paul Quesnot (347572)
  */
 public final class Units {
-    private Units() {
-    }
+    private Units() {}
 
     /**
      * Constant for the CENTI conversion, so 100*CENTI = 1
@@ -41,7 +40,7 @@ public final class Units {
         public static final double KILOMETER = KILO * METER;
         public static final double INCH = 2.54 * CENTIMETER;
         public static final double FOOT = 12 * INCH;
-        public static final double NAUTICAL_MILE = 1852;
+        public static final double NAUTICAL_MILE = METER * 1852;
 
         private Length() {
         }
@@ -52,7 +51,7 @@ public final class Units {
      */
     public static class Time {
         public static final double SECOND = 1;
-        public static final double MINUTE = 60;
+        public static final double MINUTE = 60 * SECOND;
         public static final double HOUR = 60 * MINUTE;
 
         private Time() {
@@ -64,8 +63,8 @@ public final class Units {
      * meters per second
      */
     public static class Speed {
-        public static final double KNOT = 0.51444444444;
-        public static final double KILOMETER_PER_HOUR = 1 / 3.6;
+        public static final double KNOT = Length.NAUTICAL_MILE / Time.HOUR;
+        public static final double KILOMETER_PER_HOUR = Length.KILOMETER /Time.HOUR;
 
         private Speed() {
         }

@@ -1,8 +1,11 @@
 package ch.epfl.javions.demodulation;
 
 import ch.epfl.javions.Preconditions;
+import org.w3c.dom.ls.LSResourceResolver;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 /**
  * This class is responsible for decoding a batch of samples from an input stream.
@@ -19,6 +22,7 @@ public final class SamplesDecoder {
     private final InputStream stream;
     private final int batchSize;
     private final byte[] bytes;
+    private final static int ADJUSTMENT = 2;
 
     /**
      * Constructs a SamplesDecoder object with the given input stream and batch size.
@@ -29,9 +33,9 @@ public final class SamplesDecoder {
      * @throws NullPointerException     if the input stream is null
      */
     public SamplesDecoder(InputStream stream, int batchSize) {
-        if (0 >= batchSize) throw new IllegalArgumentException();
-        if (null == stream) throw new NullPointerException();
-
+        Preconditions.checkArgument(batchSize > 0);
+        Objects.requireNonNull(stream);
+        
         this.stream = stream;
         this.batchSize = batchSize;
 
@@ -49,15 +53,15 @@ public final class SamplesDecoder {
     public int readBatch(short[] batch) throws IOException {
         Preconditions.checkArgument(batch.length == batchSize);
 
-        int bytesRead = stream.readNBytes(bytes, 0, 2 * batchSize);
+        int bytesRead = stream.readNBytes(bytes, 0, ADJUSTMENT * batchSize);
 
-        for (int posInBatch = 0; posInBatch < bytesRead / 2; ++posInBatch) {
+        for (int posInBatch = 0; posInBatch < bytesRead / ADJUSTMENT; ++posInBatch) {
 
-            short higherWeight = this.bytes[2 * posInBatch + 1];
-            higherWeight <<= 8;
+            short higherWeight = this.bytes[ADJUSTMENT * posInBatch + 1];
+            higherWeight <<= Byte.SIZE;
 
             batch[posInBatch] = (short) (((higherWeight & 0xF00) | (bytes[2 * posInBatch] & 0xFF)) - 2048);
         }
-        return bytesRead / 2;
+        return bytesRead / ADJUSTMENT;
     }
 }

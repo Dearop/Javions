@@ -1,5 +1,7 @@
 package ch.epfl.javions;
 
+import java.util.Objects;
+
 /**
  * This is a utility class containing static methods for extracting a subset of the 64 bits from a long value.
  *
@@ -10,10 +12,7 @@ public class Bits {
 
     private Bits(){}
 
-    private static final int MIN_SIZE = 0, MIN_START = 0,
-            MAX_SIZE = 32, MAX_START_PLUS_SIZE = 64,
-            MIN_INDEX = 0, MAX_INDEX = 63;
-
+    private static final int MIN_SIZE = 0;
     /**
      * This static method extracts a range of bits from the 64-bit vector value, starting at bit index start and
      * continuing for size bits, and interprets the resulting range as an unsigned integer value.
@@ -28,11 +27,9 @@ public class Bits {
      *                                   within the range of bit indices from 0 (exclusive) to 64 (exclusive)
      */
     public static int extractUInt(long value, int start, int size) {
+        Preconditions.checkArgument(MIN_SIZE < size && Integer.SIZE > size);
 
-        if (MIN_SIZE >= size || MAX_SIZE <= size)
-            throw new IllegalArgumentException();
-        else if (MIN_START > start || MAX_START_PLUS_SIZE < start + size)
-            throw new IndexOutOfBoundsException();
+        Objects.checkFromIndexSize(start, size, Long.SIZE);
 
         long extractedValue = value >>> (start);
         long changedValueSize = (long) (Math.pow(2, size) - 1);
@@ -53,8 +50,7 @@ public class Bits {
      *                                   from 0 (exclusive) to 64 (exclusive)
      */
     public static boolean testBit(long value, int index) {
-        if (MIN_INDEX > index || MAX_INDEX < index)
-            throw new IndexOutOfBoundsException();
+        Objects.checkIndex(index, Long.SIZE);
 
         long extractedValue = value >>> index;
 
