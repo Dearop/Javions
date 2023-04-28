@@ -45,17 +45,23 @@ public final class MapParameters {
     }
 
     public void scroll(double x, double y) {
-        if(minX.get() + x >= 0 && minY.get() + y >= 0 ){// TODO && minX.get() + 2000 < Math.scalb(1,zoom.get()) && minY.get() + 2000 < Math.scalb(1, zoom.get())){
-            minX.set(minX.get() + x);
-            minY.set(minY.get() + y);
-        }
+        minX.set(minX.get() + x);
+        minY.set(minY.get() + y);
+
     }
 
     public void changeZoomLevel(int zoomDifference) {
-        if (zoom.get() + zoomDifference <= 19 && zoom.get() + zoomDifference >= 6) {
-            zoom.set(Math2.clamp(MIN_ZOOM, zoom.get() + zoomDifference, MAX_ZOOM));
+
+        zoomDifference = (zoomDifference > 0) ? 1 : -1;
+
+        int zoomBoundary = Math2.clamp(MIN_ZOOM, zoom.get() + zoomDifference, MAX_ZOOM);
+
+        System.out.println(zoom.get());
+
+        if (zoom.get() != zoomBoundary) {
+            zoom.set(zoomBoundary);
             minX.set((minX.get()) * Math.scalb(1, zoomDifference));
-            minY.set((minY.get()) * Math.scalb(1, zoomDifference)); 
+            minY.set((minY.get()) * Math.scalb(1, zoomDifference));
         }
 
     }
