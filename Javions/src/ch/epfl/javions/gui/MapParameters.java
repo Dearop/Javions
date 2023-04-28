@@ -47,7 +47,6 @@ public final class MapParameters {
     public void scroll(double x, double y) {
         minX.set(minX.get() + x);
         minY.set(minY.get() + y);
-
     }
 
     public void changeZoomLevel(int zoomDifference) {
@@ -55,8 +54,6 @@ public final class MapParameters {
         zoomDifference = (zoomDifference > 0) ? 1 : -1;
 
         int zoomBoundary = Math2.clamp(MIN_ZOOM, zoom.get() + zoomDifference, MAX_ZOOM);
-
-        System.out.println(zoom.get());
 
         if (zoom.get() != zoomBoundary) {
             zoom.set(zoomBoundary);

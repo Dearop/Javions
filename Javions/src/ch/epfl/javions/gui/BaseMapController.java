@@ -1,7 +1,6 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
-import ch.epfl.javions.Math2;
 import ch.epfl.javions.WebMercator;
 import javafx.application.Platform;
 import javafx.beans.property.LongProperty;
@@ -11,7 +10,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -22,21 +20,8 @@ public final class BaseMapController {
     private boolean redrawNeeded;
     private Canvas canvas;
     private Pane mapPane;
-
-    private int xshift;
-    private int yshift;
-
-    private int windowX = -128;
-    private int windowY = -128;
-
     private static final int TILE_SIZE = 256;
-
-    private static final int MAX_ZOOM = 19;
-
-    private static final int MIN_ZOOM = 6;
     private static final int SCROLL_TIME = 200;
-    private double clickedXPosition;
-    private double clickedYPosition;
 
     private final ObjectProperty<Point2D> scroller;
 
@@ -89,9 +74,7 @@ public final class BaseMapController {
             parameter.changeZoomLevel((int) zoomDelta);
             parameter.scroll(-e.getX(), -e.getY());
 
-            setShifts();
-            clickedXPosition = e.getX();
-            clickedYPosition = e.getY();
+            scroller.set(new Point2D(e.getX(), e.getY()));
         });
 
         mapPane.setOnMousePressed(e -> {
@@ -101,14 +84,11 @@ public final class BaseMapController {
         mapPane.setOnMouseDragged(e -> {
 
             parameter.scroll((int) (scroller.get().getX() - e.getX()), (int) (scroller.get().getY()) - e.getY());
-
-            setShifts();
             scroller.set(new Point2D(e.getX(), e.getY()));
         });
 
         mapPane.setOnMouseReleased(e -> {
-            clickedXPosition = e.getX();
-            clickedYPosition = e.getY();
+            scroller.set(new Point2D(e.getX(), e.getY()));
         });
     }
 
@@ -140,45 +120,27 @@ public final class BaseMapController {
         double minTileY = tilePositionCalculator(parameter.getMinY());
         double maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
 
-        int destinationY = (int) -parameter.getMinY() % 256;
-        for (int y = (int) minTileY - 1; y < maxTileY + 2; y++) {
+        int destinationY = (int) -parameter.getMinY() % TILE_SIZE;
+        for (int y = (int) minTileY; y < (int) maxTileY + 1; y++) {
 
-            int destinationX = (int) -parameter.getMinX() % 256;
-            for (int x = (int) minTileX - 1; x < maxTileX + 2; x++) {
+            int destinationX = (int) -parameter.getMinX() % TILE_SIZE;
+        for (int x = (int) minTileX; x < (int) maxTileX + 1; x++) {
 
                 try {
                     graphics.drawImage(tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y))
-                            , destinationX , destinationY );
-                } catch (IOException e) {
-
+                            , destinationX, destinationY);
+                } catch (IOException ignored) {
                 }
                 destinationX += TILE_SIZE;
             }
             destinationY += TILE_SIZE;
         }
     }
-
     private double tilePositionCalculator(double screenPosition) {
-        return Math.rint(screenPosition / TILE_SIZE);
+        return screenPosition / TILE_SIZE;
     }
-
     private void redrawOnNextPulse() {
         redrawNeeded = true;
         Platform.requestNextPulse();
     }
-
-    private void setShifts() {
-        if (((int) parameter.getMinX() & 0xFF) > 127) {
-            xshift = ((int) parameter.getMinX() & 0xFF) - 128;
-        } else {
-            xshift = ((int) parameter.getMinX() & 0xFF) + 128;
-        }
-
-        if (((int) parameter.getMinY() & 0xFF) > 127) {
-            yshift = ((int) parameter.getMinY() & 0xFF) - 128;
-        } else {
-            yshift = ((int) parameter.getMinY() & 0xFF) + 128;
-        }
-    }
-
 }
