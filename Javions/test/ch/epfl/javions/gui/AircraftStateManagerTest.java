@@ -66,7 +66,7 @@ public class AircraftStateManagerTest {
                     ObservableAircraftState state = aircraftStateManager.getAccumulatorMap().get(realMessage.icaoAddress()).stateSetter();
                     if(goatManager.contains(state))
                         goatManager.set(goatManager.indexOf(state), state);
-                     else if(aircraftStateManager.knownStates().contains(state))
+                     else if(aircraftStateManager.states().contains(state))
                         goatManager.add(state);
                     goatManager.sort(comparator); //do something
                     System.out.printf("%-8s %-13s %-4s %-10s %-30s %-4s %-5s %-5s %n",
