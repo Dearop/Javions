@@ -16,7 +16,6 @@ import ch.epfl.javions.aircraft.IcaoAddress;
  */
 public record AircraftIdentificationMessage
         (long timeStampNs, IcaoAddress icaoAddress, int category, CallSign callSign) implements Message {
-
     private static final int INVALID_VALUE = 0;
     private static final int ALPHABET_A = 1;
     private static final int ALPHABET_Z = 26;
@@ -46,6 +45,7 @@ public record AircraftIdentificationMessage
      * @param rawMessage the RawMessage to create the AircraftIdentificationMessage from
      * @return a new AircraftIdentificationMessage, or null if the RawMessage is invalid
      */
+    // TODO: 4/28/2023 ask about method
     public static AircraftIdentificationMessage of(RawMessage rawMessage) {
 
         //computing the category
@@ -87,9 +87,6 @@ public record AircraftIdentificationMessage
 
         String finishedSign = sign.toString();
         String strippedFinishedSign = finishedSign.stripTrailing();
-
-        if (finishedSign.equals(strippedFinishedSign))
-            return null;
 
         CallSign AimCallSign = new CallSign(strippedFinishedSign);
         return new AircraftIdentificationMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), category, AimCallSign);

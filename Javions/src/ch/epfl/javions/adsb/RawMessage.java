@@ -27,7 +27,8 @@ public record RawMessage(long timeStampNs, ByteString bytes) {
     private static final Crc24 crc = new Crc24(Crc24.GENERATOR);
 
     public RawMessage{
-        Preconditions.checkArgument(0 <= timeStampNs && LENGTH == bytes.size());
+        Preconditions.checkArgument(0 <= timeStampNs);
+        Preconditions.checkArgument(LENGTH == bytes.size());
     }
 
     /**

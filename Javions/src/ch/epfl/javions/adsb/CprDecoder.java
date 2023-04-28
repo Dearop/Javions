@@ -51,8 +51,8 @@ public class CprDecoder {
         if (Math.PI / 2 < phiOdd || -(Math.PI / 2) > phiOdd)
             return null;
 
-        double A0 = AngleToZoneCalculator(zoneNumberLatitude0, phiEven);
-        double A1 = AngleToZoneCalculator(zoneNumberLatitude0, phiOdd);
+        double A0 = angleToZoneCalculator(zoneNumberLatitude0, phiEven);
+        double A1 = angleToZoneCalculator(zoneNumberLatitude0, phiOdd);
 
         double evenZoneLocationLat0 = (Double.isNaN(A0)) ? 1 : Math.floor(2 * Math.PI / A0);
         double evenZoneLocationLat1 = (Double.isNaN(A1)) ? 1 : Math.floor(2 * Math.PI / A1);
@@ -93,7 +93,7 @@ public class CprDecoder {
      * @param currentAngle  Is either Phi-even or Phi-odd
      * @return returns the arccosinus of formula seen in the course.
      */
-    private static double AngleToZoneCalculator(double numberOfZones, double currentAngle) {
+    private static double angleToZoneCalculator(double numberOfZones, double currentAngle) {
         return Math.acos(1 - ((1 - Math.cos(2 * Math.PI / numberOfZones))
                 / Math.pow(Math.cos(currentAngle), 2)));
     }

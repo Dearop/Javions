@@ -3,6 +3,7 @@ package ch.epfl.javions.aircraft;
 import java.io.*;
 import java.util.Objects;
 import java.util.zip.ZipFile;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -33,6 +34,7 @@ public final class AircraftDatabase {
     }
 
     // TODO: 4/28/2023 this has to be more efficient
+
     /**
      * Returns the aircraft data for the specified ICAO address.
      * Searches the sorted file for the address and returns the corresponding data.
@@ -43,6 +45,7 @@ public final class AircraftDatabase {
      * @return The aircraft data for the specified address, or null if no entry exists.
      * @throws IOException If there is an input/output error.
      */
+    // TODO: 4/28/2023 Ask about
     public AircraftData get(IcaoAddress address) throws IOException {
         String stringLineFiltered = "";
 
@@ -54,11 +57,13 @@ public final class AircraftDatabase {
              Reader reader = new InputStreamReader(stream, UTF_8);
              BufferedReader buffer = new BufferedReader(reader)) {
             while (null != (stringLineFiltered = buffer.readLine())) {
-                String[] lines = stringLineFiltered.split(",", -1);
-                if (address.string().equals(lines[0]))
+                if (stringLineFiltered.startsWith(address.string())) {
+                    String[] lines = stringLineFiltered.split(",", -1);
                     return new AircraftData(new AircraftRegistration(lines[1]), new AircraftTypeDesignator(lines[2]),
                             lines[3], new AircraftDescription(lines[4]), WakeTurbulenceCategory.of(lines[5]));
+                }
             }
+
         }
         return null;
     }

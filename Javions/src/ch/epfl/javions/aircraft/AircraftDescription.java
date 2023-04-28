@@ -23,6 +23,7 @@ public record AircraftDescription(String string) {
      */
     public AircraftDescription {
         Preconditions.checkArgument(string.isEmpty() || pattern.matcher(string).matches());
+
     }
 
 }

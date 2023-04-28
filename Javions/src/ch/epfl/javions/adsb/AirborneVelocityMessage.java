@@ -5,6 +5,8 @@ import ch.epfl.javions.Preconditions;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.aircraft.IcaoAddress;
 
+import java.util.Objects;
+
 /**
  * Represents an airborne velocity message containing the speed and heading/track of an aircraft.
  * @param timeStampNs The timestamp of the message in nanoseconds.
@@ -46,9 +48,10 @@ implements Message{
      * @throws IllegalArgumentException if any of the parameters have invalid values.
      */
     public AirborneVelocityMessage{
-        if(null == icaoAddress)
-            throw new NullPointerException();
-        Preconditions.checkArgument(0 <= timeStampNs && 0 <= speed && 0 <= trackOrHeading);
+        Objects.requireNonNull(icaoAddress);
+        Preconditions.checkArgument(0 <= timeStampNs);
+        Preconditions.checkArgument(0 <= speed);
+        Preconditions.checkArgument(0 <= trackOrHeading);
     }
 
     /**
@@ -72,8 +75,8 @@ implements Message{
         if (1 > ST || 4 < ST)
             return null;
 
-        double speed;
-        double trackOrHeading;
+        double speed = 0;
+        double trackOrHeading = 0;
 
         // Ground speed
         if (1 == ST || 2 == ST) {
@@ -85,18 +88,18 @@ implements Message{
             // If Vns or Vew, which represent the speed of the aircraft, are zero the value is invalid and return null
             if (-1 == Vns || -1 == Vew)
                 return null;
-
             speed = Math.hypot(Vns, Vew);
-            Vns = (0 == Dns) ? Vns : -Vns;
-            Vew = (0 == Dew) ? Vew : -Vew;
+            if(Dns != 0)
+                Vns *= -1;
+            if(Dew != 0)
+                Vew *= -1;
             trackOrHeading = Math.atan2(Vew, Vns);
-            trackOrHeading = (0 > trackOrHeading) ? trackOrHeading + 2 * Math.PI : trackOrHeading;
-
-            if (1 == ST) {
-                speed = Units.convertFrom(speed, Units.Speed.KNOT);
-            } else {
-                speed = Units.convertFrom(speed, 4 * Units.Speed.KNOT);
+            if(0 > trackOrHeading){
+                trackOrHeading += Units.Angle.TURN;
             }
+            speed = (ST == 1)
+                    ? Units.convertFrom(speed, Units.Speed.KNOT)
+                    : Units.convertFrom(speed, 4 * Units.Speed.KNOT);
 
         } else {
             int SH = Bits.extractUInt(bits22, SH_START, SH_SIZE);
@@ -108,14 +111,12 @@ implements Message{
             trackOrHeading = Units.convertFrom(Bits.extractUInt(bits22, 11, 10) /
                     Math.scalb(1, 10), Units.Angle.TURN);
 
-            final int AS = Bits.extractUInt(bits22, AS_START, AS_SIZE) - 1;
+            int AS = Bits.extractUInt(bits22, AS_START, AS_SIZE) - 1;
             if(-1 == AS)
                 return null;
-            if (3 == ST) {
-                speed = Units.convertFrom(AS, Units.Speed.KNOT);
-            } else {
-                speed = Units.convertFrom(AS,4 * Units.Speed.KNOT);
-            }
+            speed = (ST == 3)
+                    ? Units.convertFrom(AS, Units.Speed.KNOT)
+                    : Units.convertFrom(AS, 4 * Units.Speed.KNOT);
         }
         return new AirborneVelocityMessage(rawMessage.timeStampNs(), rawMessage.icaoAddress(), speed, trackOrHeading);
     }

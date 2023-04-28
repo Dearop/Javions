@@ -1,4 +1,7 @@
 package ch.epfl.javions.adsb;
+
+import java.util.Objects;
+
 /**
  * The AircraftStateAccumulator class accumulates and updates state information of an aircraft based
  * on the received ADS-B messages. It is used to maintain the current state of an aircraft,
@@ -10,6 +13,7 @@ package ch.epfl.javions.adsb;
  */
 public class AircraftStateAccumulator<T extends AircraftStateSetter> {
     private final T stateSetter;
+    private AirbornePositionMessage[] oddAndEvenMessages = new AirbornePositionMessage[2];
     private AirbornePositionMessage latestOddMessage;
     private AirbornePositionMessage latestEvenMessage;
     // 10 seconds in nanoseconds
@@ -22,8 +26,7 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
      * @throws NullPointerException if the given state setter is null
      */
     public AircraftStateAccumulator(T stateSetter) {
-        if (null == stateSetter)
-            throw new NullPointerException();
+        Objects.requireNonNull(stateSetter);
         this.stateSetter = stateSetter;
     }
     /**
@@ -58,18 +61,18 @@ public class AircraftStateAccumulator<T extends AircraftStateSetter> {
                 stateSetter.setAltitude(apm.altitude());
 
                 if (0 == apm.parity()) {
-                    latestEvenMessage = apm;
+                    oddAndEvenMessages[0] = apm;
                 } else {
-                    latestOddMessage = apm;
+                    oddAndEvenMessages[1] = apm;
                 }
 
-                if (null != latestEvenMessage && null != latestOddMessage) {
-                    if (TIME_BETWEEN_TWO_MESSAGES >= Math.abs(latestOddMessage.timeStampNs() - latestEvenMessage.timeStampNs())) {
+                if (null != oddAndEvenMessages[0] && null != oddAndEvenMessages[1]) {
+                    if (TIME_BETWEEN_TWO_MESSAGES >= Math.abs(oddAndEvenMessages[1].timeStampNs() - oddAndEvenMessages[0].timeStampNs())) {
 
-                        double x0 = latestEvenMessage.x();
-                        double y0 = latestEvenMessage.y();
-                        double x1 = latestOddMessage.x();
-                        double y1 = latestOddMessage.y();
+                        double x0 = oddAndEvenMessages[0].x();
+                        double y0 = oddAndEvenMessages[0].y();
+                        double x1 = oddAndEvenMessages[1].x();
+                        double y1 = oddAndEvenMessages[1].y();
 
                         if(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()) != null)
                             stateSetter.setPosition(CprDecoder.decodePosition(x0, y0, x1, y1, apm.parity()));

@@ -27,6 +27,10 @@ public final class AircraftStateManager {
         return (ObservableSet<ObservableAircraftState>) Set.copyOf(knownPositionStates);
     }
 
+    public Set<ObservableAircraftState> knownStates(){
+        return Set.copyOf(knownPositionStates);
+    }
+
     public void updateWithMessage(Message message)throws IOException {
         if(message != null){
             IcaoAddress messageIcaoddress = message.icaoAddress();

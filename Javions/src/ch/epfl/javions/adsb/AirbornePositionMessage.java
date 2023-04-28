@@ -41,10 +41,10 @@ public record AirbornePositionMessage
      */
     public AirbornePositionMessage {
         if (null == icaoAddress) throw new NullPointerException();
-        Preconditions.checkArgument((0 <= timeStampNs)
-            && ((0 == parity) || (1 == parity))
-            && (0 <= x) && (1 > x)
-            && (0 <= y) && (1 > y));
+        Preconditions.checkArgument((0 <= timeStampNs));
+        Preconditions.checkArgument((0 == parity) || (1 == parity));
+        Preconditions.checkArgument((0 <= x) && (1 > x));
+        Preconditions.checkArgument((0 <= y) && (1 > y));
     }
 
     /**
@@ -88,7 +88,7 @@ public record AirbornePositionMessage
     public static double altitudeComputer(int ALT) {
         //Q=1
         if (1 == Bits.extractUInt(ALT, 4, 1)) {
-            final double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
+            double altitudeInFeet = Bits.extractUInt(ALT, 0, 4) | (Bits.extractUInt(ALT, 5, 8) << 4);
             return Units.convertFrom(altitudeInFeet * 25 + BASE_ALTITUDE_Q1, Units.Length.FOOT);
         }
 
@@ -128,15 +128,16 @@ public record AirbornePositionMessage
      * @param gray The Gray code to convert.
      * @return The binary code.
      */
-    // TODO: 4/28/2023 apparently gray to binary should handle negative numbers  
     private static int grayToBinary(int gray) {
+        if(gray < 0){
+            gray *= -1;
+        }
         int binary = gray;
 
         while (0 < gray) {
             gray >>= 1;
             binary ^= gray;
         }
-
         return binary;
     }
 }

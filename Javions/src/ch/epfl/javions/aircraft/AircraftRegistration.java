@@ -22,6 +22,7 @@ public record AircraftRegistration(String string) {
      * @throws IllegalArgumentException if the input string does not match the expected format
      */
     public AircraftRegistration {
-        Preconditions.checkArgument(!string.isEmpty() && pattern.matcher(string).matches());
+        Preconditions.checkArgument(!string.isEmpty());
+        Preconditions.checkArgument(pattern.matcher(string).matches());
     }
 }

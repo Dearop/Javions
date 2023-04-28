@@ -54,11 +54,13 @@ public final class AircraftController {
 
     private Group aircraftLabelAndIcon(ObservableAircraftState oas){
         //initialisation of the different parts of the Group for the Label and Icon
+        AircraftIcon icon = AircraftIcon.iconFor(oas.getData().typeDesignator(), oas.getData().description(),
+                oas.getCategory(), oas.getData().wakeTurbulenceCategory());
         SVGPath aircraftIcon = new SVGPath();
         // Caracterisation of the SVGPath to get the Label
         aircraftIcon.getStyleClass();
-        //binding rotation to heading
-        //if(aircraftIcon.)
+        //bindings
+        aircraftIcon.contentProperty().bind(new SimpleStringProperty(icon.svgPath()));
         aircraftIcon.rotateProperty().bind(oas.trackOrHeadingProperty());
 
 

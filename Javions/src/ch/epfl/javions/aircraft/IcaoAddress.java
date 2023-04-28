@@ -22,7 +22,9 @@ public record IcaoAddress(String string) {
      *                                  or does not match the expected format (i.e. six hexadecimal digits)
      */
     public IcaoAddress {
-        Preconditions.checkArgument(!string.isEmpty() && pattern.matcher(string).matches());
+        Preconditions.checkArgument(!string.isEmpty());
+        Preconditions.checkArgument(pattern.matcher(string).matches());
+
     }
 
     /**
