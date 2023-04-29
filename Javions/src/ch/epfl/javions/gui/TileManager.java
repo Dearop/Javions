@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Preconditions;
 import javafx.scene.image.Image;
 
 import java.io.*;
@@ -32,7 +33,6 @@ public final class TileManager {
     private final String serverAddress;
     private final static int MEMORY_SIZE = 100;
     private final static float MEMORY_LOAD_FACTOR = 0.75f;
-
     private LinkedHashMap<TileId, Image> memoryCache;
 
     /**
@@ -59,19 +59,27 @@ public final class TileManager {
         private static final int MIN_ZOOM_LEVEL = 6;
         private static final int MIN_COORDS = 0;
 
+        public TileId{
+            Preconditions.checkArgument(isValid(zoom, x ,y));
+        }
+
         /**
          * TODO this method is never used!!
          * Checks if a TileId object is valid.
          * A TileId object is considered valid if its zoom level is between MIN_ZOOM_LEVEL and MAX_ZOOM_LEVEL,
          * and its x,y coordinates are between MIN_COORDS and a maximum value that depends on the zoom level.
-         * @param id the TileId object to check.
+         *
+         * @param x the x coordinate of the tile represented by the current instance of the TileId class
+         * @param y the y coordinate of the tile represented by the current instance of the TileId class
+         * @param zoom the zoom level of the tile represented by the current instance of the TileId class
+         *
          * @return true if the TileId object is valid, false otherwise.
          */
-        public static boolean isValid(TileId id) {
-            int max_coords = (int) Math.scalb(1, 8 + id.zoom);
-            return (id.x >= MIN_COORDS && id.y >= MIN_COORDS) &&
-                    (id.x <= max_coords && id.y <= max_coords) &&
-                    (MIN_ZOOM_LEVEL <= id.zoom && id.zoom <= MAX_ZOOM_LEVEL);
+        public static boolean isValid(int zoom, int x, int y) {
+            int max_coords = (int) Math.scalb(1, 8 + zoom);
+            return (x >= MIN_COORDS && y >= MIN_COORDS) &&
+                    (x <= max_coords && y <= max_coords) &&
+                    (MIN_ZOOM_LEVEL <= zoom && zoom <= MAX_ZOOM_LEVEL);
 
         }
     }
