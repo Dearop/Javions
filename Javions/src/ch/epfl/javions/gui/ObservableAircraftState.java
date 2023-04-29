@@ -247,6 +247,14 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
     /**
+     *
+     * @return a read-only property representing the current position of the aircraft
+     */
+    public ReadOnlyObjectProperty<GeoPos> positionProperty(){
+        return position;
+    }
+
+    /**
      * Returns the aircraft data associated with this observable state.
      * @return the aircraft data
      */

@@ -159,5 +159,4 @@ public final class TileManager {
     private Path directoryPath(TileId id) {
         return path.resolve(Paths.get(id.zoom + "/" + id.x));
     }
-
 }
