@@ -46,7 +46,7 @@ public final class AircraftStateManager {
      * @return an unmodifiable ObservableSet containing the known aircraft positions
      */
     public ObservableSet<ObservableAircraftState> states(){
-        return (ObservableSet<ObservableAircraftState>) Set.copyOf(knownPositionStates);
+        return observableSet(Set.copyOf(knownPositionStates));
     }
 
     /**

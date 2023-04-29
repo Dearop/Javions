@@ -30,7 +30,6 @@ public final class AircraftController {
         this.knownStates = knownStates;
         this.currentSelectedState = currentSelectedState;
         installListeners();
-        setBindings();
     }
 
     public Pane pane() {
@@ -70,6 +69,7 @@ public final class AircraftController {
 
 
     private void aircraftLabelAndIconPositioning(ObservableAircraftState oas, Group iconAndLabel) {
+        setBindings();
         //binding the icon and label to the position of the aircraft
         SimpleObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
         //bind the position of the aircraft to the position we are using
