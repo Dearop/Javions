@@ -8,7 +8,6 @@ import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;

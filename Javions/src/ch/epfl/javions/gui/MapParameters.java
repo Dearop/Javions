@@ -2,6 +2,7 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Math2;
 import javafx.beans.property.*;
+import javafx.geometry.Point2D;
 
 /**
  * A class representing the parameters of a map, including zoom level and minimum X and Y coordinates.
@@ -103,6 +104,9 @@ public final class MapParameters {
             minX.set((minX.get()) * Math.scalb(1, zoomDifference));
             minY.set((minY.get()) * Math.scalb(1, zoomDifference));
         }
+    }
 
+    public Point2D topLeft(){
+        return new Point2D(getMinX(), getMinY());
     }
 }

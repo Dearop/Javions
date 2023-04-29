@@ -90,7 +90,8 @@ public final class BaseMapController {
      * Add event handlers to handle user interactions with the map (scroll, drag, etc.).
      */
     private void addEventManagers() {
-        // Set up a timer to handle the scroll event so it doesn't fire too frequently
+
+        // Set up a timer to handle the scroll event so that it doesn't fire too frequently
         LongProperty minScrollTime = new SimpleLongProperty();
 
         // Add scroll event handler to handle zooming in/out of the map
@@ -143,11 +144,10 @@ public final class BaseMapController {
 
 
     /**
-     * This getter method is only being used for testing.
      *
-     * @return
+     * @return the pane containing the canvas on which the whole map is drawn
      */
-    public Pane getMapPane() {
+    public Pane pane() {
         return mapPane;
     }
 
