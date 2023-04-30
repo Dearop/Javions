@@ -30,17 +30,18 @@ public final class TestAircraftController extends Application {
                         new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")));
         byte[] bytes = new byte[RawMessage.LENGTH];
         int i = 0;
-        while (i < 1e5) {
-            long timeStampNs = s.readLong();
-            int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-            assert bytesRead == RawMessage.LENGTH;
-            ByteString message = new ByteString(bytes);
-            RawMessage rawMessage = new RawMessage(timeStampNs, message);
-            Message realMessage = MessageParser.parse(rawMessage);
-            if (realMessage != null) {
-                goatList.add(rawMessage);
+            while (i < 1e3) {
+                long timeStampNs = s.readLong();
+                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                assert bytesRead == RawMessage.LENGTH;
+                ByteString message = new ByteString(bytes);
+                RawMessage rawMessage = new RawMessage(timeStampNs, message);
+                Message realMessage = MessageParser.parse(rawMessage);
+                if (realMessage != null) {
+                    goatList.add(rawMessage);
+                }
+                ++i;
             }
-        }
         return goatList;
     }
 
