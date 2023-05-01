@@ -83,7 +83,6 @@ public final class BaseMapController {
         parameter.zoomProperty().addListener(e -> redrawOnNextPulse());
         parameter.minXProperty().addListener(e -> redrawOnNextPulse());
         parameter.minYProperty().addListener(e -> redrawOnNextPulse());
-
     }
 
     /**
