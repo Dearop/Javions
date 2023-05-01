@@ -105,8 +105,4 @@ public final class MapParameters {
             minY.set((minY.get()) * Math.scalb(1, zoomDifference));
         }
     }
-
-    public Point2D topLeft(){
-        return new Point2D(getMinX(), getMinY());
-    }
 }
