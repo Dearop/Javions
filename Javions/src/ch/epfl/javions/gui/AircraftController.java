@@ -47,7 +47,6 @@ public final class AircraftController {
         });
         parameters.zoomProperty().addListener(e -> {
             currentZoom.set(parameters.getZoom());
-
         });
     }
 
@@ -60,9 +59,10 @@ public final class AircraftController {
         Group icon = new Group(aircraftIconInitialisation(oas));
         //label.visibleProperty().bind(isShowable(icon));
         //Group iconAndLabel = new Group(icon);
-        aircraftLabelAndIconPositioning(oas, icon);
         Group aircraftGroup = new Group(icon);
         aircraftGroup.setId(oas.icaoAddress().string());
+        aircraftLabelAndIconPositioning(oas, icon);
+        setGroupBindings(oas, icon);
         return aircraftGroup;
     }
 
@@ -76,10 +76,16 @@ public final class AircraftController {
         return null;
     }
 
+    private void setGroupBindings(ObservableAircraftState oas, Group iconAndLabel){
+        oas.positionProperty().addListener(e -> aircraftLabelAndIconPositioning(oas, iconAndLabel));
+        parameters.zoomProperty().addListener( e -> aircraftLabelAndIconPositioning(oas,iconAndLabel));
+    }
 
     private void aircraftLabelAndIconPositioning(ObservableAircraftState oas, Group iconAndLabel) {
         //binding the icon and label to the position of the aircraft
         ReadOnlyObjectProperty<GeoPos> position = oas.positionProperty();
+        if(iconAndLabel.getParent().getId().equals(oas.icaoAddress().string()))
+            System.out.println(position);
         //bind the position of the aircraft to the position we are using
         double positionX = WebMercator.x(currentZoom.get(), position.get().longitude());
         double positionY = WebMercator.y(currentZoom.get(), position.get().latitude());
