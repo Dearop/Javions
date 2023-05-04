@@ -4,10 +4,8 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 
-import ch.epfl.javions.aircraft.AircraftData;
-import ch.epfl.javions.aircraft.AircraftDescription;
-import ch.epfl.javions.aircraft.AircraftTypeDesignator;
-import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
+import ch.epfl.javions.adsb.CallSign;
+import ch.epfl.javions.aircraft.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
@@ -78,9 +76,9 @@ public final class AircraftController {
         return null;
     }
 
-    private void setGroupBindings(ObservableAircraftState oas, Group iconAndLabel){
+    private void setGroupBindings(ObservableAircraftState oas, Group iconAndLabel) {
         oas.positionProperty().addListener(e -> aircraftLabelAndIconPositioning(oas, iconAndLabel));
-        parameters.zoomProperty().addListener( e -> aircraftLabelAndIconPositioning(oas,iconAndLabel));
+        parameters.zoomProperty().addListener(e -> aircraftLabelAndIconPositioning(oas, iconAndLabel));
     }
 
     private void aircraftLabelAndIconPositioning(ObservableAircraftState oas, Group iconAndLabel) {
@@ -98,24 +96,33 @@ public final class AircraftController {
     }
 
     public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
-        Rectangle rectangle = new Rectangle(0, 0, new Color(0,0,0,0.5));
+        Rectangle rectangle = new Rectangle();
         Text text = new Text();
-        text.textProperty().bind(
-                Bindings.format("%s /n", new SimpleStringProperty(oas.icaoAddress().string())));
-        text.textProperty().bind(
-                Bindings.createStringBinding(() ->
-                                String.format("%f m/s u/2002 %f mètres", oas.getVelocity(), oas.getAltitude())
+        // TODO: 5/4/2023 create method
+        if(oas.getData() != null){text.textProperty().bind(
+                Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
+                                , oas.getData().registration().string()
+                                , (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
+                                , (int) Math.rint(oas.getAltitude()))
                         , oas.velocityProperty(), oas.altitudeProperty()));
+        }
         rectangle.heightProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
-
         rectangle.widthProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
 
         Group label = new Group(rectangle, text);
         label.getStyleClass();
-        label.visibleProperty().bind(isShowable(label));
+        showLabelListener(label);
+        label.getStyleClass().add("label");
         return label;
+    }
+
+    private void showLabelListener(Group label) {
+        currentZoom.addListener(e ->
+                label.visibleProperty().bind(Bindings.createBooleanBinding(() ->
+                        currentZoom.get() >= 11)));
+
     }
 
     private Group aircraftIconInitialisation(ObservableAircraftState oas) {
@@ -136,6 +143,8 @@ public final class AircraftController {
             aircraftIcon.fillProperty().bind(iconColor);
         });
 
+        aircraftIcon.setStroke(Color.BLACK);
+
         aircraftIcon.contentProperty().bind(Bindings.createStringBinding(icon.getValue()::svgPath, icon));
         aircraftIcon.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
             if (icon.getValue().canRotate()) {
@@ -146,18 +155,13 @@ public final class AircraftController {
         return new Group(aircraftIcon);
     }
 
-    private BooleanBinding isShowable(Group icon){
-        return Bindings.createBooleanBinding(
-                () -> currentZoom.get() <= 11 || airCraftHasBeenClicked(icon));
-    }
-
-    private boolean airCraftHasBeenClicked(Group icon){
+    /*private boolean airCraftHasBeenClicked(Group icon){
         aircraftPane.setOnMouseClicked(e -> {
-            if ((e.getX() == aircraftPane.getWidth() + icon.getLayoutX()) && e.getY() == aircraftPane.getHeight() + icon.getLayoutY() && !aircraftClicked)
+            if ((e.getX() == aircraftPane.getWidth() + icon.getLayoutX()) && e.getY() == aircraftPane.getHeight() + icon.getLayoutY() && !aircraftClicked) {
                 aircraftClicked = true;
-            else if (aircraftClicked)
+            }else if (aircraftClicked)
                 aircraftClicked = false;
         });
         return aircraftClicked;
-    }
+    }*/
 }
