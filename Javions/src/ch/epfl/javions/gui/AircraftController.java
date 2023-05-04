@@ -99,12 +99,13 @@ public final class AircraftController {
         Rectangle rectangle = new Rectangle();
         Text text = new Text();
         // TODO: 5/4/2023 create method
-        if(oas.getData() != null){text.textProperty().bind(
-                Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
-                                , oas.getData().registration().string()
-                                , (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
-                                , (int) Math.rint(oas.getAltitude()))
-                        , oas.velocityProperty(), oas.altitudeProperty()));
+        if (oas.getData() != null) {
+            text.textProperty().bind(
+                    Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
+                                    , oas.getData().registration().string()
+                                    , (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
+                                    , (int) Math.rint(oas.getAltitude()))
+                            , oas.velocityProperty(), oas.altitudeProperty()));
         }
         rectangle.heightProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
@@ -129,6 +130,7 @@ public final class AircraftController {
         SVGPath aircraftIcon = new SVGPath();
         aircraftIcon.getStyleClass().add("aircraft");
         AircraftData data = oas.getData();
+        // TODO: 5/4/2023 ask how to fix
         ObservableValue<AircraftIcon> icon = (data == null)
                 ? oas.categoryProperty().map(f -> AircraftIcon.iconFor(new AircraftTypeDesignator("G3"),
                 new AircraftDescription("L2J"), 0, WakeTurbulenceCategory.UNKNOWN))
@@ -146,13 +148,22 @@ public final class AircraftController {
         aircraftIcon.setStroke(Color.BLACK);
 
         aircraftIcon.contentProperty().bind(Bindings.createStringBinding(icon.getValue()::svgPath, icon));
-        aircraftIcon.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
-            if (icon.getValue().canRotate()) {
-                return Units.convertTo(oas.trackOrHeadingProperty().get(), Units.Angle.DEGREE);
-            }
-            return 0.0;
-        }));
+        rotateIcon(icon, oas, aircraftIcon);
         return new Group(aircraftIcon);
+    }
+
+    private void rotateIcon(ObservableValue<AircraftIcon> icon, ObservableAircraftState oas, SVGPath aircraftIcon){
+        oas.trackOrHeadingProperty().addListener(e -> {
+            if (icon.getValue().canRotate())
+                aircraftIcon.rotateProperty().bind(Bindings.createDoubleBinding(() ->
+                        Units.convertTo(oas.trackOrHeadingProperty().get(), Units.Angle.DEGREE)));
+            });
+    }
+
+    private void dataListener(ObservableAircraftState oas, ObservableValue<AircraftIcon> icon){
+        AircraftData data = oas.getData();
+        icon.addListener(l -> oas.dataProperty().addListener(e -> oas.categoryProperty().map(f -> AircraftIcon.iconFor(data.typeDesignator(),
+                data.description(), oas.getCategory(), data.wakeTurbulenceCategory()))));
     }
 
     /*private boolean airCraftHasBeenClicked(Group icon){

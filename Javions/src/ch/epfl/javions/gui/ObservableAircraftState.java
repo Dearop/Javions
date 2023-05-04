@@ -36,6 +36,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private DoubleProperty altitude = new SimpleDoubleProperty();
     private DoubleProperty velocity = new SimpleDoubleProperty();
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
+    private ObjectProperty<AircraftData> dataProperty = new SimpleObjectProperty<>();
     private long previousMessageTimeStampNs;
 
     /**
@@ -46,6 +47,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
         this.data = data;
+        dataProperty.set(data);
     }
 
     /**
@@ -262,10 +264,12 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return this.data;
     }
 
-    // TODO: 4/10/2023 adding the timeStamp is guesswork -- (Henri) what does this mean?
+    public ReadOnlyObjectProperty<AircraftData> dataProperty(){
+        return this.dataProperty;
+    }
     /**
      * Represents the position and altitude of an aircraft at a specific point in time.
      * This record is used internally to track an aircraft's trajectory.
      */
-    private record AirbornePos(GeoPos position, double altitude) { }
+    private record AirbornePos(GeoPos position, double altitude) {}
 }
