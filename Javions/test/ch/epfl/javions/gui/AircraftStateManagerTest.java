@@ -70,7 +70,7 @@ public class AircraftStateManagerTest {
                         goatManager.add(state);
                     goatManager.sort(comparator); //do something
                     System.out.printf("%-8s %-13s %-4s %-10s %-30s %-4s %-5s %-5s %n",
-                            "ICAO", "TimeStampNs", "category", "Callsign", "Model", "Velocity", "Longitude", "Latitude");
+                            "ICAO", "TimeStampNs", "category", "Registration", "Model", "Velocity", "Longitude", "Latitude");
                     System.out.printf("__________________________________________________________________________________________ %n");
                     for(ObservableAircraftState oas : goatManager){
                         if(oas.getCallSign() == null || oas.getData() == null){
@@ -81,7 +81,7 @@ public class AircraftStateManagerTest {
                         } else
                             System.out.printf("%-8s %-13s %-4s %-10s %-30s %-4f %-5f %-5f %n", oas.icaoAddress().toString(),
                                     oas.getLastMessageTimeStampNs(), oas.getCategory(),
-                                    oas.getCallSign().toString(), oas.getData().model(), oas.getVelocity(),
+                                    oas.getData().registration().string(), oas.getData().model(), oas.getVelocity(),
                                     Units.convertTo(oas.getPosition().longitude(), Units.Angle.DEGREE),
                                     Units.convertTo(oas.getPosition().latitude(), Units.Angle.DEGREE));
                     }
