@@ -61,16 +61,14 @@ public final class TestAircraftController extends Application {
         var db = new AircraftDatabase(f);
 
         AircraftStateManager asm = new AircraftStateManager(db);
-        ObjectProperty<ObservableAircraftState> sap =
-                new SimpleObjectProperty<>();
+        ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
         AircraftController ac =
                 new AircraftController(mp, asm.states(), sap);
         var root = new StackPane(bmc.pane(), ac.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        var mi = readAllMessages("messages_20230318_0915.bin")
-                .iterator();
+        var mi = readAllMessages("messages_20230318_0915.bin").iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {

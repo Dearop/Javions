@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableSet;
+import static javafx.collections.FXCollections.unmodifiableObservableSet;
 
 /**
  *  This class represents the AircraftStateManager, which is responsible for managing and updating the states of
@@ -32,6 +33,8 @@ public final class AircraftStateManager {
     // An AircraftDatabase has all the information about the aircrafts available.
     private AircraftDatabase database;
 
+    private ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
+
     /**
      * Constructs an AircraftStateManager with the given AircraftDatabase.
      * @param database the AircraftDatabase to use
@@ -40,13 +43,14 @@ public final class AircraftStateManager {
         this.database = database;
         this.knownPositionStates = observableSet();
         this.accumulatorMap = new HashMap<>();
+        this.unmodifiableKnownPositionStates = unmodifiableObservableSet(knownPositionStates);
     }
 
     /**
      * @return an unmodifiable ObservableSet containing the known aircraft positions
      */
     public ObservableSet<ObservableAircraftState> states(){
-        return observableSet(Set.copyOf(knownPositionStates));
+        return unmodifiableKnownPositionStates;
     }
 
     /**

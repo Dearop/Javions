@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class ColorRamp {
-    private Color[] colors;
+    private final Color[] colors;
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
@@ -24,6 +24,7 @@ public final class ColorRamp {
             Color.valueOf("0xfdb52eff"), Color.valueOf("0xfdc229ff"),
             Color.valueOf("0xfccf25ff"), Color.valueOf("0xf9dd24ff"),
             Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff"));
+
     public ColorRamp(Color ...colors){
         if(colors.length < 2)
             throw new IllegalArgumentException();

@@ -1,27 +1,27 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
+
 import ch.epfl.javions.aircraft.AircraftData;
-import javafx.beans.Observable;
+import ch.epfl.javions.aircraft.AircraftDescription;
+import ch.epfl.javions.aircraft.AircraftTypeDesignator;
+import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableObjectValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Group;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
-
 
 public final class AircraftController {
     private MapParameters parameters;
-    private ObservableSet<ObservableAircraftState> knownStates;
     private ObjectProperty<ObservableAircraftState> currentSelectedState;
     private Pane aircraftPane;
     private IntegerProperty currentZoom;
@@ -31,11 +31,10 @@ public final class AircraftController {
     public AircraftController(MapParameters parameters, ObservableSet<ObservableAircraftState> knownStates,
                               ObjectProperty<ObservableAircraftState> currentSelectedState) {
         this.parameters = parameters;
-        this.knownStates = knownStates;
         this.currentSelectedState = currentSelectedState;
         this.aircraftPane = new Pane();
         this.aircraftPane.setPickOnBounds(false);
-        this.aircraftPane.getStylesheets().add("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\aircraft.css");
+        this.aircraftPane.getStylesheets().add("aircraft.css");
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) c -> {
             if (c.wasAdded()) {
                 Group addedAircraft = individualAircraftGroup(c.getElementAdded());
@@ -47,7 +46,7 @@ public final class AircraftController {
         });
     }
 
-    public Pane pane(){
+    public Pane pane() {
         return aircraftPane;
     }
 
@@ -55,12 +54,11 @@ public final class AircraftController {
         //Group label = new Group(aircraftLabelInitialisation(oas));
         Group icon = new Group(aircraftIconInitialisation(oas));
         //label.visibleProperty().bind(isShowable(icon));
-        Group iconAndLabel = new Group(icon);
-        aircraftLabelAndIconPositioning(oas, iconAndLabel);
-        Group aircraftGroup =
-                new Group(iconAndLabel);
-        aircraftGroup.setId(oas.icaoAddress().string());
+        //Group iconAndLabel = new Group(icon);
+        aircraftLabelAndIconPositioning(oas, icon);
 
+        Group aircraftGroup = new Group(icon);
+        aircraftGroup.setId(oas.icaoAddress().string());
         return aircraftGroup;
     }
 
@@ -80,18 +78,26 @@ public final class AircraftController {
         //binding the icon and label to the position of the aircraft
         ReadOnlyObjectProperty<GeoPos> position = oas.positionProperty();
         //bind the position of the aircraft to the position we are using
-        double positionX = WebMercator.x(currentZoom.get(), position.get().latitude());
-        double positionY = WebMercator.y(currentZoom.get(), position.get().longitude());
-        // lmk what you think of this if statement, basically I'm only drawing the labels on the aircraft that we can see on the screen
-        // TODO: 4/29/2023: might have to add a listener that observes the pane here if we don't see anything
-        if (parameters.getMinX() < positionX && positionX < parameters.getMinX() + aircraftPane.getWidth()
-                && parameters.getMinY() < positionY && positionY < parameters.getMinY() + aircraftPane.getHeight()) {
-            iconAndLabel.layoutXProperty().bind(
-                    Bindings.createDoubleBinding(() -> parameters.getMinX() - positionX));
-            iconAndLabel.layoutYProperty().bind(
-                    Bindings.createDoubleBinding(() -> parameters.getMinY() - positionY));
-        }
+        double positionX = WebMercator.x(parameters.getZoom(), position.get().longitude());
+        double positionY = WebMercator.y(parameters.getZoom(), position.get().latitude());
+        iconAndLabel.layoutXProperty().bind(
+                Bindings.createDoubleBinding(() ->
+                        positionX - parameters.getMinX(), position, parameters.zoomProperty(), parameters.minXProperty()));
+        iconAndLabel.layoutYProperty().bind(
+                Bindings.createDoubleBinding(() ->
+                        positionY - parameters.getMinY(), position, parameters.zoomProperty(), parameters.minYProperty()));
     }
+
+    private void SeeIfPositioningLogicWorks(ObservableAircraftState oas, Group icon){
+        ReadOnlyObjectProperty<GeoPos> position = oas.positionProperty();
+        double positionX = WebMercator.x(parameters.getZoom(), position.get().longitude());
+        double positionY = WebMercator.y(parameters.getZoom(), position.get().latitude());
+        icon.layoutYProperty().bind(
+                Bindings.createDoubleBinding(() ->
+                        positionX - parameters.getMinX())); //position, parameters.zoomProperty(), parameters.minXProperty()));
+
+    }
+
 
     /*public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
         Rectangle rectangle = new Rectangle();
@@ -111,23 +117,38 @@ public final class AircraftController {
         return label;
     }*/
 
-    private Group aircraftIconInitialisation(ObservableAircraftState oas) {
+    private Rectangle aircraftIconInitialisation(ObservableAircraftState oas) {
         SVGPath aircraftIcon = new SVGPath();
         aircraftIcon.getStyleClass().add("aircraft");
-
-        ObservableValue<AircraftIcon> icon = oas.categoryProperty().map(f ->
-            AircraftIcon.iconFor(oas.getData().typeDesignator(), oas.getData().description(),
-                    oas.getCategory(), oas.getData().wakeTurbulenceCategory())
+        AircraftData data = oas.getData();
+        ObservableValue<AircraftIcon> icon = (data == null)
+                ? oas.categoryProperty().map(f -> AircraftIcon.iconFor(new AircraftTypeDesignator("G3"),
+                new AircraftDescription("L2J"), 0, WakeTurbulenceCategory.UNKNOWN))
+                : oas.categoryProperty().map(f -> AircraftIcon.iconFor(data.typeDesignator(), data.description(),
+                oas.getCategory(), data.wakeTurbulenceCategory())
         );
+
+
         // Binding the altitude to a paint property and then binding the icon color to that paint property
         oas.altitudeProperty().addListener(e -> {
             ObjectProperty<Paint> iconColor =
                     new SimpleObjectProperty<>(ColorRamp.PLASMA.at(Math.cbrt(Math.rint(oas.getAltitude() / ALTITUDE_CEILING))));
             aircraftIcon.fillProperty().bind(iconColor);
         });
+
+        //aircraftIcon.fillProperty().bind(Bindings.createObjectBinding(() ->
+        //ColorRamp.PLASMA.at(Math.cbrt(oas.getAltitude() / ALTITUDE_CEILING))
+        //));
         aircraftIcon.contentProperty().bind(Bindings.createStringBinding(icon.getValue()::svgPath, icon));
-        aircraftIcon.rotateProperty().bind(oas.trackOrHeadingProperty());
-        return new Group(aircraftIcon);
+        aircraftIcon.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
+            if (icon.getValue().canRotate()) {
+                return Units.convertTo(oas.trackOrHeadingProperty().get(), Units.Angle.DEGREE);
+            }
+            return 0.0;
+        }));
+        //return new Group(aircraftIcon);
+        //just trying to see what's working and what isn't
+        return new Rectangle(100, 100, new Color(1,1,1,1));
     }
 
     /*private void setBindings(){
