@@ -113,13 +113,15 @@ public final class AircraftController {
                 text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
 
         Group label = new Group(rectangle, text);
+        label.visibleProperty().bind(Bindings.createBooleanBinding(() -> currentZoom.get() >= 11));
         label.getStyleClass();
-        showLabelListener(label);
         label.getStyleClass().add("label");
+        showLabelListener(label, oas);
+
         return label;
     }
 
-    private void showLabelListener(Group label) {
+    private void showLabelListener(Group label, ObservableAircraftState oas) {
         currentZoom.addListener(e ->
                 label.visibleProperty().bind(Bindings.createBooleanBinding(() ->
                         currentZoom.get() >= 11)));
@@ -138,11 +140,12 @@ public final class AircraftController {
                 oas.getCategory(), data.wakeTurbulenceCategory())
         );
 
+        //initialising the color of the icon depending on the altitude
+        iconColorSetter(aircraftIcon, oas);
+
         // Binding the altitude to a paint property and then binding the icon color to that paint property
         oas.altitudeProperty().addListener(e -> {
-            ObjectProperty<Paint> iconColor =
-                    new SimpleObjectProperty<>(ColorRamp.PLASMA.at(Math.cbrt(oas.getAltitude() / ALTITUDE_CEILING)));
-            aircraftIcon.fillProperty().bind(iconColor);
+            iconColorSetter(aircraftIcon, oas);
         });
 
         aircraftIcon.setStroke(Color.BLACK);
@@ -152,15 +155,21 @@ public final class AircraftController {
         return new Group(aircraftIcon);
     }
 
-    private void rotateIcon(ObservableValue<AircraftIcon> icon, ObservableAircraftState oas, SVGPath aircraftIcon){
+    private void iconColorSetter(SVGPath aircraftIcon, ObservableAircraftState oas) {
+        ObjectProperty<Paint> iconColorUpdated =
+                new SimpleObjectProperty<>(ColorRamp.PLASMA.at(Math.cbrt(oas.getAltitude() / ALTITUDE_CEILING)));
+        aircraftIcon.fillProperty().bind(iconColorUpdated);
+    }
+
+    private void rotateIcon(ObservableValue<AircraftIcon> icon, ObservableAircraftState oas, SVGPath aircraftIcon) {
         oas.trackOrHeadingProperty().addListener(e -> {
             if (icon.getValue().canRotate())
                 aircraftIcon.rotateProperty().bind(Bindings.createDoubleBinding(() ->
                         Units.convertTo(oas.trackOrHeadingProperty().get(), Units.Angle.DEGREE)));
-            });
+        });
     }
 
-    private void dataListener(ObservableAircraftState oas, ObservableValue<AircraftIcon> icon){
+    private void dataListener(ObservableAircraftState oas, ObservableValue<AircraftIcon> icon) {
         AircraftData data = oas.getData();
         icon.addListener(l -> oas.dataProperty().addListener(e -> oas.categoryProperty().map(f -> AircraftIcon.iconFor(data.typeDesignator(),
                 data.description(), oas.getCategory(), data.wakeTurbulenceCategory()))));
