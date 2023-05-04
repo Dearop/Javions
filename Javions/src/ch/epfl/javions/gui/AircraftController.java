@@ -35,6 +35,7 @@ public final class AircraftController {
         this.aircraftPane = new Pane();
         this.aircraftPane.setPickOnBounds(false);
         this.aircraftPane.getStylesheets().add("aircraft.css");
+        this.currentZoom = new SimpleIntegerProperty();
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) c -> {
             if (c.wasAdded()) {
                 Group addedAircraft = individualAircraftGroup(c.getElementAdded());
@@ -43,6 +44,10 @@ public final class AircraftController {
             } else if (c.wasRemoved()) {
                 aircraftPane.getChildren().removeIf(p -> p.getId().equals(c.getElementRemoved().icaoAddress().string()));
             }
+        });
+        parameters.zoomProperty().addListener(e -> {
+            currentZoom.set(parameters.getZoom());
+
         });
     }
 
@@ -56,7 +61,6 @@ public final class AircraftController {
         //label.visibleProperty().bind(isShowable(icon));
         //Group iconAndLabel = new Group(icon);
         aircraftLabelAndIconPositioning(oas, icon);
-
         Group aircraftGroup = new Group(icon);
         aircraftGroup.setId(oas.icaoAddress().string());
         return aircraftGroup;
@@ -74,30 +78,18 @@ public final class AircraftController {
 
 
     private void aircraftLabelAndIconPositioning(ObservableAircraftState oas, Group iconAndLabel) {
-        //setBindings();
         //binding the icon and label to the position of the aircraft
         ReadOnlyObjectProperty<GeoPos> position = oas.positionProperty();
         //bind the position of the aircraft to the position we are using
-        double positionX = WebMercator.x(parameters.getZoom(), position.get().longitude());
-        double positionY = WebMercator.y(parameters.getZoom(), position.get().latitude());
+        double positionX = WebMercator.x(currentZoom.get(), position.get().longitude());
+        double positionY = WebMercator.y(currentZoom.get(), position.get().latitude());
         iconAndLabel.layoutXProperty().bind(
                 Bindings.createDoubleBinding(() ->
-                        positionX - parameters.getMinX(), position, parameters.zoomProperty(), parameters.minXProperty()));
+                        positionX - parameters.getMinX(), position, currentZoom, parameters.minXProperty()));
         iconAndLabel.layoutYProperty().bind(
                 Bindings.createDoubleBinding(() ->
-                        positionY - parameters.getMinY(), position, parameters.zoomProperty(), parameters.minYProperty()));
+                        positionY - parameters.getMinY(), position, currentZoom, parameters.minYProperty()));
     }
-
-    private void SeeIfPositioningLogicWorks(ObservableAircraftState oas, Group icon){
-        ReadOnlyObjectProperty<GeoPos> position = oas.positionProperty();
-        double positionX = WebMercator.x(parameters.getZoom(), position.get().longitude());
-        double positionY = WebMercator.y(parameters.getZoom(), position.get().latitude());
-        icon.layoutYProperty().bind(
-                Bindings.createDoubleBinding(() ->
-                        positionX - parameters.getMinX())); //position, parameters.zoomProperty(), parameters.minXProperty()));
-
-    }
-
 
     /*public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
         Rectangle rectangle = new Rectangle();
@@ -128,7 +120,6 @@ public final class AircraftController {
                 oas.getCategory(), data.wakeTurbulenceCategory())
         );
 
-
         // Binding the altitude to a paint property and then binding the icon color to that paint property
         oas.altitudeProperty().addListener(e -> {
             ObjectProperty<Paint> iconColor =
@@ -148,12 +139,9 @@ public final class AircraftController {
         }));
         //return new Group(aircraftIcon);
         //just trying to see what's working and what isn't
-        return new Rectangle(100, 100, new Color(1,1,1,1));
+        return new Rectangle(10, 10, new Color(0,0,1,1));
     }
-
-    /*private void setBindings(){
-        currentZoom.bind(parameters.zoomProperty());
-    }
+    /*
     private BooleanBinding isShowable(Group label){
         return Bindings.createBooleanBinding(
                 () -> currentZoom.get() <= 11 || airCraftHasBeenClicked(icon));
