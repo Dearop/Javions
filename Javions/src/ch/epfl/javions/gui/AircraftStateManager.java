@@ -71,7 +71,6 @@ public final class AircraftStateManager {
             IcaoAddress messageIcaoddress = message.icaoAddress();
             AircraftData data = database.get(messageIcaoddress);
             if(!accumulatorMap.containsKey(messageIcaoddress)) {
-
                 ObservableAircraftState state = new ObservableAircraftState(messageIcaoddress, data);
                 accumulatorMap.put(messageIcaoddress,new AircraftStateAccumulator<>(state));
             }
