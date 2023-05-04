@@ -38,17 +38,15 @@ public final class ColorRamp {
     }
 
     public Color at(double index){
-        double tableDiff = 1 / (colors.length -1);
-        int counter = 0;
         if(index <= 0){
             return colors[0];
         }
         if(index >= 1)
             return colors[colors.length - 1];
-        while(index > tableDiff){
-            ++counter;
-            index -= tableDiff;
-        }
-        return colors[counter].interpolate(colors[counter + 1], index / tableDiff);
+
+        index *= colors.length - 1;
+        int lowerIndex = (int) Math.floor(index);
+        int upperIndex = (int) Math.ceil(index);
+        return colors[lowerIndex].interpolate(colors[upperIndex], index - lowerIndex);
     }
 }

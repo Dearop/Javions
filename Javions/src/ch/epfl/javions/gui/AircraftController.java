@@ -9,6 +9,7 @@ import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.WakeTurbulenceCategory;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
@@ -19,13 +20,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
+import javafx.scene.text.Text;
 
 public final class AircraftController {
     private MapParameters parameters;
     private ObjectProperty<ObservableAircraftState> currentSelectedState;
     private Pane aircraftPane;
     private IntegerProperty currentZoom;
-    private boolean airCraftClicked;
+    private boolean aircraftClicked;
     private static final int ALTITUDE_CEILING = 12000;
 
     public AircraftController(MapParameters parameters, ObservableSet<ObservableAircraftState> knownStates,
@@ -55,14 +57,14 @@ public final class AircraftController {
     }
 
     private Group individualAircraftGroup(ObservableAircraftState oas) {
-        //Group label = new Group(aircraftLabelInitialisation(oas));
+        Group label = new Group(aircraftLabelInitialisation(oas));
         Group icon = new Group(aircraftIconInitialisation(oas));
-        //label.visibleProperty().bind(isShowable(icon));
-        //Group iconAndLabel = new Group(icon);
-        Group aircraftGroup = new Group(icon);
+
+        Group iconAndLabel = new Group(icon, label);
+        aircraftLabelAndIconPositioning(oas, iconAndLabel);
+        Group aircraftGroup = new Group(iconAndLabel);
         aircraftGroup.setId(oas.icaoAddress().string());
-        aircraftLabelAndIconPositioning(oas, icon);
-        setGroupBindings(oas, icon);
+        setGroupBindings(oas, iconAndLabel);
         return aircraftGroup;
     }
 
@@ -84,8 +86,6 @@ public final class AircraftController {
     private void aircraftLabelAndIconPositioning(ObservableAircraftState oas, Group iconAndLabel) {
         //binding the icon and label to the position of the aircraft
         ReadOnlyObjectProperty<GeoPos> position = oas.positionProperty();
-        if(iconAndLabel.getParent().getId().equals(oas.icaoAddress().string()))
-            System.out.println(position);
         //bind the position of the aircraft to the position we are using
         double positionX = WebMercator.x(currentZoom.get(), position.get().longitude());
         double positionY = WebMercator.y(currentZoom.get(), position.get().latitude());
@@ -97,25 +97,28 @@ public final class AircraftController {
                         positionY - parameters.getMinY(), position, currentZoom, parameters.minYProperty()));
     }
 
-    /*public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
-        Rectangle rectangle = new Rectangle();
+    public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
+        Rectangle rectangle = new Rectangle(0, 0, new Color(0,0,0,0.5));
         Text text = new Text();
         text.textProperty().bind(
-                Bindings.format("%f/n", new SimpleStringProperty(oas.icaoAddress().string())));
+                Bindings.format("%s /n", new SimpleStringProperty(oas.icaoAddress().string())));
         text.textProperty().bind(
                 Bindings.createStringBinding(() ->
                                 String.format("%f m/s u/2002 %f mètres", oas.getVelocity(), oas.getAltitude())
                         , oas.velocityProperty(), oas.altitudeProperty()));
         rectangle.heightProperty().bind(
-                text.layoutBoundsProperty().map(b -> b.getHeight()));
+                text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
+
         rectangle.widthProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
+
         Group label = new Group(rectangle, text);
         label.getStyleClass();
+        label.visibleProperty().bind(isShowable(label));
         return label;
-    }*/
+    }
 
-    private Rectangle aircraftIconInitialisation(ObservableAircraftState oas) {
+    private Group aircraftIconInitialisation(ObservableAircraftState oas) {
         SVGPath aircraftIcon = new SVGPath();
         aircraftIcon.getStyleClass().add("aircraft");
         AircraftData data = oas.getData();
@@ -129,13 +132,10 @@ public final class AircraftController {
         // Binding the altitude to a paint property and then binding the icon color to that paint property
         oas.altitudeProperty().addListener(e -> {
             ObjectProperty<Paint> iconColor =
-                    new SimpleObjectProperty<>(ColorRamp.PLASMA.at(Math.cbrt(Math.rint(oas.getAltitude() / ALTITUDE_CEILING))));
+                    new SimpleObjectProperty<>(ColorRamp.PLASMA.at(Math.cbrt(oas.getAltitude() / ALTITUDE_CEILING)));
             aircraftIcon.fillProperty().bind(iconColor);
         });
 
-        //aircraftIcon.fillProperty().bind(Bindings.createObjectBinding(() ->
-        //ColorRamp.PLASMA.at(Math.cbrt(oas.getAltitude() / ALTITUDE_CEILING))
-        //));
         aircraftIcon.contentProperty().bind(Bindings.createStringBinding(icon.getValue()::svgPath, icon));
         aircraftIcon.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
             if (icon.getValue().canRotate()) {
@@ -143,23 +143,21 @@ public final class AircraftController {
             }
             return 0.0;
         }));
-        //return new Group(aircraftIcon);
-        //just trying to see what's working and what isn't
-        return new Rectangle(10, 10, new Color(0,0,1,1));
+        return new Group(aircraftIcon);
     }
-    /*
-    private BooleanBinding isShowable(Group label){
+
+    private BooleanBinding isShowable(Group icon){
         return Bindings.createBooleanBinding(
                 () -> currentZoom.get() <= 11 || airCraftHasBeenClicked(icon));
-    }*/
+    }
 
-    /*private boolean airCraftHasBeenClicked(Group icon){
+    private boolean airCraftHasBeenClicked(Group icon){
         aircraftPane.setOnMouseClicked(e -> {
-            if ((e.getX() == aircraftPane.getWidth() + icon.getLayoutX()) && e.getY() == aircraftPane.getHeight() + icon.getLayoutY() && !airCraftClicked)
-                airCraftClicked = true;
-            else if (airCraftClicked)
-                airCraftClicked = false;
+            if ((e.getX() == aircraftPane.getWidth() + icon.getLayoutX()) && e.getY() == aircraftPane.getHeight() + icon.getLayoutY() && !aircraftClicked)
+                aircraftClicked = true;
+            else if (aircraftClicked)
+                aircraftClicked = false;
         });
-        return airCraftClicked;
-    }*/
+        return aircraftClicked;
+    }
 }
