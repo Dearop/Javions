@@ -28,7 +28,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private AircraftStateAccumulator accumulator;
     private AircraftData data;
     private IcaoAddress icaoAddress;
-    private ObservableList<AirbornePos> trajectories = FXCollections.observableArrayList();
+    private ObservableList<AirbornePos> trajectories;
+    private ObservableList<AirbornePos> trajectoryProperty;
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
     private IntegerProperty category = new SimpleIntegerProperty();
     private ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
@@ -47,6 +48,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
         this.icaoAddress = icaoAddress;
         this.data = data;
+        trajectories = FXCollections.observableArrayList();
+        trajectoryProperty =  FXCollections.unmodifiableObservableList(trajectories);
         dataProperty.set(data);
     }
 
@@ -124,8 +127,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * @param position the position of the aircraft
      */
     private void setTrajectory(double altitude, GeoPos position) {
-        if (!trajectories.isEmpty()) {
-            if (!trajectories.get(trajectories.size() - 1).position().equals(position))
+        if (position != null) {
+            if (this.positionProperty().get().equals(position) || trajectories.isEmpty())
                 trajectories.add(new AirbornePos(position, altitude));
             else if (previousMessageTimeStampNs == lastMessageTimeStampNs.get())
                 trajectories.set(trajectories.size() - 1, new AirbornePos(position, altitude));
@@ -161,13 +164,9 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         return callSign.get();
     }
 
-    /**
-     * @return the latest trajectory of the aircraft
-     */
-    public AirbornePos getTrajectory() {
-        if (trajectories.size() != 0)
-            return trajectories.get(trajectories.size() - 1);
-        return null;
+
+    public List<AirbornePos> getTrajectories(){
+        return trajectories;
     }
 
     /**
@@ -224,7 +223,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * @return an unmodifiable view of the list of airborne positions of the aircraft
      */
     public ObservableList<AirbornePos> trajectoryProperty() {
-        return FXCollections.unmodifiableObservableList(trajectories);
+        return trajectoryProperty;
     }
 
     /**
@@ -271,5 +270,5 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * Represents the position and altitude of an aircraft at a specific point in time.
      * This record is used internally to track an aircraft's trajectory.
      */
-    private record AirbornePos(GeoPos position, double altitude) {}
+    public record AirbornePos(GeoPos position, double altitude) {}
 }

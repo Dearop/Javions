@@ -46,7 +46,7 @@ public final class ColorRamp {
 
         index *= colors.length - 1;
         int lowerIndex = (int) Math.floor(index);
-        int upperIndex = (int) Math.ceil(index);
+        int upperIndex = lowerIndex + 1;
         return colors[lowerIndex].interpolate(colors[upperIndex], index - lowerIndex);
     }
 }
