@@ -18,29 +18,32 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 import org.junit.jupiter.api.ClassOrdererContext;
 
+import java.util.Collection;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 public final class AircraftTableController {
-
     private static ObservableSet<ObservableAircraftState> knownStates; //not sure todo
-
     private static ObjectProperty<ObservableAircraftState> currentSelectedState;
-
     private static TableView scenegraph = new TableView<>();
 
+    private static TableColumn<ObservableAircraftState, String> icaoAddress;
+    private static TableColumn<ObservableAircraftState, String> callSign;
+    private static TableColumn<ObservableAircraftState, String> registration;
+    private static TableColumn<ObservableAircraftState, String> model;
+    private static TableColumn<ObservableAircraftState, String> type;
+    private static TableColumn<ObservableAircraftState, String> description;
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> knownStates, ObjectProperty<ObservableAircraftState> currentSelectedState) {
         this.knownStates = knownStates;
         this.currentSelectedState = currentSelectedState;
-        scenegraph = (TableView) pane();
+
 
         knownStates.addListener((SetChangeListener<ObservableAircraftState>)  change -> {
             if(change.wasAdded()){
-                scenegraph.getItems().addAll(change);
-                System.out.println("add");
+                scenegraph.getItems().addAll(change.getElementAdded());
             } else {
-                scenegraph.getItems().remove(change);
-                System.out.println("remove");
+                scenegraph.getItems().remove(change.getElementRemoved());
             }
             scenegraph.sort();
         });
@@ -52,47 +55,50 @@ public final class AircraftTableController {
     }
 
     public static Node pane() {
-
-        TableView<ObservableAircraftState> scenegraph = new TableView<>();
         scenegraph.getStyleClass().add("table.css");
         scenegraph.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         scenegraph.setTableMenuButtonVisible(true);
 
-        // this is needed for constants this example!
-        ObservableValue<String> icaoAddressConstant = new ReadOnlyObjectWrapper<>(currentSelectedState.get().icaoAddress().string());
+        if(scenegraph.getColumns().size() == 0){
 
-        TableColumn<ObservableAircraftState, String> icaoAddress = new TableColumn<>("IcaoAdress");
-        icaoAddress.setPrefWidth(60);
+            // ICAOAddress
+            icaoAddress = new TableColumn<>("IcaoAdress");
+            icaoAddress.setPrefWidth(60);
 
-//        icaoAddress.setCellValueFactory(f ->
-//            f.getValue().icaoAddress().toString().map(icaoAddressConstant::string   );
+            // CallSign
+            callSign = new TableColumn<>("CallSign");
+            callSign.setPrefWidth(70);
 
+            // Registration
+            registration = new TableColumn<>("Registration");
+            registration.setPrefWidth(90);
 
-        TableColumn<ObservableAircraftState, String> callSign = new TableColumn<>("CallSign");
-        callSign.setPrefWidth(70);
+            // Model
+            model = new TableColumn<>("Model");
+            model.setPrefWidth(230);
 
-        // callSign here gets called and put into a string with the lambda
-        callSign.setCellValueFactory(f ->
-                f.getValue().callSignProperty().map(CallSign::string));
+            //Type
+            type = new TableColumn<>("Type");
+            type.setPrefWidth(50);
 
-        scenegraph.getColumns().addAll(callSign);
+            // Description
+            description = new TableColumn<>("Description");
+            description.setPrefWidth(70);
 
+            scenegraph.getColumns().add(icaoAddress);
+            scenegraph.getColumns().add(callSign);
+            scenegraph.getColumns().addAll(registration);
+            scenegraph.getColumns().addAll(model);
+            scenegraph.getColumns().addAll(type);
+            scenegraph.getColumns().addAll(description);
+        }
 
-        TableColumn<ObservableAircraftState, String> registration = new TableColumn<>("Registration");
-        callSign.setPrefWidth(90);
-
-        // callSign here gets called and put into a string with the lambda
-//        callSign.setCellValueFactory(f ->
-//                f.getValue().getData().registration().string(AircraftRegistration::string));
-
-        scenegraph.getColumns().addAll(callSign);
+        ObservableValue<IcaoAddress> icaoAddressConstant = new ReadOnlyObjectWrapper<>(currentSelectedState.get().icaoAddress());
+        icaoAddress.setCellValueFactory(f -> icaoAddressConstant.flatMap(IcaoAddress::string);
+        callSign.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
 
 
         return scenegraph;
-    }
-
-    private void setCellValueFactory() {
-
     }
 
     public Consumer<ObservableAircraftState> setOnDoubleClick() {

@@ -67,6 +67,7 @@ public final class AircraftStateManager {
      * @throws IOException if an error occurs while updating the states
      */
     public void updateWithMessage(Message message)throws IOException {
+        purge(message);
         if(message != null){
             IcaoAddress messageIcaoddress = message.icaoAddress();
             AircraftData data = database.get(messageIcaoddress);
