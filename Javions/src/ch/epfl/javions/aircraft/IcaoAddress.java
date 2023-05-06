@@ -34,7 +34,4 @@ public record IcaoAddress(String string) {
         return string.substring(string.length() - 2);
     }
 
-    public String toString(){
-        return string;
-    }
 }

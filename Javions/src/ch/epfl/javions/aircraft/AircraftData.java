@@ -17,7 +17,7 @@ import java.util.Objects;
  * @author Paul Quesnot (347572)
  */
 public record AircraftData(AircraftRegistration registration, AircraftTypeDesignator typeDesignator, String model,
-                           AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) {
+    AircraftDescription description, WakeTurbulenceCategory wakeTurbulenceCategory) {
     /**
      * The constructor of AircraftData throws NullPointerException if any of its attributes are null
      *

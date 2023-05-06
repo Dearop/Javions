@@ -7,6 +7,7 @@ import java.util.List;
 
 public final class ColorRamp {
     private final Color[] colors;
+    private final int maxIndex;
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
@@ -29,12 +30,14 @@ public final class ColorRamp {
         if(colors.length < 2)
             throw new IllegalArgumentException();
         this.colors = colors;
+        this.maxIndex = colors.length - 1;
     }
 
     public ColorRamp(List<Color> colors){
         if(colors.size() < 2)
             throw new IllegalArgumentException();
         this.colors = colors.toArray(new Color[0]);
+        this.maxIndex = colors.size() - 1;
     }
 
     public Color at(double index){
@@ -42,11 +45,22 @@ public final class ColorRamp {
             return colors[0];
         }
         if(index >= 1)
-            return colors[colors.length - 1];
+            return colors[maxIndex];
 
-        index *= colors.length - 1;
-        int lowerIndex = (int) Math.floor(index);
+        int lowerIndex;
+        if (index >= 1) {
+            lowerIndex = maxIndex;
+        } else {
+            lowerIndex = (int) (index * maxIndex);
+        }
+
+        Color lowerColor = colors[lowerIndex];
+        if (index == 1 || lowerIndex == maxIndex) {
+            return lowerColor;
+        }
+
         int upperIndex = lowerIndex + 1;
-        return colors[lowerIndex].interpolate(colors[upperIndex], index - lowerIndex);
+        Color upperColor = colors[upperIndex];
+        return lowerColor.interpolate(upperColor, index * maxIndex - lowerIndex);
     }
 }

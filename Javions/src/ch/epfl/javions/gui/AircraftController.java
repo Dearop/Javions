@@ -5,7 +5,6 @@ import ch.epfl.javions.Units;
 import ch.epfl.javions.WebMercator;
 
 import ch.epfl.javions.aircraft.*;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
@@ -53,7 +52,6 @@ public final class AircraftController {
                 aircraftPane.getChildren().removeIf(p -> p.getId().equals(c.getElementRemoved().icaoAddress().string()));
             }
         });
-
         currentZoom = (IntegerProperty) parameters.zoomProperty();
     }
 
@@ -96,19 +94,26 @@ public final class AircraftController {
     }
 
     private void buildTrajectory(Group trajectory, ObservableAircraftState oas) {
-        if(trajectory.isVisible()){
+        if (trajectory.isVisible()) {
             trajectory.getChildren().clear();
             ObservableList<ObservableAircraftState.AirbornePos> oasTrajectory = oas.trajectoryProperty();
             for (int i = 1; i < oasTrajectory.size(); i++) {
-                GeoPos start = oasTrajectory.get(i-1).position();
+                GeoPos start = oasTrajectory.get(i - 1).position();
                 GeoPos end = oasTrajectory.get(i).position();
-                Line line = new Line(WebMercator.x(currentZoom.get(), start.longitude()),
-                        WebMercator.y(currentZoom.get(), start.latitude()),
-                        WebMercator.x(currentZoom.get(), end.longitude()),
-                        WebMercator.y(currentZoom.get(), end.latitude()));
+                double startX = WebMercator.x(currentZoom.get(), start.longitude());
+                double startY = WebMercator.y(currentZoom.get(), start.latitude());
+                double endX = WebMercator.x(currentZoom.get(), end.longitude());
+                double endY = WebMercator.y(currentZoom.get(), end.latitude());
+                Line line = new Line(startX, startY, endX, endY);
                 line.layoutXProperty().bind(parameters.minXProperty().negate());
                 line.layoutYProperty().bind(parameters.minYProperty().negate());
-                line.setStroke(altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
+                if (oasTrajectory.get(i - 1).altitude() == oasTrajectory.get(i).altitude())
+                    line.setStroke(altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
+                else {
+                    Stop s1 = new Stop(0, altitudeToPlasmaColourIndex(oasTrajectory.get(i - 1).altitude()));
+                    Stop s2 = new Stop(1, altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
+                    line.setStroke(new LinearGradient(startX, startY, endX, endY, true, NO_CYCLE, s1, s2));
+                }
                 trajectory.getChildren().add(line);
             }
         }
@@ -136,14 +141,13 @@ public final class AircraftController {
     public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
         Rectangle rectangle = new Rectangle();
         Text text = new Text();
-        if (oas.getData() != null) {
-            text.textProperty().bind(
-                    Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
-                                    , oas.getData().registration().string()
-                                    , (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
-                                    , (int) Math.rint(oas.getAltitude()))
-                            , oas.velocityProperty(), oas.altitudeProperty()));
-        }
+
+        text.textProperty().bind(
+                Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
+                                , (oas.getData() != null) ? oas.getData().registration().string() : "Unknown"
+                                , (Double.isNaN(oas.getVelocity()))? "?": (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
+                                , (Double.isNaN(oas.getAltitude()))? "?": (int) Math.rint(oas.getAltitude()))
+                                , oas.velocityProperty(), oas.altitudeProperty()));
         rectangle.heightProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
         rectangle.widthProperty().bind(
@@ -186,7 +190,6 @@ public final class AircraftController {
 
         //initialising the color of the icon depending on the altitude
         iconColorSetter(aircraftIcon, oas);
-
         // Binding the altitude to a paint property and then binding the icon color to that paint property
         oas.altitudeProperty().addListener(e -> iconColorSetter(aircraftIcon, oas));
 

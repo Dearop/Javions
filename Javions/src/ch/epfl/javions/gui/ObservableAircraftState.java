@@ -4,22 +4,18 @@ import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.adsb.AircraftStateAccumulator;
 import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
-import ch.epfl.javions.aircraft.AircraftData;
-import ch.epfl.javions.aircraft.IcaoAddress;
+import ch.epfl.javions.aircraft.*;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.IOException;
 import java.util.*;
 
-// TODO: 4/9/2023 I don't know if it should extend Observable or if we should create a Subject interface.
-// TODO still stands?
-
 /**
- *  This class represents the state of an aircraft that can be observed by external entities.
- *  It maintains the aircraft's position, velocity, and acceleration, and allows external entities to
- *  set the aircraft's trajectory and update its state based on elapsed time.
+ * This class represents the state of an aircraft that can be observed by external entities.
+ * It maintains the aircraft's position, velocity, and acceleration, and allows external entities to
+ * set the aircraft's trajectory and update its state based on elapsed time.
  *
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
@@ -27,34 +23,50 @@ import java.util.*;
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
     private AircraftStateAccumulator accumulator;
     private AircraftData data;
-    private IcaoAddress icaoAddress;
     private ObservableList<AirbornePos> trajectories;
     private ObservableList<AirbornePos> trajectoryProperty;
     private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
     private IntegerProperty category = new SimpleIntegerProperty();
     private ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
     private ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
-    private DoubleProperty altitude = new SimpleDoubleProperty();
-    private DoubleProperty velocity = new SimpleDoubleProperty();
+    private DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
+    private DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
-    private ObjectProperty<AircraftData> dataProperty = new SimpleObjectProperty<>();
+    private ObservableValue<AircraftData> dataObservableValue;
+    private ObservableValue<IcaoAddress> icaoAddress;
+    private ObservableValue<AircraftDescription> description;
+    private ObservableValue<AircraftRegistration> registration;
+    private ObservableValue<AircraftTypeDesignator> type;
+    private ObservableValue<String> model;
     private long previousMessageTimeStampNs;
 
     /**
      * Creates an ObservableAircraftState object with the given IcaoAddress and AircraftData.
+     *
      * @param icaoAddress the IcaoAddress of the aircraft
-     * @param data the AircraftData associated with the aircraft
+     * @param data        the AircraftData associated with the aircraft
      */
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
-        this.icaoAddress = icaoAddress;
+        this.icaoAddress = new ReadOnlyObjectWrapper<>(icaoAddress);
         this.data = data;
+        dataObservableValue = new ReadOnlyObjectWrapper<>(data);
         trajectories = FXCollections.observableArrayList();
-        trajectoryProperty =  FXCollections.unmodifiableObservableList(trajectories);
-        dataProperty.set(data);
+        trajectoryProperty = FXCollections.unmodifiableObservableList(trajectories);
+        unpackAircraftData();
+    }
+
+    private void unpackAircraftData() {
+        if(data != null){
+            description = new ReadOnlyObjectWrapper<>(data.description());
+            registration = new ReadOnlyObjectWrapper<>(data.registration());
+            type = new ReadOnlyObjectWrapper<>(data.typeDesignator());
+            model = new ReadOnlyObjectWrapper<>(data.model());
+        }
     }
 
     /**
      * Sets the last message timestamp in nanoseconds.
+     *
      * @param timeStampNs the timestamp in nanoseconds
      */
     @Override
@@ -64,6 +76,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     /**
      * Sets the category of the aircraft.
+     *
      * @param category the category of the aircraft
      */
     @Override
@@ -73,6 +86,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     /**
      * Sets the call sign of the aircraft.
+     *
      * @param callSign the call sign of the aircraft
      */
     @Override
@@ -82,6 +96,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     /**
      * Sets the position of the aircraft.
+     *
      * @param position the GeoPos position of the aircraft
      */
     @Override
@@ -92,6 +107,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     /**
      * Sets the altitude of the aircraft.
+     *
      * @param altitude the altitude of the aircraft
      */
     @Override
@@ -102,6 +118,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     /**
      * Sets the velocity of the aircraft.
+     *
      * @param velocity the velocity of the aircraft
      */
     @Override
@@ -111,6 +128,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
 
     /**
      * Sets the track or heading of the aircraft.
+     *
      * @param trackOrHeading the track or heading of the aircraft
      */
     @Override
@@ -123,6 +141,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * If the trajectory list is not empty and the last position is different from the new position,
      * a new trajectory point is added to the list. If the last message timestamp is equal to the current message timestamp,
      * then the last trajectory point is updated with the new altitude and position.
+     *
      * @param altitude the altitude of the aircraft
      * @param position the position of the aircraft
      */
@@ -140,7 +159,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * @return the IcaoAddress of the aircraft
      */
     public IcaoAddress icaoAddress() {
-        return icaoAddress;
+        return icaoAddress.getValue();
     }
 
     /**
@@ -165,7 +184,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
 
-    public List<AirbornePos> getTrajectories(){
+    public List<AirbornePos> getTrajectories() {
         return trajectories;
     }
 
@@ -248,27 +267,50 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
     /**
-     *
      * @return a read-only property representing the current position of the aircraft
      */
-    public ReadOnlyObjectProperty<GeoPos> positionProperty(){
+    public ReadOnlyObjectProperty<GeoPos> positionProperty() {
         return position;
+    }
+
+    // TODO: 5/6/2023 ask if right 
+    public ObservableValue<AircraftData> dataObservableValue() {
+        return dataObservableValue;
+    }
+
+    public ObservableValue<IcaoAddress> icaoAddressObservableValue() {
+        return icaoAddress;
+    }
+
+    public ObservableValue<AircraftRegistration> registrationObservableValue() {
+        return registration;
+    }
+
+    public ObservableValue<AircraftDescription> aircraftDescriptionObservableValue() {
+        return description;
+    }
+
+    public ObservableValue<AircraftTypeDesignator> aircraftTypeDesignatorObservableValue() {
+        return type;
+    }
+
+    public ObservableValue<String> modelObservableValue() {
+        return model;
     }
 
     /**
      * Returns the aircraft data associated with this observable state.
+     *
      * @return the aircraft data
      */
-    public AircraftData getData(){
+    public AircraftData getData() {
         return this.data;
     }
 
-    public ReadOnlyObjectProperty<AircraftData> dataProperty(){
-        return this.dataProperty;
-    }
     /**
      * Represents the position and altitude of an aircraft at a specific point in time.
      * This record is used internally to track an aircraft's trajectory.
      */
-    public record AirbornePos(GeoPos position, double altitude) {}
+    public record AirbornePos(GeoPos position, double altitude) {
+    }
 }
