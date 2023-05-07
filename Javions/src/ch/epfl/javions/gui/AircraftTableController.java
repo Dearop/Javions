@@ -1,5 +1,7 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.GeoPos;
+import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftRegistration;
@@ -95,7 +97,7 @@ public final class AircraftTableController {
             description.setPrefWidth(70);
 
             // Longitude
-            longitude = new TableColumn<>("Latitude (°)");
+            longitude = new TableColumn<>("Longitude (°)");
             longitude.setPrefWidth(85);
 
             // Latitude
@@ -128,6 +130,7 @@ public final class AircraftTableController {
                         new ReadOnlyObjectWrapper<>(f.getValue().icaoAddress());
                 return icaoAddressWrapper.map(IcaoAddress::string);
         });
+
         callSign.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
 
         registration.setCellValueFactory(f -> {
@@ -160,7 +163,17 @@ public final class AircraftTableController {
                 return descriptionWrapper.map(AircraftDescription::string);
             }else return null;
         });
-        longitude.setCellValueFactory(f -> new SimpleObjectProperty<>(format.format(f.getValue().positionProperty().get().latitude())));
+
+        longitude.setCellValueFactory(f ->
+                        f.getValue().positionProperty().map(m ->
+                                format.format(Units.convertTo(m.longitude(), Units.Angle.DEGREE))));
+        latitude.setCellValueFactory(f ->
+                f.getValue().positionProperty().map(m ->
+                        format.format(Units.convertTo(m.latitude(), Units.Angle.DEGREE))));
+        altitude.setCellValueFactory(f -> f.getValue().altitudeProperty().map(m -> format.format(m.doubleValue())));
+        velocity.setCellValueFactory(f ->
+                f.getValue().velocityProperty().map(m ->
+                        format.format(Units.convertTo(m.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
 
         return scenegraph;
     }
