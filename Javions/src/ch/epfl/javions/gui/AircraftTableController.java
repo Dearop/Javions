@@ -18,6 +18,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 
 import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import static javafx.beans.binding.Bindings.when;
@@ -72,6 +75,7 @@ public final class AircraftTableController {
 
         if (scenegraph.getColumns().size() == 0) {
 
+            List<TableColumn<ObservableAircraftState, String>> numColumns = new ArrayList<>();
             // ICAOAddress
             icaoAddress = new TableColumn<>("IcaoAdress");
             icaoAddress.setPrefWidth(60);
@@ -99,18 +103,27 @@ public final class AircraftTableController {
             // Longitude
             longitude = new TableColumn<>("Longitude (°)");
             longitude.setPrefWidth(85);
+            numColumns.add(longitude);
 
             // Latitude
             latitude = new TableColumn<>("Latitude (°)");
             latitude.setPrefWidth(85);
+            numColumns.add(latitude);
             
             // Altitude
             altitude = new TableColumn<>("Altitude (m)");
             altitude.setPrefWidth(85);
+            numColumns.add(altitude);
             
             // Velocity
             velocity = new TableColumn<>("Velocity (km/h)");
             velocity.setPrefWidth(85);
+            numColumns.add(velocity);
+
+            numColumns.forEach(column ->
+                    column.setComparator((s1, s2) ->
+                            Double.compare(Double.parseDouble(s1.replace(",", "")),
+                                    Double.parseDouble(s2.replace(",", "")))));
 
             // TODO: 5/7/2023 Could be a for loop ? 
             scenegraph.getColumns().add(icaoAddress);
