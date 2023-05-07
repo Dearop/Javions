@@ -32,12 +32,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     private DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
     private DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
     private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
-    private ObservableValue<AircraftData> dataObservableValue;
-    private ObservableValue<IcaoAddress> icaoAddress;
-    private ObservableValue<AircraftDescription> description;
-    private ObservableValue<AircraftRegistration> registration;
-    private ObservableValue<AircraftTypeDesignator> type;
-    private ObservableValue<String> model;
+    IcaoAddress icaoAddress;
     private long previousMessageTimeStampNs;
 
     /**
@@ -47,21 +42,10 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * @param data        the AircraftData associated with the aircraft
      */
     public ObservableAircraftState(IcaoAddress icaoAddress, AircraftData data) {
-        this.icaoAddress = new ReadOnlyObjectWrapper<>(icaoAddress);
+        this.icaoAddress = icaoAddress;
         this.data = data;
-        dataObservableValue = new ReadOnlyObjectWrapper<>(data);
         trajectories = FXCollections.observableArrayList();
         trajectoryProperty = FXCollections.unmodifiableObservableList(trajectories);
-        unpackAircraftData();
-    }
-
-    private void unpackAircraftData() {
-        if(data != null){
-            description = new ReadOnlyObjectWrapper<>(data.description());
-            registration = new ReadOnlyObjectWrapper<>(data.registration());
-            type = new ReadOnlyObjectWrapper<>(data.typeDesignator());
-            model = new ReadOnlyObjectWrapper<>(data.model());
-        }
     }
 
     /**
@@ -159,7 +143,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * @return the IcaoAddress of the aircraft
      */
     public IcaoAddress icaoAddress() {
-        return icaoAddress.getValue();
+        return icaoAddress;
     }
 
     /**
@@ -271,31 +255,6 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      */
     public ReadOnlyObjectProperty<GeoPos> positionProperty() {
         return position;
-    }
-
-    // TODO: 5/6/2023 ask if right 
-    public ObservableValue<AircraftData> dataObservableValue() {
-        return dataObservableValue;
-    }
-
-    public ObservableValue<IcaoAddress> icaoAddressObservableValue() {
-        return icaoAddress;
-    }
-
-    public ObservableValue<AircraftRegistration> registrationObservableValue() {
-        return registration;
-    }
-
-    public ObservableValue<AircraftDescription> aircraftDescriptionObservableValue() {
-        return description;
-    }
-
-    public ObservableValue<AircraftTypeDesignator> aircraftTypeDesignatorObservableValue() {
-        return type;
-    }
-
-    public ObservableValue<String> modelObservableValue() {
-        return model;
     }
 
     /**

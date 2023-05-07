@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
 
+import java.text.NumberFormat;
 import java.util.function.Consumer;
 
 import static javafx.beans.binding.Bindings.when;
@@ -29,10 +30,22 @@ public final class AircraftTableController {
     private static TableColumn<ObservableAircraftState, String> model;
     private static TableColumn<ObservableAircraftState, String> type;
     private static TableColumn<ObservableAircraftState, String> description;
+    private static TableColumn<ObservableAircraftState, String> longitude;
+    private static TableColumn<ObservableAircraftState, String> latitude;
+    private static TableColumn<ObservableAircraftState, String> altitude;
+    private static TableColumn<ObservableAircraftState, String> velocity;
+    private static NumberFormat format;
+    // TODO: 5/7/2023 Need to add Constants for column sizes
+    private static final int MAX_INTEGER_DECIMAL = 4;
+    private static final int MIN_INTEGER_DECIMAL = 0;
 
     public AircraftTableController(ObservableSet<ObservableAircraftState> knownStates, ObjectProperty<ObservableAircraftState> currentSelectedState) {
         this.knownStates = knownStates;
         this.currentSelectedState = currentSelectedState;
+
+        this.format = NumberFormat.getInstance();
+        format.setMinimumFractionDigits(MIN_INTEGER_DECIMAL);
+        format.setMaximumFractionDigits(MAX_INTEGER_DECIMAL);
 
 
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
@@ -81,41 +94,73 @@ public final class AircraftTableController {
             description = new TableColumn<>("Description");
             description.setPrefWidth(70);
 
+            // Longitude
+            longitude = new TableColumn<>("Latitude (°)");
+            longitude.setPrefWidth(85);
+
+            // Latitude
+            latitude = new TableColumn<>("Latitude (°)");
+            latitude.setPrefWidth(85);
+            
+            // Altitude
+            altitude = new TableColumn<>("Altitude (m)");
+            altitude.setPrefWidth(85);
+            
+            // Velocity
+            velocity = new TableColumn<>("Velocity (km/h)");
+            velocity.setPrefWidth(85);
+
+            // TODO: 5/7/2023 Could be a for loop ? 
             scenegraph.getColumns().add(icaoAddress);
             scenegraph.getColumns().add(callSign);
             scenegraph.getColumns().add(registration);
             scenegraph.getColumns().add(model);
             scenegraph.getColumns().add(type);
             scenegraph.getColumns().add(description);
+            scenegraph.getColumns().add(longitude);
+            scenegraph.getColumns().add(latitude);
+            scenegraph.getColumns().add(altitude);
+            scenegraph.getColumns().add(velocity);
         }
 
-        icaoAddress.setCellValueFactory(f -> f.getValue().icaoAddressObservableValue().map(IcaoAddress::string));
+        icaoAddress.setCellValueFactory(f -> {
+            ReadOnlyObjectWrapper<IcaoAddress> icaoAddressWrapper =
+                        new ReadOnlyObjectWrapper<>(f.getValue().icaoAddress());
+                return icaoAddressWrapper.map(IcaoAddress::string);
+        });
         callSign.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
 
         registration.setCellValueFactory(f -> {
-            if(f.getValue().getData() != null)
-                return f.getValue().registrationObservableValue().map(AircraftRegistration::string);
-            else return null;
+            if(f.getValue().getData() != null){
+                ReadOnlyObjectWrapper<AircraftRegistration> registrationWrapper =
+                        new ReadOnlyObjectWrapper<>(f.getValue().getData().registration());
+                return registrationWrapper.map(AircraftRegistration::string);
+            } else return null;
         });
 
         model.setCellValueFactory(f -> {
-            if(f.getValue().getData() != null)
-                return f.getValue().modelObservableValue().map(String::toString);
-            else return null;
+            if(f.getValue().getData() != null) {
+                ReadOnlyObjectWrapper<String> modelWrapper =
+                        new ReadOnlyObjectWrapper<>(f.getValue().getData().model());
+                return modelWrapper.map(String::toString);
+            }else return null;
         });
         type.setCellValueFactory(f -> {
             if(f.getValue().getData() != null) {
-                if (f.getValue().getData().typeDesignator() != null) {
-                    return f.getValue().aircraftTypeDesignatorObservableValue().map(AircraftTypeDesignator::string);
-                }
+                ReadOnlyObjectWrapper<AircraftTypeDesignator> typeWrapper =
+                        new ReadOnlyObjectWrapper<>(f.getValue().getData().typeDesignator());
+                return typeWrapper.map(AircraftTypeDesignator::string);
             }
             return null;
         });
         description.setCellValueFactory(f -> {
-            if (f.getValue().getData() != null)
-                return f.getValue().aircraftDescriptionObservableValue().map(AircraftDescription::string);
-            else return null;
+            if (f.getValue().getData() != null) {
+                ReadOnlyObjectWrapper<AircraftDescription> descriptionWrapper =
+                        new ReadOnlyObjectWrapper<>(f.getValue().getData().description());
+                return descriptionWrapper.map(AircraftDescription::string);
+            }else return null;
         });
+        longitude.setCellValueFactory(f -> new SimpleObjectProperty<>(format.format(f.getValue().positionProperty().get().latitude())));
 
         return scenegraph;
     }
