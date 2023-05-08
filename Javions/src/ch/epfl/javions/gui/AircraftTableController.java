@@ -20,7 +20,9 @@ import javafx.scene.input.MouseButton;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import static javafx.beans.binding.Bindings.when;
@@ -41,6 +43,7 @@ public final class AircraftTableController {
     private static TableColumn<ObservableAircraftState, String> velocity;
     private static NumberFormat format;
     // TODO: 5/7/2023 Need to add Constants for column sizes
+    private static final int NUMBER_COLUMN_SIZE = 85;
     private static final int MAX_INTEGER_DECIMAL = 4;
     private static final int MIN_INTEGER_DECIMAL = 0;
 
@@ -65,77 +68,65 @@ public final class AircraftTableController {
         setOnDoubleClick();
 
 
-        //currentSelectedState.bind();
+        currentSelectedState.addListener(e -> {
+            // TODO: 5/7/2023 ask about this 
+            if(scenegraph.getColumns().contains(currentSelectedState)){
+                scenegraph.scrollTo(currentSelectedState.getValue());
+                scenegraph.getSelectionModel().select(currentSelectedState.getValue());
+            }
+        });
     }
 
     public static Node pane() {
-        scenegraph.getStyleClass().add("table.css");
         scenegraph.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         scenegraph.setTableMenuButtonVisible(true);
 
         if (scenegraph.getColumns().size() == 0) {
 
-            List<TableColumn<ObservableAircraftState, String>> numColumns = new ArrayList<>();
+            Set<TableColumn<ObservableAircraftState, String>> numberColumns = new HashSet<>();
+
             // ICAOAddress
-            icaoAddress = new TableColumn<>("IcaoAdress");
+            icaoAddress = new TableColumn<>("IcaoAddress");
             icaoAddress.setPrefWidth(60);
+            scenegraph.getColumns().add(icaoAddress);
 
             // CallSign
             callSign = new TableColumn<>("CallSign");
             callSign.setPrefWidth(70);
+            scenegraph.getColumns().add(callSign);
 
             // Registration
             registration = new TableColumn<>("Registration");
             registration.setPrefWidth(90);
+            scenegraph.getColumns().add(registration);
 
             // Model
             model = new TableColumn<>("Model");
             model.setPrefWidth(230);
+            scenegraph.getColumns().add(model);
 
             //Type
             type = new TableColumn<>("Type");
             type.setPrefWidth(50);
+            scenegraph.getColumns().add(type);
 
             // Description
             description = new TableColumn<>("Description");
             description.setPrefWidth(70);
+            scenegraph.getColumns().add(description);
 
             // Longitude
-            longitude = new TableColumn<>("Longitude (°)");
-            longitude.setPrefWidth(85);
-            numColumns.add(longitude);
+            longitude = createNumberColumn(numberColumns, longitude, "Longitude (°)");
 
             // Latitude
-            latitude = new TableColumn<>("Latitude (°)");
-            latitude.setPrefWidth(85);
-            numColumns.add(latitude);
-            
+            latitude = createNumberColumn(numberColumns, latitude, "Latitude (°)");
+
             // Altitude
-            altitude = new TableColumn<>("Altitude (m)");
-            altitude.setPrefWidth(85);
-            numColumns.add(altitude);
+            altitude = createNumberColumn(numberColumns, altitude, "Altitude (m)");
+
             
             // Velocity
-            velocity = new TableColumn<>("Velocity (km/h)");
-            velocity.setPrefWidth(85);
-            numColumns.add(velocity);
-
-            numColumns.forEach(column ->
-                    column.setComparator((s1, s2) ->
-                            Double.compare(Double.parseDouble(s1.replace(",", "")),
-                                    Double.parseDouble(s2.replace(",", "")))));
-
-            // TODO: 5/7/2023 Could be a for loop ? 
-            scenegraph.getColumns().add(icaoAddress);
-            scenegraph.getColumns().add(callSign);
-            scenegraph.getColumns().add(registration);
-            scenegraph.getColumns().add(model);
-            scenegraph.getColumns().add(type);
-            scenegraph.getColumns().add(description);
-            scenegraph.getColumns().add(longitude);
-            scenegraph.getColumns().add(latitude);
-            scenegraph.getColumns().add(altitude);
-            scenegraph.getColumns().add(velocity);
+            velocity = createNumberColumn(numberColumns, velocity,"Velocity (km/h)");
         }
 
         icaoAddress.setCellValueFactory(f -> {
@@ -183,7 +174,9 @@ public final class AircraftTableController {
         latitude.setCellValueFactory(f ->
                 f.getValue().positionProperty().map(m ->
                         format.format(Units.convertTo(m.latitude(), Units.Angle.DEGREE))));
-        altitude.setCellValueFactory(f -> f.getValue().altitudeProperty().map(m -> format.format(m.doubleValue())));
+        altitude.setCellValueFactory(f ->
+                f.getValue().altitudeProperty().map(m ->
+                        format.format(m.doubleValue())));
         velocity.setCellValueFactory(f ->
                 f.getValue().velocityProperty().map(m ->
                         format.format(Units.convertTo(m.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
@@ -193,16 +186,30 @@ public final class AircraftTableController {
 
     public Consumer<ObservableAircraftState> setOnDoubleClick() {
         scenegraph.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) ;
+            if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
 
+            }
         });
-
+        // TODO: 5/7/2023  ask about this shit
         // HMM
         return new Consumer<ObservableAircraftState>() {
             @Override
-            public void accept(ObservableAircraftState observableAircraftState) {
+            public void accept(ObservableAircraftState oas) {
 
             }
         };
+    }
+
+    public static TableColumn<ObservableAircraftState, String> createNumberColumn(
+            Set<TableColumn<ObservableAircraftState, String>> numberColumns,
+            TableColumn<ObservableAircraftState, String> column, String columnName){
+        column = new TableColumn<>(columnName);
+        column.setPrefWidth(NUMBER_COLUMN_SIZE);
+        scenegraph.getColumns().add(column);
+        numberColumns.add(column);
+        column.setComparator((s1, s2) ->
+                Double.compare(Double.parseDouble(s1.replace(",", "")),
+                        Double.parseDouble(s2.replace(",", ""))));
+        return column;
     }
 }
