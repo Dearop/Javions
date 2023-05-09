@@ -4,7 +4,6 @@ import ch.epfl.javions.adsb.*;
 import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.aircraft.IcaoAddress;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 
 import java.io.IOException;
@@ -91,6 +90,12 @@ public final class AircraftStateManager {
     public void purge(Message message){
         knownPositionStates.removeIf(observableAircraftState ->
                 message.timeStampNs() - observableAircraftState.getLastMessageTimeStampNs() > 6e10);
+        IcaoAddress addressOfRemoved = message.icaoAddress();
+        if (accumulatorMap.get(addressOfRemoved) != null) {
+            if(message.timeStampNs() -
+                    accumulatorMap.get(addressOfRemoved).stateSetter().getLastMessageTimeStampNs() > 6e10)
+                accumulatorMap.remove(addressOfRemoved);
+        }
     }
 
     /**

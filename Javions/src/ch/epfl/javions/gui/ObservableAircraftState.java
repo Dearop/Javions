@@ -86,7 +86,8 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setPosition(GeoPos position) {
         this.position.set(position);
-        setTrajectory(altitude.get(), position);
+        if(!Double.isNaN(altitude.get()))
+            trajectories.add(new AirbornePos(position, altitude.get()));
     }
 
     /**
@@ -97,7 +98,12 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setAltitude(double altitude) {
         this.altitude.set(altitude);
-        setTrajectory(altitude, position.get());
+        if (position.get() != null) {
+            if (trajectories.isEmpty())
+                trajectories.add(new AirbornePos(position.get(), altitude));
+            else if (previousMessageTimeStampNs == lastMessageTimeStampNs.get())
+                trajectories.set(trajectories.size() - 1, new AirbornePos(position.get(), altitude));
+        }
     }
 
     /**
@@ -118,25 +124,6 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setTrackOrHeading(double trackOrHeading) {
         this.trackOrHeading.set(trackOrHeading);
-    }
-
-    /**
-     * Updates the trajectory list with a new position and altitude based on the received aircraft state message.
-     * If the trajectory list is not empty and the last position is different from the new position,
-     * a new trajectory point is added to the list. If the last message timestamp is equal to the current message timestamp,
-     * then the last trajectory point is updated with the new altitude and position.
-     *
-     * @param altitude the altitude of the aircraft
-     * @param position the position of the aircraft
-     */
-    private void setTrajectory(double altitude, GeoPos position) {
-        if (position != null) {
-            if (this.positionProperty().get().equals(position) || trajectories.isEmpty())
-                trajectories.add(new AirbornePos(position, altitude));
-            else if (previousMessageTimeStampNs == lastMessageTimeStampNs.get())
-                trajectories.set(trajectories.size() - 1, new AirbornePos(position, altitude));
-        }
-        previousMessageTimeStampNs = lastMessageTimeStampNs.get();
     }
 
     /**

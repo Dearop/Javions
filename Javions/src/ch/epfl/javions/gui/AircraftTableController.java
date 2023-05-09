@@ -30,7 +30,7 @@ import static javafx.beans.binding.Bindings.when;
 public final class AircraftTableController {
     private static ObservableSet<ObservableAircraftState> knownStates; //not sure todo
     private static ObjectProperty<ObservableAircraftState> currentSelectedState;
-    private static TableView scenegraph = new TableView<>();
+    private static TableView <ObservableAircraftState> scenegraph = new TableView<>();
     private static TableColumn<ObservableAircraftState, String> icaoAddress;
     private static TableColumn<ObservableAircraftState, String> callSign;
     private static TableColumn<ObservableAircraftState, String> registration;
@@ -42,15 +42,17 @@ public final class AircraftTableController {
     private static TableColumn<ObservableAircraftState, String> altitude;
     private static TableColumn<ObservableAircraftState, String> velocity;
     private static NumberFormat format;
+    private Consumer<ObservableAircraftState> selectedState;
     // TODO: 5/7/2023 Need to add Constants for column sizes
     private static final int NUMBER_COLUMN_SIZE = 85;
     private static final int MAX_INTEGER_DECIMAL = 4;
     private static final int MIN_INTEGER_DECIMAL = 0;
 
-    public AircraftTableController(ObservableSet<ObservableAircraftState> knownStates, ObjectProperty<ObservableAircraftState> currentSelectedState) {
+    public AircraftTableController(ObservableSet<ObservableAircraftState> knownStates,
+                                   ObjectProperty<ObservableAircraftState> currentSelectedState) {
         this.knownStates = knownStates;
         this.currentSelectedState = currentSelectedState;
-
+        this.selectedState = selectedState;
         this.format = NumberFormat.getInstance();
         format.setMinimumFractionDigits(MIN_INTEGER_DECIMAL);
         format.setMaximumFractionDigits(MAX_INTEGER_DECIMAL);
@@ -65,11 +67,14 @@ public final class AircraftTableController {
             scenegraph.sort();
         });
 
-        setOnDoubleClick();
-
+        scenegraph.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
+                if(selectedState != null)
+                    selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
+            }
+        });
 
         currentSelectedState.addListener(e -> {
-            // TODO: 5/7/2023 ask about this 
             if(scenegraph.getColumns().contains(currentSelectedState)){
                 scenegraph.scrollTo(currentSelectedState.getValue());
                 scenegraph.getSelectionModel().select(currentSelectedState.getValue());
@@ -184,20 +189,8 @@ public final class AircraftTableController {
         return scenegraph;
     }
 
-    public Consumer<ObservableAircraftState> setOnDoubleClick() {
-        scenegraph.setOnMouseClicked(event -> {
-            if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
-
-            }
-        });
-        // TODO: 5/7/2023  ask about this shit
-        // HMM
-        return new Consumer<ObservableAircraftState>() {
-            @Override
-            public void accept(ObservableAircraftState oas) {
-
-            }
-        };
+    public void setOnDoubleClick (Consumer<ObservableAircraftState> selectedState) {
+        this.selectedState = selectedState;
     }
 
     public static TableColumn<ObservableAircraftState, String> createNumberColumn(
@@ -207,9 +200,16 @@ public final class AircraftTableController {
         column.setPrefWidth(NUMBER_COLUMN_SIZE);
         scenegraph.getColumns().add(column);
         numberColumns.add(column);
-        column.setComparator((s1, s2) ->
-                Double.compare(Double.parseDouble(s1.replace(",", "")),
-                        Double.parseDouble(s2.replace(",", ""))));
+
+        column.setComparator((s1, s2) -> {
+            try {
+                return Double.compare((double) format.parse(s1),
+                        (double) format.parse(s2));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        column.setStyle("-fx-alignment: baseline-right");
         return column;
     }
 }

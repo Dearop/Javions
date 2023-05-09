@@ -32,7 +32,7 @@ public final class AircraftController {
     private MapParameters parameters;
     private ObjectProperty<ObservableAircraftState> currentSelectedState;
     private Pane aircraftPane;
-    private IntegerProperty currentZoom;
+    private ReadOnlyIntegerProperty currentZoom;
     private static final int ALTITUDE_CEILING = 12000;
 
     public AircraftController(MapParameters parameters, ObservableSet<ObservableAircraftState> knownStates,
@@ -52,7 +52,7 @@ public final class AircraftController {
                 aircraftPane.getChildren().removeIf(p -> p.getId().equals(c.getElementRemoved().icaoAddress().string()));
             }
         });
-        currentZoom = (IntegerProperty) parameters.zoomProperty();
+        currentZoom = parameters.zoomProperty();
     }
 
     public Pane pane() {
@@ -82,17 +82,22 @@ public final class AircraftController {
         trajectory.setVisible(false);
 
         oas.trajectoryProperty().addListener((ListChangeListener<ObservableAircraftState.AirbornePos>) c -> {
-            buildTrajectory(trajectory, oas);
+            if(currentSelectedState.get() != null && currentSelectedState.getValue().equals(oas))
+                buildTrajectory(trajectory, oas);
         });
 
         parameters.zoomProperty().addListener(e -> {
-            buildTrajectory(trajectory, oas);
+            if(currentSelectedState.get() != null && currentSelectedState.getValue().equals(oas))
+                buildTrajectory(trajectory, oas);
         });
 
         currentSelectedState.addListener(e -> trajectory.setVisible(currentSelectedState.getValue().equals(oas)));
+
+        trajectory.visibleProperty().addListener(e -> trajectory.getChildren().clear());
         return trajectory;
     }
 
+    // TODO: 5/9/2023 ask for effiency 
     private void buildTrajectory(Group trajectory, ObservableAircraftState oas) {
         if (trajectory.isVisible()) {
             trajectory.getChildren().clear();
@@ -155,8 +160,7 @@ public final class AircraftController {
 
         Group label = new Group(rectangle, text);
         label.visibleProperty().bind(
-                Bindings.createBooleanBinding(() -> selectedStateListener(oas)));
-        label.getStyleClass();
+                Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas)));
         label.getStyleClass().add("label");
         showLabelListener(label, oas);
 
@@ -165,13 +169,14 @@ public final class AircraftController {
 
     private void showLabelListener(Group label, ObservableAircraftState oas) {
         currentZoom.addListener(e ->
-                label.visibleProperty().bind(Bindings.createBooleanBinding(() -> selectedStateListener(oas))));
+                label.visibleProperty().bind(Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas))));
         currentSelectedState.addListener(e ->
-                label.visibleProperty().bind(Bindings.createBooleanBinding(() -> selectedStateListener(oas))));
+                label.visibleProperty().bind(Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas))));
     }
 
     private Group aircraftIconInitialisation(ObservableAircraftState oas) {
         SVGPath aircraftIcon = new SVGPath();
+        aircraftIcon.getStyleClass().add("aircraft");
         aircraftIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -179,7 +184,6 @@ public final class AircraftController {
             }
         });
 
-        aircraftIcon.getStyleClass().add("aircraft");
         AircraftData data = oas.getData();
         ObservableValue<AircraftIcon> icon = (data == null)
                 ? oas.categoryProperty().map(f -> AircraftIcon.iconFor(new AircraftTypeDesignator(""),
@@ -190,12 +194,14 @@ public final class AircraftController {
 
         //initialising the color of the icon depending on the altitude
         iconColorSetter(aircraftIcon, oas);
+
         // Binding the altitude to a paint property and then binding the icon color to that paint property
         oas.altitudeProperty().addListener(e -> iconColorSetter(aircraftIcon, oas));
 
         aircraftIcon.setStroke(Color.BLACK);
 
         aircraftIcon.contentProperty().bind(Bindings.createStringBinding(icon.getValue()::svgPath, icon));
+
         rotateIcon(icon, oas, aircraftIcon);
         return new Group(aircraftIcon);
     }
@@ -218,7 +224,7 @@ public final class AircraftController {
         return ColorRamp.PLASMA.at(Math.cbrt(altitude / ALTITUDE_CEILING));
     }
 
-    private boolean selectedStateListener(ObservableAircraftState oas) {
+    private boolean selectedStateLabelListener(ObservableAircraftState oas) {
         return (currentSelectedState.getValue() == null)
                 ? currentZoom.get() >= 11
                 : currentZoom.get() >= 11 || currentSelectedState.getValue().equals(oas);

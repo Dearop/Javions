@@ -6,6 +6,7 @@ import java.util.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+
 /**
  * The AircraftDatabase class represents a database of aircraft information stored in a file.
  * The file is read in a sorted order by ICAO address, and the get() method takes advantage of this
@@ -20,6 +21,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public final class AircraftDatabase {
     private final String fileName;
 
+    public static final String SEPARATOR = ",";
     /**
      * Stores the specified file name.
      * Throws a NullPointerException if the file name is null.
@@ -47,23 +49,26 @@ public final class AircraftDatabase {
      */
     // TODO: 4/28/2023 Ask about
     public AircraftData get(IcaoAddress address) throws IOException {
-        String stringLineFiltered = "";
+        String addressString = address.string();
 
-        /**
-         * This try/catch gets the zip file that includes all the data that we have about the different aircraft
-         */
-        try (ZipFile zipFileUsed = new ZipFile(this.fileName);
-             InputStream stream = zipFileUsed.getInputStream(zipFileUsed.getEntry(address.getLastChar() + ".csv"));
+        try (ZipFile zip = new ZipFile(fileName);
+             InputStream stream = zip.getInputStream(zip.getEntry(addressString.substring(addressString.length() - 2) + ".csv"));
              Reader reader = new InputStreamReader(stream, UTF_8);
              BufferedReader buffer = new BufferedReader(reader)) {
-            while (null != (stringLineFiltered = buffer.readLine())) {
-                if (stringLineFiltered.startsWith(address.string())) {
-                    String[] lines = stringLineFiltered.split(",", -1);
-                    return new AircraftData(new AircraftRegistration(lines[1]), new AircraftTypeDesignator(lines[2]),
-                            lines[3], new AircraftDescription(lines[4]), WakeTurbulenceCategory.of(lines[5]));
+
+            String line;
+            while ((line = buffer.readLine()) != null) {
+                if (line.startsWith(addressString)) {
+                    String[] splitData = line.split(SEPARATOR, -1);
+                    return new AircraftData(
+                            new AircraftRegistration(splitData[1]),
+                            new AircraftTypeDesignator(splitData[2]),
+                            splitData[3],
+                            new AircraftDescription(splitData[4]),
+                            WakeTurbulenceCategory.of(splitData[5])
+                    );
                 }
             }
-
         }
         return null;
     }

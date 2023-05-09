@@ -23,8 +23,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-
-
+import java.util.function.Consumer;
 
 
 public final class TestAircraftTableController extends Application {
@@ -78,6 +77,7 @@ public final class TestAircraftTableController extends Application {
         AircraftStateManager asm = new AircraftStateManager(db);
         ObjectProperty<ObservableAircraftState> sap =
                 new SimpleObjectProperty<>();
+        Consumer<ObservableAircraftState> stateConsumer = null;
 
         AircraftTableController atc = new AircraftTableController(asm.states(), sap);
 
