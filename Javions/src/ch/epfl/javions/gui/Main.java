@@ -1,10 +1,12 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.ByteString;
+import ch.epfl.javions.adsb.Message;
+import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
-import ch.epfl.javions.aircraft.AircraftData;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -12,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.*;
@@ -47,12 +50,27 @@ public class Main extends Application {
 
 
         BorderPane tableAndLinePane = new BorderPane(table.pane(), controller.pane(), null, null, null);
-        SplitPane mainPane = new SplitPane(bmc.pane(), ac.pane());
+        StackPane aircraftAndMapPane = new StackPane(bmc.pane(), ac.pane());
+        SplitPane mainPane = new SplitPane(aircraftAndMapPane, table.pane());
         primaryStage.setTitle("Javions");
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
+        primaryStage.show();
 
+        var mi = readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
+        new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                try {
+                    Message m = MessageParser.parse(mi.next());
+                    if (m != null)
+                        asm.updateWithMessage(m);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        }.start();
     }
 
 
