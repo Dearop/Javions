@@ -11,6 +11,7 @@ import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
@@ -26,15 +27,16 @@ import java.util.List;
 public class Main extends Application {
 
     public static void main(String[] args) {
-        launch(args);
+        Application.launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL dbUrl = getClass().getResource("/aircraft.zip");
+        assert dbUrl != null;
         String f = Path.of(dbUrl.toURI()).toString();
-        AircraftDatabase dataBase = new AircraftDatabase(f);
-        AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+        var dataBase = new AircraftDatabase(f);
+        //AdsbDemodulator demodulator = new AdsbDemodulator(System.in); TODO
 
         Path tileCache = Path.of("tile-cache");
         TileManager tm = new TileManager(tileCache, "tile.openstreetmap.org");
@@ -51,14 +53,15 @@ public class Main extends Application {
 
         BorderPane tableAndLinePane = new BorderPane(table.pane(), controller.pane(), null, null, null);
         StackPane aircraftAndMapPane = new StackPane(bmc.pane(), ac.pane());
-        SplitPane mainPane = new SplitPane(aircraftAndMapPane, table.pane());
+        SplitPane mainPane = new SplitPane(aircraftAndMapPane, tableAndLinePane);
+        mainPane.setOrientation(Orientation.VERTICAL);
         primaryStage.setTitle("Javions");
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.show();
-
-        var mi = readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
+        ///home/henri/Henri/EPFL/CS108/Javions/Javions/resources/messages_20230318_0915.bin"
+        var mi = readAllMessages("/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/messages_20230318_0915.bin").iterator();
         new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -76,6 +79,7 @@ public class Main extends Application {
 
     private static List<RawMessage> readAllMessages(String fileName)
             throws IOException {
+
         List<RawMessage> rawMessages = new ArrayList<>();
         try (DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
@@ -86,7 +90,6 @@ public class Main extends Application {
                 timeStampNs = s.readLong();
                 int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                 assert bytesRead == RawMessage.LENGTH;
-
                 rawMessages.add(new RawMessage(timeStampNs, new ByteString(bytes)));
             }
         }catch (EOFException exception){
