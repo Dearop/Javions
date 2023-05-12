@@ -5,12 +5,12 @@ import ch.epfl.javions.adsb.Message;
 import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
-import ch.epfl.javions.demodulation.AdsbDemodulator;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.SetChangeListener;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
@@ -48,7 +48,7 @@ public class Main extends Application {
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
         AircraftTableController table = new AircraftTableController(asm.states(), sap);
         StatusLineController controller = new StatusLineController();
-        controller.airCraftCountProperty().bind(Bindings.createIntegerBinding(() -> asm.getAccumulatorMap().size()));
+        controller.airCraftCountProperty().bind(Bindings.size(asm.states()));
 
 
         BorderPane tableAndLinePane = new BorderPane(table.pane(), controller.pane(), null, null, null);
@@ -60,15 +60,19 @@ public class Main extends Application {
         primaryStage.setMinWidth(800);
         primaryStage.setMinHeight(600);
         primaryStage.show();
-        ///home/henri/Henri/EPFL/CS108/Javions/Javions/resources/messages_20230318_0915.bin"
-        var mi = readAllMessages("/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/messages_20230318_0915.bin").iterator();
+
+        URL messageURL = getClass().getResource("/messages_20230318_0915.bin");
+        String message = Path.of(messageURL.toURI()).toString();
+        var mi = readAllMessages(message).iterator();
         new AnimationTimer() {
             @Override
             public void handle(long now) {
                 try {
                     Message m = MessageParser.parse(mi.next());
-                    if (m != null)
+                    controller.messageCountProperty().set(controller.messageCountProperty().get()  + 1);
+                    if (m != null) {
                         asm.updateWithMessage(m);
+                    }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }

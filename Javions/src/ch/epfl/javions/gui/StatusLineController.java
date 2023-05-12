@@ -16,17 +16,14 @@ public final class StatusLineController {
     private LongProperty messageCountProperty = new SimpleLongProperty();
 
     public StatusLineController(){
-        this.airCraftCountProperty.set(0);
-        this.messageCountProperty.set(0);
 
         Text numberOfAircraft = new Text();
-        ObservableValue<String> bottomLeftText = new SimpleObjectProperty<>("Aeronefs visibles " + Bindings.createStringBinding(() ->
-                String.format("%s" , airCraftCountProperty.get())));
-        numberOfAircraft.textProperty().bind(bottomLeftText);
+        numberOfAircraft.textProperty().bind(Bindings.createStringBinding(() ->
+               String.format("Aéronefs visibles : " + airCraftCountProperty.get())));
+
         Text numberOfMessages = new Text();
-        ObservableValue<String> topRight = new SimpleObjectProperty<>("Aeronefs visibles " + Bindings.createStringBinding(() ->
-                String.format("%s" ,  messageCountProperty.get())));
-        numberOfMessages.textProperty().bind(topRight);
+        numberOfMessages.textProperty().bind(Bindings.createStringBinding(() ->
+                ("Messages reçus : " + messageCountProperty.get())));
 
         this.scenegraph = new BorderPane(null, null,numberOfAircraft , null, numberOfMessages);
         scenegraph.setPickOnBounds(false);
