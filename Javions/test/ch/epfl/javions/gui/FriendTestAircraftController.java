@@ -86,7 +86,9 @@ public final class FriendTestAircraftController extends Application {
         //var root = new StackPane(atc.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-        var mi = readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
+        URL messageURL = getClass().getResource("/messages_20230318_0915.bin");
+        String message = Path.of(messageURL.toURI()).toString();
+        var mi = readAllMessages(message).iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
@@ -96,7 +98,7 @@ public final class FriendTestAircraftController extends Application {
                     for (int i = 0; i < 10; i += 1) {
                         Message m = MessageParser.parse(mi.next());
                         if (m != null) asm.updateWithMessage(m);
-                        if(m != null)  asm.purge(m);
+                        asm.purge();
                     }
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);

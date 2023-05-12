@@ -31,9 +31,9 @@ public final class AircraftStateManager {
 
     // An AircraftDatabase has all the information about the aircrafts available.
     private AircraftDatabase database;
-
     private ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
-
+    private long lastTimeStampNs;
+    private IcaoAddress lastIcaoAddress;
     private static final double MAX_TIME = 6e10;
 
     /**
@@ -68,36 +68,36 @@ public final class AircraftStateManager {
      * @throws IOException if an error occurs while updating the states
      */
     public void updateWithMessage(Message message)throws IOException {
-        purge(message);
-        if(message != null){
-            IcaoAddress messageIcaoddress = message.icaoAddress();
-            AircraftData data = database.get(messageIcaoddress);
-            if(!accumulatorMap.containsKey(messageIcaoddress)) {
-                ObservableAircraftState state = new ObservableAircraftState(messageIcaoddress, data);
-                accumulatorMap.put(messageIcaoddress,new AircraftStateAccumulator<>(state));
-            }
+        lastTimeStampNs = message.timeStampNs();
+        lastIcaoAddress = message.icaoAddress();
+
+        AircraftData data = database.get(lastIcaoAddress);
+
+        if(!accumulatorMap.containsKey(lastIcaoAddress)) {
+            ObservableAircraftState state = new ObservableAircraftState(lastIcaoAddress, data);
+            accumulatorMap.put(lastIcaoAddress,new AircraftStateAccumulator<>(state));
+        }
             
-            AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator = accumulatorMap.get(messageIcaoddress);
+            AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator =
+                    accumulatorMap.get(lastIcaoAddress);
             desiredAccumulator.update(message);
 
             if(desiredAccumulator.stateSetter().getPosition() != null)
                 knownPositionStates.add(desiredAccumulator.stateSetter());
-        }
     }
 
     /**
-     * Purges outdated aircraft states. //TODO what's up with this method, do we still need it?
-     * @param message the Message to use for purging outdated aircraft states
+     * Purges outdated aircraft states.
      */
-    // TODO: 5/12/2023 ask Assistant 
-    public void purge(Message message){
-        knownPositionStates.removeIf(observableAircraftState ->
-                message.timeStampNs() - observableAircraftState.getLastMessageTimeStampNs() > MAX_TIME);
-        IcaoAddress addressOfRemoved = message.icaoAddress();
-        if (accumulatorMap.get(addressOfRemoved) != null) {
-            if(message.timeStampNs() -
-                    accumulatorMap.get(addressOfRemoved).stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
-                accumulatorMap.remove(addressOfRemoved);
+    public void purge(){
+
+        knownPositionStates.removeIf(oas ->
+                lastTimeStampNs - oas.getLastMessageTimeStampNs() > MAX_TIME);
+
+        if (accumulatorMap.get(lastIcaoAddress) != null) {
+            if(lastTimeStampNs -
+                    accumulatorMap.get(lastIcaoAddress).stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
+                accumulatorMap.remove(lastIcaoAddress);
         }
     }
 

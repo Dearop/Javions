@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -32,8 +33,10 @@ public final class TestAircraftTableController extends Application {
     }
 
     @Test
-    void readMessages() throws IOException {
-        for(RawMessage message :readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")) {
+    void readMessages() throws IOException, URISyntaxException {
+        URL messageURL = getClass().getResource("/messages_20230318_0915.bin");
+        String pathOfMessage = Path.of(messageURL.toURI()).toString();
+        for(RawMessage message :readAllMessages(pathOfMessage)) {
             System.out.println(message.toString());
         }
 
@@ -85,7 +88,9 @@ public final class TestAircraftTableController extends Application {
         var root = new StackPane(atc.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-        var mi = readAllMessages("/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/messages_20230318_0915.bin").iterator();
+        URL messageURL = getClass().getResource("/messages_20230318_0915.bin");
+        String pathOfMessage = Path.of(messageURL.toURI()).toString();
+        var mi = readAllMessages(pathOfMessage).iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {

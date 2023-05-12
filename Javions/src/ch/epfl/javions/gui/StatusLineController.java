@@ -32,11 +32,11 @@ public final class StatusLineController {
 
         Text numberOfAircraft = new Text();
         numberOfAircraft.textProperty().bind(Bindings.createStringBinding(() ->
-               String.format("Aéronefs visibles : " + airCraftCountProperty.get())));
+                String.format("%s", "Aéronefs visibles : " + airCraftCountProperty.get()), airCraftCountProperty));
 
         Text numberOfMessages = new Text();
         numberOfMessages.textProperty().bind(Bindings.createStringBinding(() ->
-                ("Messages reçus : " + messageCountProperty.get())));
+                String.format("%s", "Messages reçus : " + messageCountProperty.get()), messageCountProperty));
 
         this.scenegraph = new BorderPane(null, null,numberOfAircraft , null, numberOfMessages);
         scenegraph.setPickOnBounds(false);

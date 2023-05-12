@@ -99,7 +99,6 @@ public final class AircraftTableController {
         // Initialize variables
         this.knownStates = knownStates;
         this.currentSelectedState = currentSelectedState;
-        this.selectedState = selectedState;
         this.format = NumberFormat.getInstance();
         format.setMinimumFractionDigits(MIN_INTEGER_DECIMAL);
         format.setMaximumFractionDigits(MAX_INTEGER_DECIMAL);
