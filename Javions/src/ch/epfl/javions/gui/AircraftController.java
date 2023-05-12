@@ -94,6 +94,8 @@ public final class AircraftController {
         currentSelectedState.addListener(e -> trajectory.setVisible(currentSelectedState.getValue().equals(oas)));
 
         trajectory.visibleProperty().addListener(e -> trajectory.getChildren().clear());
+        trajectory.layoutXProperty().bind(parameters.minXProperty().negate());
+        trajectory.layoutYProperty().bind(parameters.minYProperty().negate());
         return trajectory;
     }
 
@@ -110,8 +112,6 @@ public final class AircraftController {
                 double endX = WebMercator.x(currentZoom.get(), end.longitude());
                 double endY = WebMercator.y(currentZoom.get(), end.latitude());
                 Line line = new Line(startX, startY, endX, endY);
-                line.layoutXProperty().bind(parameters.minXProperty().negate());
-                line.layoutYProperty().bind(parameters.minYProperty().negate());
                 if (oasTrajectory.get(i - 1).altitude() == oasTrajectory.get(i).altitude())
                     line.setStroke(altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
                 else {
