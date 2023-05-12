@@ -34,6 +34,8 @@ public final class AircraftStateManager {
 
     private ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
 
+    private static final double MAX_TIME = 6e10;
+
     /**
      * Constructs an AircraftStateManager with the given AircraftDatabase.
      * @param database the AircraftDatabase to use
@@ -74,7 +76,7 @@ public final class AircraftStateManager {
                 ObservableAircraftState state = new ObservableAircraftState(messageIcaoddress, data);
                 accumulatorMap.put(messageIcaoddress,new AircraftStateAccumulator<>(state));
             }
-
+            
             AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator = accumulatorMap.get(messageIcaoddress);
             desiredAccumulator.update(message);
 
@@ -87,13 +89,14 @@ public final class AircraftStateManager {
      * Purges outdated aircraft states. //TODO what's up with this method, do we still need it?
      * @param message the Message to use for purging outdated aircraft states
      */
+    // TODO: 5/12/2023 ask Assistant 
     public void purge(Message message){
         knownPositionStates.removeIf(observableAircraftState ->
-                message.timeStampNs() - observableAircraftState.getLastMessageTimeStampNs() > 6e10);
+                message.timeStampNs() - observableAircraftState.getLastMessageTimeStampNs() > MAX_TIME);
         IcaoAddress addressOfRemoved = message.icaoAddress();
         if (accumulatorMap.get(addressOfRemoved) != null) {
             if(message.timeStampNs() -
-                    accumulatorMap.get(addressOfRemoved).stateSetter().getLastMessageTimeStampNs() > 6e10)
+                    accumulatorMap.get(addressOfRemoved).stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
                 accumulatorMap.remove(addressOfRemoved);
         }
     }
