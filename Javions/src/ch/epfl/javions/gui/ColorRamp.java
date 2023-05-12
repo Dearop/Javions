@@ -5,9 +5,20 @@ import javafx.scene.paint.Color;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A color ramp defines a sequence of colors used for mapping values to colors in a visualization.
+ * The `at` method can be used to retrieve the color at a given index within the ramp.
+ *
+ * @author Henri Antal (339444)
+ * @author Paul Quesnot (347572)
+ */
 public final class ColorRamp {
     private final Color[] colors;
     private final int maxIndex;
+
+    /**
+     * An instance of the `ColorRamp` class representing the "Plasma" color map.
+     */
     public static final ColorRamp PLASMA = new ColorRamp(
             Color.valueOf("0x0d0887ff"), Color.valueOf("0x220690ff"),
             Color.valueOf("0x320597ff"), Color.valueOf("0x40049dff"),
@@ -26,6 +37,12 @@ public final class ColorRamp {
             Color.valueOf("0xfccf25ff"), Color.valueOf("0xf9dd24ff"),
             Color.valueOf("0xf5eb27ff"), Color.valueOf("0xf0f921ff"));
 
+    /**
+     * Constructs a new color ramp with the given array of colors.
+     *
+     * @param colors The list of colors in the ramp.
+     * @throws IllegalArgumentException if the number of colors is less than 2.
+     */
     public ColorRamp(Color ...colors){
         if(colors.length < 2)
             throw new IllegalArgumentException();
@@ -33,6 +50,12 @@ public final class ColorRamp {
         this.maxIndex = colors.length - 1;
     }
 
+    /**
+     * Constructs a new color ramp with the given list of colors.
+     *
+     * @param colors The array of colors in the ramp.
+     * @throws IllegalArgumentException if the number of colors is less than 2.
+     */
     public ColorRamp(List<Color> colors){
         if(colors.size() < 2)
             throw new IllegalArgumentException();
@@ -40,6 +63,12 @@ public final class ColorRamp {
         this.maxIndex = colors.size() - 1;
     }
 
+    /**
+     * Returns the color at the given index within the color ramp.
+     *
+     * @param index The index of the color to retrieve.
+     * @return The color at the given index within the color ramp.
+     */
     public Color at(double index){
         if(index <= 0){
             return colors[0];

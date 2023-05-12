@@ -85,7 +85,7 @@ public final class TestAircraftTableController extends Application {
         var root = new StackPane(atc.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-        var mi = readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin").iterator();
+        var mi = readAllMessages("/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/messages_20230318_0915.bin").iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {
