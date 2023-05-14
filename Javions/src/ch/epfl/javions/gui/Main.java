@@ -43,7 +43,7 @@ public class Main extends Application {
         List<String> parameters = this.getParameters().getRaw();
         Queue<Message> messages = new ConcurrentLinkedQueue();
 
-        Supplier<Message> messageSupplier = parameters.isEmpty() ? demodulation() : messageFromFile(parameters);
+        Supplier<Message> messageSupplier = (parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
 
         URL dbUrl = getClass().getResource("/aircraft.zip");
         assert dbUrl != null;
@@ -89,7 +89,6 @@ public class Main extends Application {
         primaryStage.setMinHeight(600);
         primaryStage.show();
 
-
         new AnimationTimer() {
             @Override
             public void handle(long now) {
@@ -114,7 +113,7 @@ public class Main extends Application {
                     AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
                     if (demodulator.nextMessage() != null) {
                         RawMessage message = demodulator.nextMessage();
-                        MessageParser.parse(message);
+                        return MessageParser.parse(message);
                     }
                 }
             } catch (IOException e) {
@@ -123,6 +122,7 @@ public class Main extends Application {
         };
     }
 
+    // TODO: 5/13/2023 I don't fucking get this 
     private Supplier<Message> messageFromFile(List<String> parameters) {
         String f = Path.of(parameters.get(0)).toString();
         List<Message> messages = new ArrayList<>();
@@ -136,17 +136,25 @@ public class Main extends Application {
                     timeStampNs = s.readLong();
                     int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                     assert bytesRead == RawMessage.LENGTH;
+
                     long deltaT = timeStampNs - (System.nanoTime() - timeOnStartUp);
                     if (deltaT >= 0) {
                         Thread.sleep(deltaT / MILLION);
                     }
                     messages.add(MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes))));
-                    if(mi.hasNext())
-                        return mi.next();
+                    Message nextMessage = mi.next();
+                    if(nextMessage == null)
+                        break;
+                    return mi.next();
                 }
             } catch (InterruptedException | IOException exception) {
-                throw new RuntimeException();
+                if (exception instanceof InterruptedException)
+                    throw new RuntimeException("Stoopid");
+                else if (exception instanceof IOException) {
+                    throw new RuntimeException("Stoopider");
+                }
             }
+            return null;
         };
     }
 
