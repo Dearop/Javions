@@ -221,27 +221,40 @@ public final class AircraftController {
                         positionY - parameters.getMinY(), position, currentZoom, parameters.minYProperty()));
     }
 
+    /**
+     * Creates a Group object containing a Text object and a Rectangle object, representing the label for an aircraft.
+     * The Text object displays the aircraft's registration, velocity and altitude information.
+     * The Rectangle object serves as a background for the Text object.
+     * The Group object is made visible only if the corresponding aircraft's state label is selected.
+     * @param oas An ObservableAircraftState object representing the aircraft for which the label is created.
+     * @return A Group object representing the label for the given aircraft.
+     */
     public Group aircraftLabelInitialisation(ObservableAircraftState oas) {
         Rectangle rectangle = new Rectangle();
         Text text = new Text();
 
+        // bind the Text object's text property to the aircraft's registration, velocity and altitude
         text.textProperty().bind(
                 Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
                                 , (oas.getData() != null) ? oas.getData().registration().string() : "Unknown"
                                 , (Double.isNaN(oas.getVelocity())) ? "?" : (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
                                 , (Double.isNaN(oas.getAltitude())) ? "?" : (int) Math.rint(oas.getAltitude()))
                         , oas.velocityProperty(), oas.altitudeProperty()));
+
+        // bind the Rectangle object's height and width properties to the Text object's layoutBounds property
         rectangle.heightProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
         rectangle.widthProperty().bind(
                 text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
 
+        // create the Group object containing the Rectangle and Text objects
         Group label = new Group(rectangle, text);
+
+        // bind the visibility property of the Group object to whether the corresponding aircraft's state label is selected
         label.visibleProperty().bind(
                 Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas)));
         label.getStyleClass().add("label");
         showLabelListener(label, oas);
-
         return label;
     }
 

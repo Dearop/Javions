@@ -104,7 +104,7 @@ public class Main extends Application {
                 }
             }
         }.start();
-    }
+    } // TODO Programmation par flot
 
     private Supplier<Message> demodulation() {
         return () -> {
