@@ -52,7 +52,52 @@ public class Main extends Application {
         AircraftStateManager asm = new AircraftStateManager(dataBase);
 
 
-        Thread messageHandler = new Thread(() -> {
+        Thread fromDemodulator = new Thread(() -> {
+            try {
+                while (true) {
+                    AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+                    if (demodulator.nextMessage() != null) {
+                        RawMessage message = demodulator.nextMessage();
+                        messages.add(MessageParser.parse(message));
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException();
+            }
+        });
+        fromDemodulator.setDaemon(true);
+
+        Thread fromFiles = new Thread(() -> {
+            String fileName = Path.of(parameters.get(0)).toString();
+                            try (DataInputStream s = new DataInputStream(
+                        new FileInputStream(fileName))) {
+                    byte[] bytes = new byte[RawMessage.LENGTH];
+                    while (true) {
+                        long timeStampNs = s.readLong();
+                        int bytesRead = s.readNBytes(bytes, 0, bytes.length);
+                        assert bytesRead == RawMessage.LENGTH;
+
+                        long deltaT = timeStampNs - (System.nanoTime() - timeOnStartUp);
+                        if (deltaT >= 0) {
+                            Thread.sleep(deltaT / MILLION);
+                        }
+                        messages.add(MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes))));
+                    }
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException();
+                    }catch (IOException e){
+                        throw new UncheckedIOException(e);
+                    }
+        });
+        fromFiles.setDaemon(true);
+
+        if ((!parameters.isEmpty())) {
+            fromFiles.start();
+        } else {
+            fromDemodulator.start();
+        }
+
+        /*Thread messageHandler = new Thread(() -> {
             while (true) {
                 if (messageSupplier.get() == null)
                     break;
@@ -61,7 +106,7 @@ public class Main extends Application {
         });
 
         messageHandler.setDaemon(true);
-        messageHandler.start();
+        messageHandler.start();*/
 
         Path tileCache = Path.of("tile-cache");
         TileManager tm = new TileManager(tileCache, "tile.openstreetmap.org");
@@ -97,8 +142,8 @@ public class Main extends Application {
                         Message m = messages.remove();
                         controller.messageCountProperty().set(controller.messageCountProperty().get() + 1);
                         asm.updateWithMessage(m);
+                        asm.purge();
                     }
-                    //purge
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
@@ -125,36 +170,26 @@ public class Main extends Application {
     // TODO: 5/13/2023 I don't fucking get this 
     private Supplier<Message> messageFromFile(List<String> parameters) {
         String f = Path.of(parameters.get(0)).toString();
-        List<Message> messages = new ArrayList<>();
-        var mi = messages.iterator();
         return () -> {
             try (DataInputStream s = new DataInputStream(
                     new FileInputStream(f))) {
                 byte[] bytes = new byte[RawMessage.LENGTH];
-                long timeStampNs;
                 while (true) {
-                    timeStampNs = s.readLong();
+                    long timeStampNs = s.readLong();
                     int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                     assert bytesRead == RawMessage.LENGTH;
 
-                    long deltaT = timeStampNs - (System.nanoTime() - timeOnStartUp);
+                    long deltaT = timeStampNs - System.nanoTime() - timeOnStartUp;
                     if (deltaT >= 0) {
                         Thread.sleep(deltaT / MILLION);
                     }
-                    messages.add(MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes))));
-                    Message nextMessage = mi.next();
-                    if(nextMessage == null)
-                        break;
-                    return mi.next();
+                    return MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes)));
                 }
-            } catch (InterruptedException | IOException exception) {
-                if (exception instanceof InterruptedException)
-                    throw new RuntimeException("Stoopid");
-                else if (exception instanceof IOException) {
-                    throw new RuntimeException("Stoopider");
-                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException();
+            }catch (IOException e){
+                throw new UncheckedIOException(e);
             }
-            return null;
         };
     }
 

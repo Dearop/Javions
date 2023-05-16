@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class MyPowerComputerTest {
     @Test
     public void PowerComputerTestFirstValuesAreCorrect() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
         final int pow16 = 32;
@@ -40,7 +40,7 @@ public class MyPowerComputerTest {
 
     @Test
     public void PowerGraphTest() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
 
@@ -57,7 +57,7 @@ public class MyPowerComputerTest {
 
     @Test
     void PowerComputerConstructorThrowsExceptionWithBatchSizeNotAMultipleOf8() throws FileNotFoundException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         assertThrows(IllegalArgumentException.class,() -> new PowerComputer(stream, 2));
@@ -65,7 +65,7 @@ public class MyPowerComputerTest {
 
     @Test
     void PowerComputerReadBatchMethodThrowsIllegalArgumentExceptionIfBatchTableSizeNotEqualToBatchSize() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         InputStream stream = new FileInputStream(samples);
         PowerComputer computer = new PowerComputer(stream, 8);

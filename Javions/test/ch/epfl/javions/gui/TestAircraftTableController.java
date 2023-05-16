@@ -9,10 +9,6 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
-import javafx.collections.SetChangeListener;
-import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -34,7 +30,7 @@ public final class TestAircraftTableController extends Application {
 
     @Test
     void readMessages() throws IOException, URISyntaxException {
-        URL messageURL = getClass().getResource("/messages_20230318_0915.bin");
+        URL messageURL = getClass().getResource("/Javions/test-resources/messages_20230318_0915.bin");
         String pathOfMessage = Path.of(messageURL.toURI()).toString();
         for(RawMessage message :readAllMessages(pathOfMessage)) {
             System.out.println(message.toString());
@@ -88,7 +84,7 @@ public final class TestAircraftTableController extends Application {
         var root = new StackPane(atc.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-        URL messageURL = getClass().getResource("/messages_20230318_0915.bin");
+        URL messageURL = getClass().getResource("/Javions/test-resources/messages_20230318_0915.bin");
         String pathOfMessage = Path.of(messageURL.toURI()).toString();
         var mi = readAllMessages(pathOfMessage).iterator();
 
