@@ -124,7 +124,7 @@ public final class AircraftTableController {
 
         // Add listener to currentSelectedState for scrolling to and selecting the corresponding row in the table
         currentSelectedState.addListener(e -> {
-            if(scenegraph.getColumns().contains(currentSelectedState)){
+            if(knownStates.contains(currentSelectedState.get())){
                 scenegraph.scrollTo(currentSelectedState.getValue());
                 scenegraph.getSelectionModel().select(currentSelectedState.getValue());
             }
