@@ -96,7 +96,8 @@ public final class AircraftController {
      * Creates a group containing an aircraft icon and label, and binds their position to the aircraft state.
      * Also includes a trajectory group which is created and updated in the method buildTrajectory.
      *
-     * @param oas The ObservableAircraftState object representing the aircraft and it's state to create the group for.
+     * @param oas The ObservableAircraftState object representing the aircraft along with its state
+     *            for which we are creating the group.
      * @return A Group object representing the aircraft icon, label, and trajectory.
      */
     private Group individualAircraftGroup(ObservableAircraftState oas) {
@@ -130,14 +131,16 @@ public final class AircraftController {
         oas.trajectoryProperty().addListener((ListChangeListener<ObservableAircraftState.AirbornePos>) c -> {
             if (currentSelectedState.get() != null && currentSelectedState.getValue().equals(oas))
                 buildTrajectory(trajectory, oas);
+            else trajectory.getChildren().clear();
         });
 
         parameters.zoomProperty().addListener(e -> {
-            if (currentSelectedState.get() != null && currentSelectedState.getValue().equals(oas))
+            if (currentSelectedState.get() != null &&
+                    currentSelectedState.getValue().equals(oas))
                 buildTrajectory(trajectory, oas);
         });
 
-        currentSelectedState.addListener(e -> trajectory.setVisible(currentSelectedState.getValue().equals(oas)));
+        currentSelectedState.addListener(e ->  trajectory.setVisible(currentSelectedState.getValue().equals(oas)));
 
         trajectory.visibleProperty().addListener(e -> trajectory.getChildren().clear());
         trajectory.layoutXProperty().bind(parameters.minXProperty().negate());
@@ -198,6 +201,7 @@ public final class AircraftController {
 
         // Bind the position of the icon and label to the current zoom level
         parameters.zoomProperty().addListener(e -> aircraftLabelAndIconPositioning(oas, iconAndLabel));
+
     }
 
     /**
@@ -267,11 +271,13 @@ public final class AircraftController {
 
         // Add listener to current zoom level
         currentZoom.addListener(e ->
-                label.visibleProperty().bind(Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas))));
+                label.visibleProperty().bind(Bindings.createBooleanBinding(() ->
+                        selectedStateLabelListener(oas))));
 
         // Add listener to currently selected state
         currentSelectedState.addListener(e ->
-                label.visibleProperty().bind(Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas))));
+                label.visibleProperty().bind(Bindings.createBooleanBinding(() ->
+                        selectedStateLabelListener(oas))));
     }
 
     /**
