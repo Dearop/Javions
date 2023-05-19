@@ -53,8 +53,6 @@ public final class AircraftController {
     // a constant integer value that represents the maximum altitude of the color scheme for the aircraft.
     private static final int ALTITUDE_CEILING = 12000;
 
-    private static final int ZOOM_HURDLE = 11;
-
     /**
      * Constructor for AircraftController class that initializes the private variables parameters and currentSelectedState
      * then it creates a new Pane that uses the aircraft.css for styling purposes. The constructor also adds a listener
@@ -392,7 +390,7 @@ public final class AircraftController {
      */
     private boolean selectedStateLabelListener(ObservableAircraftState oas) {
         return (currentSelectedState.getValue() == null)
-                ? currentZoom.get() >= ZOOM_HURDLE
-                : currentZoom.get() >= ZOOM_HURDLE || currentSelectedState.getValue().equals(oas);
+                ? currentZoom.get() >= 11
+                : currentZoom.get() >= 11 || currentSelectedState.getValue().equals(oas);
     }
 }

@@ -43,7 +43,7 @@ public final class AircraftTableController {
     private static ObjectProperty<ObservableAircraftState> currentSelectedState;
 
     // table view that displays aircraft state information
-    private static TableView<ObservableAircraftState> scenegraph = new TableView<>();
+    private static TableView <ObservableAircraftState> scenegraph = new TableView<>();
 
     // table column that displays ICAO address
     private static TableColumn<ObservableAircraftState, String> icaoAddress;
@@ -90,17 +90,11 @@ public final class AircraftTableController {
     private static final int NUMBER_COLUMN_SIZE = 85;
     private static final int MAX_INTEGER_DECIMAL = 4;
     private static final int MIN_INTEGER_DECIMAL = 0;
-    private static final int WIDTH_ICAOADRESS = 60;
-    private static final int WIDTH_CALLSIGN_AND_DESCRIPTION = 70;
-    private static final int WIDTH_REGISTRATION = 90;
-    private static final int WIDTH_MODEL = 230;
-    private static final int WIDTH_TYPE = 50;
 
     /**
      * This constructor is responsible for creating an instance of the AircraftTableController class
      * which controls the table of aircraft states displayed in the user interface.
-     *
-     * @param knownStates          contains a set of all the known aircraft states that will be displayed in the table.
+     * @param knownStates contains a set of all the known aircraft states that will be displayed in the table.
      * @param currentSelectedState is used to keep track of the currently selected state in the table.
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> knownStates,
@@ -129,16 +123,16 @@ public final class AircraftTableController {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
                 if (selectedState != null) {
                     selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
-                } else if (event.getClickCount() == 1) {
-                    currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
                 }
+            }else {
+                currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
             }
         });
 
         // Add listener to currentSelectedState for scrolling to and selecting the corresponding row in the table
         currentSelectedState.addListener(e -> {
-            if (knownStates.contains(currentSelectedState.get()) &&
-                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()) {
+            if(knownStates.contains(currentSelectedState.get()) &&
+                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()){
                 scenegraph.scrollTo(currentSelectedState.getValue());
                 scenegraph.getSelectionModel().select(currentSelectedState.getValue());
             }
@@ -152,11 +146,11 @@ public final class AircraftTableController {
      * all columns according to available space. The table includes a menu button that can be used to show/hide columns.
      * The data displayed in the table is obtained from an ObservableSet<ObservableAircraftState> object passed
      * in when constructing an instance of AircraftTableController.
-     * <p>
+     *
      * The data in each column is populated using a cell value factory, which maps the data in an
      * ObservableAircraftState object to the appropriate value for the corresponding column. For example,
      * the ICAO address column is populated using the ICAO address property of the aircraft state object.
-     * <p>
+     *
      * The longitude, latitude, altitude, and velocity columns display numeric data and are created using a private
      * helper method that creates a number column with a set preferred width and cell value factory that formats the
      * numeric data according to the appropriate units and precision.
@@ -173,32 +167,32 @@ public final class AircraftTableController {
 
             // ICAOAddress
             icaoAddress = new TableColumn<>("IcaoAddress");
-            icaoAddress.setPrefWidth(WIDTH_ICAOADRESS);
+            icaoAddress.setPrefWidth(60);
             scenegraph.getColumns().add(icaoAddress);
 
             // CallSign
             callSign = new TableColumn<>("CallSign");
-            callSign.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
+            callSign.setPrefWidth(70);
             scenegraph.getColumns().add(callSign);
 
             // Registration
             registration = new TableColumn<>("Registration");
-            registration.setPrefWidth(WIDTH_REGISTRATION);
+            registration.setPrefWidth(90);
             scenegraph.getColumns().add(registration);
 
             // Model
             model = new TableColumn<>("Model");
-            model.setPrefWidth(WIDTH_MODEL);
+            model.setPrefWidth(230);
             scenegraph.getColumns().add(model);
 
             //Type
             type = new TableColumn<>("Type");
-            type.setPrefWidth(WIDTH_TYPE);
+            type.setPrefWidth(50);
             scenegraph.getColumns().add(type);
 
             // Description
             description = new TableColumn<>("Description");
-            description.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
+            description.setPrefWidth(70);
             scenegraph.getColumns().add(description);
 
             // Longitude
@@ -210,8 +204,9 @@ public final class AircraftTableController {
             // Altitude
             altitude = createNumberColumn(numberColumns, altitude, "Altitude (m)");
 
+
             // Velocity
-            velocity = createNumberColumn(numberColumns, velocity, "Velocity (km/h)");
+            velocity = createNumberColumn(numberColumns, velocity,"Velocity (km/h)");
         }
 
         icaoAddress.setCellValueFactory(f -> {
@@ -223,7 +218,7 @@ public final class AircraftTableController {
         callSign.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
 
         registration.setCellValueFactory(f -> {
-            if (f.getValue().getData() != null) {
+            if(f.getValue().getData() != null){
                 ReadOnlyObjectWrapper<AircraftRegistration> registrationWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().registration());
                 return registrationWrapper.map(AircraftRegistration::string);
@@ -231,14 +226,14 @@ public final class AircraftTableController {
         });
 
         model.setCellValueFactory(f -> {
-            if (f.getValue().getData() != null) {
+            if(f.getValue().getData() != null) {
                 ReadOnlyObjectWrapper<String> modelWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().model());
                 return modelWrapper.map(String::toString);
-            } else return null;
+            }else return null;
         });
         type.setCellValueFactory(f -> {
-            if (f.getValue().getData() != null) {
+            if(f.getValue().getData() != null) {
                 ReadOnlyObjectWrapper<AircraftTypeDesignator> typeWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().typeDesignator());
                 return typeWrapper.map(AircraftTypeDesignator::string);
@@ -250,7 +245,7 @@ public final class AircraftTableController {
                 ReadOnlyObjectWrapper<AircraftDescription> descriptionWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().description());
                 return descriptionWrapper.map(AircraftDescription::string);
-            } else return null;
+            }else return null;
         });
 
         longitude.setCellValueFactory(f ->
@@ -269,12 +264,8 @@ public final class AircraftTableController {
         return scenegraph;
     }
 
-    /**
-     * Sets the Consumer selected to the one that it receives from the listener.
-     *
-     * @param selectedState the Consumer to be set as the double-clicked state
-     */
-    public void setOnDoubleClick(Consumer<ObservableAircraftState> selectedState) {
+    //TODO still needs to be done
+    public void setOnDoubleClick (Consumer<ObservableAircraftState> selectedState) {
         this.selectedState = selectedState;
     }
 
@@ -284,15 +275,14 @@ public final class AircraftTableController {
      * The method adds the new TableColumn to the scenegraph, sets its width to NUMBER_COLUMN_SIZE, and adds it to the Set of
      * existing TableColumn objects. It also sets the TableColumn's comparator to sort based on numerical values,
      * and sets the alignment style to right-justified. The method returns the new TableColumn object.
-     *
      * @param numberColumns a Set of existing TableColumn objects.
-     * @param column        a TableColumn object.
-     * @param columnName    the name of the column as a String.
+     * @param column a TableColumn object.
+     * @param columnName the name of the column as a String.
      * @return the new TableColumn object.
      */
     public static TableColumn<ObservableAircraftState, String> createNumberColumn(
             Set<TableColumn<ObservableAircraftState, String>> numberColumns,
-            TableColumn<ObservableAircraftState, String> column, String columnName) {
+            TableColumn<ObservableAircraftState, String> column, String columnName){
         column = new TableColumn<>(columnName);
         column.setPrefWidth(NUMBER_COLUMN_SIZE);
         scenegraph.getColumns().add(column);
@@ -300,9 +290,8 @@ public final class AircraftTableController {
 
         column.setComparator((s1, s2) -> {
             try {
-                return (s1.isEmpty() || s2.isEmpty())
-                        ? s1.compareTo(s2)
-                        : Double.compare(format.parse(s1).doubleValue(), format.parse(s2).doubleValue());
+                return Double.compare((double) format.parse(s1),
+                        (double) format.parse(s2));
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
