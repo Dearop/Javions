@@ -89,15 +89,14 @@ public class Main extends Application {
                 try {
                     if(time == 0)
                         time = now;
-                    double elapsedTime = (now - time) / 1_000_000_000.0;
+                    double elapsedTime = (now - time) / BILLION;
                     while (!messages.isEmpty()) {
                         Message m = messages.remove();
                         controller.messageCountProperty().set(controller.messageCountProperty().get() + 1);
                         asm.updateWithMessage(m);
-                        if(elapsedTime >= 1){
+                        if(elapsedTime > 1){
                             asm.purge();
                             time = now;
-                            System.out.println(true);
                         }
                     }
                 } catch (IOException e) {

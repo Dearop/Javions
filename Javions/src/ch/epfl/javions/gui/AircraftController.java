@@ -58,8 +58,9 @@ public final class AircraftController {
      * then it creates a new Pane that uses the aircraft.css for styling purposes. The constructor also adds a listener
      * on the ObservableSet of the ObservableAircraftState called knownStates. The listener adds and removes the aircraft
      * from the pane.
-     * @param parameters - a map of parameters for aircraft control
-     * @param knownStates - an ObservableSet of ObservableAircraftState representing the known aircraft states
+     *
+     * @param parameters           - a map of parameters for aircraft control
+     * @param knownStates          - an ObservableSet of ObservableAircraftState representing the known aircraft states
      * @param currentSelectedState - an ObjectProperty representing the current selected aircraft state
      */
     public AircraftController(MapParameters parameters, ObservableSet<ObservableAircraftState> knownStates,
@@ -86,6 +87,7 @@ public final class AircraftController {
 
     /**
      * The pane() method returns the aircraft pane.
+     *
      * @return the aircraft pane.
      */
     public Pane pane() {
@@ -131,7 +133,6 @@ public final class AircraftController {
         oas.trajectoryProperty().addListener((ListChangeListener<ObservableAircraftState.AirbornePos>) c -> {
             if (currentSelectedState.get() != null && currentSelectedState.getValue().equals(oas))
                 buildTrajectory(trajectory, oas);
-            else trajectory.getChildren().clear();
         });
 
         parameters.zoomProperty().addListener(e -> {
@@ -140,7 +141,10 @@ public final class AircraftController {
                 buildTrajectory(trajectory, oas);
         });
 
-        currentSelectedState.addListener(e ->  trajectory.setVisible(currentSelectedState.getValue().equals(oas)));
+        currentSelectedState.addListener(e -> {
+            trajectory.setVisible(currentSelectedState.getValue().equals(oas));
+            buildTrajectory(trajectory, oas);
+        });
 
         trajectory.visibleProperty().addListener(e -> trajectory.getChildren().clear());
         trajectory.layoutXProperty().bind(parameters.minXProperty().negate());
@@ -157,7 +161,7 @@ public final class AircraftController {
      * with a gradient being used if the altitude changes between two positions.
      *
      * @param trajectory The Group object representing the trajectory of the given ObservableAircraftState object
-     * @param oas The ObservableAircraftState object whose trajectory is to be built
+     * @param oas        The ObservableAircraftState object whose trajectory is to be built
      */
     private void buildTrajectory(Group trajectory, ObservableAircraftState oas) {
         if (trajectory.isVisible()) {
@@ -192,9 +196,10 @@ public final class AircraftController {
      * Sets the bindings for the position of the icon and label based on the position
      * of the aircraft and the current zoom level.
      *
-     * @param oas           the observable aircraft state for which to set the bindings
-     * @param iconAndLabel  the group containing the aircraft icon and label
-     */private void setGroupBindings(ObservableAircraftState oas, Group iconAndLabel) {
+     * @param oas          the observable aircraft state for which to set the bindings
+     * @param iconAndLabel the group containing the aircraft icon and label
+     */
+    private void setGroupBindings(ObservableAircraftState oas, Group iconAndLabel) {
 
         // Bind the position of the icon and label to the position of the aircraft
         oas.positionProperty().addListener(e -> aircraftLabelAndIconPositioning(oas, iconAndLabel));
@@ -206,7 +211,8 @@ public final class AircraftController {
 
     /**
      * Positions the icon and label of an aircraft on the map based on its current position and zoom level.
-     * @param oas The ObservableAircraftState object representing the aircraft to be positioned.
+     *
+     * @param oas          The ObservableAircraftState object representing the aircraft to be positioned.
      * @param iconAndLabel The Group containing the icon and label of the aircraft.
      */
     private void aircraftLabelAndIconPositioning(ObservableAircraftState oas, Group iconAndLabel) {
@@ -230,6 +236,7 @@ public final class AircraftController {
      * The Text object displays the aircraft's registration, velocity and altitude information.
      * The Rectangle object serves as a background for the Text object.
      * The Group object is made visible only if the corresponding aircraft's state label is selected.
+     *
      * @param oas An ObservableAircraftState object representing the aircraft for which the label is created.
      * @return A Group object representing the label for the given aircraft.
      */
@@ -264,8 +271,9 @@ public final class AircraftController {
 
     /**
      * Adds listeners to the current zoom level and currently selected state in order to show or hide the label.
+     *
      * @param label The label to show or hide.
-     * @param oas The ObservableAircraftState to associate the label with.
+     * @param oas   The ObservableAircraftState to associate the label with.
      */
     private void showLabelListener(Group label, ObservableAircraftState oas) {
 
@@ -284,6 +292,7 @@ public final class AircraftController {
      * Initializes and returns the aircraft icon for the given ObservableAircraftState.
      * The icon is an SVGPath that represents the aircraft and includes bindings to update its color
      * based on the altitude of the aircraft, and to rotate it based on the aircraft's track.
+     *
      * @param oas the ObservableAircraftState for which the icon is being created
      * @return a Group containing the aircraft icon
      */
@@ -334,6 +343,7 @@ public final class AircraftController {
      * and binds it to the value returned by the altitudeToPlasmaColourIndex() method, which
      * calculates the color based on the altitude. Finally, it binds the fillProperty of the
      * aircraftIcon (an SVGPath object) to the ObjectProperty to update the color of the icon.
+     *
      * @param aircraftIcon the SVGPath object representing the aircraft icon
      * @param oas          the ObservableAircraftState object representing the aircraft state
      */
@@ -347,8 +357,8 @@ public final class AircraftController {
     /**
      * Rotates the given aircraft icon according to the track or heading of the aircraft.
      *
-     * @param icon the icon of the aircraft
-     * @param oas the observable state of the aircraft
+     * @param icon         the icon of the aircraft
+     * @param oas          the observable state of the aircraft
      * @param aircraftIcon the SVGPath object representing the aircraft icon
      */
     private void rotateIcon(ObservableValue<AircraftIcon> icon, ObservableAircraftState oas, SVGPath aircraftIcon) {
