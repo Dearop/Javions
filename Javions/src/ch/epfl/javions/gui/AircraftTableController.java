@@ -90,6 +90,11 @@ public final class AircraftTableController {
     private static final int NUMBER_COLUMN_SIZE = 85;
     private static final int MAX_INTEGER_DECIMAL = 4;
     private static final int MIN_INTEGER_DECIMAL = 0;
+    private static final int WIDTH_ICAOADRESS = 60;
+    private static final int WIDTH_CALLSIGN_AND_DESCRIPTION= 70;
+    private static final int WIDTH_REGISTRATION = 90;
+    private static final int WIDTH_MODEL = 230;
+    private static final int WIDTH_TYPE = 50;
 
     /**
      * This constructor is responsible for creating an instance of the AircraftTableController class
@@ -132,7 +137,7 @@ public final class AircraftTableController {
         // Add listener to currentSelectedState for scrolling to and selecting the corresponding row in the table
         currentSelectedState.addListener(e -> {
             if(knownStates.contains(currentSelectedState.get()) &&
-                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()){
+                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()) {
                 scenegraph.scrollTo(currentSelectedState.getValue());
                 scenegraph.getSelectionModel().select(currentSelectedState.getValue());
             }
@@ -264,7 +269,9 @@ public final class AircraftTableController {
         return scenegraph;
     }
 
-    //TODO still needs to be done
+     /*
+      * @param selectedState the Consumer to be set as the double-clicked state
+      */
     public void setOnDoubleClick (Consumer<ObservableAircraftState> selectedState) {
         this.selectedState = selectedState;
     }
@@ -290,8 +297,9 @@ public final class AircraftTableController {
 
         column.setComparator((s1, s2) -> {
             try {
-                return Double.compare((double) format.parse(s1),
-                        (double) format.parse(s2));
+                return (s1.isEmpty() || s2.isEmpty())
+                        ? s1.compareTo(s2)
+                        :Double.compare(format.parse(s1).doubleValue(), (double) format.parse(s2).doubleValue());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }

@@ -38,7 +38,7 @@ public final class StatusLineController {
         numberOfMessages.textProperty().bind(Bindings.createStringBinding(() ->
                 String.format("%s", "Messages reçus : " + messageCountProperty.get()), messageCountProperty));
 
-        this.scenegraph = new BorderPane(null, null,numberOfMessages , null, numberOfAircraft);
+        this.scenegraph = new BorderPane(null, null,numberOfAircraft , null, numberOfMessages);
         scenegraph.setPickOnBounds(false);
         scenegraph.getStylesheets().add("status.css");
 
