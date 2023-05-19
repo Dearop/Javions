@@ -90,6 +90,11 @@ public final class AircraftTableController {
     private static final int NUMBER_COLUMN_SIZE = 85;
     private static final int MAX_INTEGER_DECIMAL = 4;
     private static final int MIN_INTEGER_DECIMAL = 0;
+    private static final int WIDTH_ICAOADRESS = 60;
+    private static final int WIDTH_CALLSIGN_AND_DESCRIPTION= 70;
+    private static final int WIDTH_REGISTRATION = 90;
+    private static final int WIDTH_MODEL = 230;
+    private static final int WIDTH_TYPE = 50;
 
     /**
      * This constructor is responsible for creating an instance of the AircraftTableController class
@@ -123,9 +128,9 @@ public final class AircraftTableController {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
                 if (selectedState != null) {
                     selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
+                } else if (event.getClickCount() == 1) {
+                    currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
                 }
-            }else {
-                currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
             }
         });
 
@@ -167,32 +172,32 @@ public final class AircraftTableController {
 
             // ICAOAddress
             icaoAddress = new TableColumn<>("IcaoAddress");
-            icaoAddress.setPrefWidth(60);
+            icaoAddress.setPrefWidth(WIDTH_ICAOADRESS);
             scenegraph.getColumns().add(icaoAddress);
 
             // CallSign
             callSign = new TableColumn<>("CallSign");
-            callSign.setPrefWidth(70);
+            callSign.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
             scenegraph.getColumns().add(callSign);
 
             // Registration
             registration = new TableColumn<>("Registration");
-            registration.setPrefWidth(90);
+            registration.setPrefWidth(WIDTH_REGISTRATION);
             scenegraph.getColumns().add(registration);
 
             // Model
             model = new TableColumn<>("Model");
-            model.setPrefWidth(230);
+            model.setPrefWidth(WIDTH_MODEL);
             scenegraph.getColumns().add(model);
 
             //Type
             type = new TableColumn<>("Type");
-            type.setPrefWidth(50);
+            type.setPrefWidth(WIDTH_TYPE);
             scenegraph.getColumns().add(type);
 
             // Description
             description = new TableColumn<>("Description");
-            description.setPrefWidth(70);
+            description.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
             scenegraph.getColumns().add(description);
 
             // Longitude
@@ -264,7 +269,11 @@ public final class AircraftTableController {
         return scenegraph;
     }
 
-    //TODO still needs to be done
+    /**
+     * Sets the Consumer selected to the one that it receives from the listener.
+     *
+     * @param selectedState the Consumer to be set as the double-clicked state
+     */
     public void setOnDoubleClick (Consumer<ObservableAircraftState> selectedState) {
         this.selectedState = selectedState;
     }
@@ -290,8 +299,9 @@ public final class AircraftTableController {
 
         column.setComparator((s1, s2) -> {
             try {
-                return Double.compare((double) format.parse(s1),
-                        (double) format.parse(s2));
+                return(s1.isEmpty() || s2.isEmpty())
+                        ? s1.compareTo(s2)
+                        : Double.compare(format.parse(s1).doubleValue(),format.parse(s2).doubleValue());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
