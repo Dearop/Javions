@@ -84,9 +84,10 @@ public final class TestAircraftTableController extends Application {
         var root = new StackPane(atc.pane());
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
-        URL messageURL = getClass().getResource("/Javions/test-resources/messages_20230318_0915.bin");
-        String pathOfMessage = Path.of(messageURL.toURI()).toString();
-        var mi = readAllMessages(pathOfMessage).iterator();
+        URL u = getClass().getResource("/messages_20230318_0915.bin");
+        assert u != null;
+        Path p = Path.of(u.toURI());
+        var mi = readAllMessages(p.toString()).iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {

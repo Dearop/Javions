@@ -79,7 +79,12 @@ public final class AircraftTableController {
     private static NumberFormat format;
 
     // function that handles selected state changes
-    private Consumer<ObservableAircraftState> selectedState;
+    private Consumer<ObservableAircraftState> selectedState = new Consumer<ObservableAircraftState>() {
+        @Override
+        public void accept(ObservableAircraftState oas) {
+            currentSelectedState.set(oas);
+        }
+    };
 
     // Constants for column sizes, and the formatting of the decimal numbers shown
     private static final int NUMBER_COLUMN_SIZE = 85;
@@ -116,11 +121,11 @@ public final class AircraftTableController {
         // Add listener to table for handling double-click events
         scenegraph.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
-                if(selectedState != null){
+                if (selectedState != null) {
                     selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
+                } else if (event.getClickCount() == 1) {
+                    currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
                 }
-            } else if (event.getClickCount() == 1) {
-                currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
             }
         });
 

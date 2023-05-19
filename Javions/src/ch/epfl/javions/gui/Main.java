@@ -23,10 +23,11 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Main extends Application {
-    private long time = 0;
+    private long time;
 
     private long MILLION = 1_000_000L;
 
@@ -57,10 +58,19 @@ public class Main extends Application {
 
         controller.airCraftCountProperty().bind(Bindings.size(asm.states()));
 
+        BaseMapController bmc = new BaseMapController(tm, mp);
+
+        // Set on DoubleClick
+        Consumer<ObservableAircraftState> stateConsumer = new Consumer<ObservableAircraftState>() {
+            @Override
+            public void accept(ObservableAircraftState oas) {
+                bmc.centerOn(oas.getPosition());
+            }
+        };
+        table.setOnDoubleClick(stateConsumer);
+
         BorderPane tableAndLinePane =
                 new BorderPane(table.pane(), controller.pane(), null, null, null);
-
-        BaseMapController bmc = new BaseMapController(tm, mp);
 
         StackPane aircraftAndMapPane = new StackPane(bmc.pane(), ac.pane());
         SplitPane mainPane = new SplitPane(aircraftAndMapPane, tableAndLinePane);
