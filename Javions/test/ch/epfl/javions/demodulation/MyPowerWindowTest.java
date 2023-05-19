@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,7 +14,7 @@ public class MyPowerWindowTest {
 
     @Test
     public void PowerWindowConstructorTest() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final PowerWindow window = new PowerWindow(stream, 16);
@@ -23,7 +22,7 @@ public class MyPowerWindowTest {
 
     @Test
     public void PowerWindowAdvanceMethodWorks() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
 
@@ -40,7 +39,7 @@ public class MyPowerWindowTest {
 
     @Test
     public void PowerWindowAdvanceByTest() throws IOException{
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
 
@@ -52,7 +51,7 @@ public class MyPowerWindowTest {
     // Should return true because we fill the window at the beginning
     @Test
     void isFullReturnsTrueAtTheBeginning() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
 
@@ -62,7 +61,7 @@ public class MyPowerWindowTest {
 
     @Test
     void getMethodReturnsRightIndex() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
 
@@ -85,7 +84,7 @@ public class MyPowerWindowTest {
 
     @Test
     void sizeMethodReturnsRightValue() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
 
@@ -95,7 +94,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfGetWorksForTriviain1stWindow() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final InputStream f = new FileInputStream(samples);
@@ -110,7 +109,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfGetWorksIfCanSwitchTable() throws IOException { //with small batchsize
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final InputStream f = new FileInputStream(samples);
@@ -126,7 +125,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfAdvanceby1Worksfor1TableCases() throws IOException{
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final InputStream f=new FileInputStream(samples);
@@ -143,7 +142,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfAdvancebyOffsetWorksfor1TableCases() throws IOException{
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final InputStream f=new FileInputStream(samples);
@@ -159,7 +158,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfIsFullforSmallFile()throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final PowerWindow powerWindow = new PowerWindow(stream, 8);
@@ -171,7 +170,7 @@ public class MyPowerWindowTest {
     }
 
     @Test
-    void testTable() throws IOException{    String samples = this.getClass().getResource("/samples.bin").getFile();
+    void testTable() throws IOException{    String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final PowerWindow window = new PowerWindow(stream, 4);

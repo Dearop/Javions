@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class MySamplesDecoderTest {
     @Test
     public void SamplesDecodeThrowsExceptions() throws FileNotFoundException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         assertThrows(NullPointerException.class, () -> new SamplesDecoder(null, 3));
@@ -22,7 +22,7 @@ public class MySamplesDecoderTest {
 
     @Test
     public void SamplesDecoderReturnsExpectedValue() throws IOException {
-        String samples = this.getClass().getResource("/samples.bin").getFile();
+        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(samples);
         final SamplesDecoder decoder = new SamplesDecoder(stream, 2402);
@@ -32,7 +32,7 @@ public class MySamplesDecoderTest {
 
     @Test
     void testValidSampleDecoder() throws IOException {
-        String stream2 = this.getClass().getResource("/samples.bin").getFile();
+        String stream2 = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
         stream2 = URLDecoder.decode(stream2, StandardCharsets.UTF_8);
         final InputStream stream = new FileInputStream(stream2);
         final SamplesDecoder test = new SamplesDecoder(stream, 2402);

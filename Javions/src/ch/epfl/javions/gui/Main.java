@@ -21,29 +21,24 @@ import javafx.stage.Stage;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
 public class Main extends Application {
-
-    private long timeOnStartUp;
+    private long time = 0;
 
     private long MILLION = 1_000_000L;
 
+    private long BILLION = 1_000_000_000L;
     public static void main(String[] args) {
         Application.launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        timeOnStartUp = System.nanoTime();
         List<String> parameters = this.getParameters().getRaw();
         Queue<Message> messages = new ConcurrentLinkedQueue();
-
-        Supplier<Message> messageSupplier = (parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
 
         URL dbUrl = getClass().getResource("/aircraft.zip");
         assert dbUrl != null;
@@ -51,23 +46,10 @@ public class Main extends Application {
         var dataBase = new AircraftDatabase(f);
         AircraftStateManager asm = new AircraftStateManager(dataBase);
 
-
-        Thread messageHandler = new Thread(() -> {
-            while (true) {
-                if (messageSupplier.get() == null)
-                    break;
-                else messages.add(messageSupplier.get());
-            }
-        });
-
-        messageHandler.setDaemon(true);
-        messageHandler.start();
-
         Path tileCache = Path.of("tile-cache");
         TileManager tm = new TileManager(tileCache, "tile.openstreetmap.org");
         MapParameters mp = new MapParameters(8, 33_530, 23_070);
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
-
 
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
         AircraftTableController table = new AircraftTableController(asm.states(), sap);
@@ -89,22 +71,40 @@ public class Main extends Application {
         primaryStage.setMinHeight(600);
         primaryStage.show();
 
+        Supplier<Message> messageSupplier = (parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
+
+        Thread messageHandler = new Thread(() -> {
+            while (true) {
+                if (messageSupplier.get() == null)
+                    break;
+                else messages.add(messageSupplier.get());
+            }
+        });
+
+        messageHandler.setDaemon(true);
+        messageHandler.start();
         new AnimationTimer() {
             @Override
             public void handle(long now) {
                 try {
+                    if(time == 0)
+                        time = now;
+                    double elapsedTime = (now - time) / BILLION;
                     while (!messages.isEmpty()) {
                         Message m = messages.remove();
                         controller.messageCountProperty().set(controller.messageCountProperty().get() + 1);
                         asm.updateWithMessage(m);
+                        if(elapsedTime > 1){
+                            asm.purge();
+                            time = now;
+                        }
                     }
-                    //purge
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
             }
         }.start();
-    } // TODO Programmation par flot
+    }
 
     private Supplier<Message> demodulation() {
         return () -> {
@@ -122,59 +122,31 @@ public class Main extends Application {
         };
     }
 
-    // TODO: 5/13/2023 I don't fucking get this 
     private Supplier<Message> messageFromFile(List<String> parameters) {
         String f = Path.of(parameters.get(0)).toString();
-        List<Message> messages = new ArrayList<>();
-        var mi = messages.iterator();
-        return () -> {
-            try (DataInputStream s = new DataInputStream(
-                    new FileInputStream(f))) {
-                byte[] bytes = new byte[RawMessage.LENGTH];
-                long timeStampNs;
-                while (true) {
-                    timeStampNs = s.readLong();
+        long supplierStartTime = System.nanoTime();
+        try {
+            DataInputStream s = new DataInputStream(new FileInputStream(f));
+            return () -> {
+                try {
+                    byte[] bytes = new byte[RawMessage.LENGTH];
+                    long timeStampNs = s.readLong();
                     int bytesRead = s.readNBytes(bytes, 0, bytes.length);
                     assert bytesRead == RawMessage.LENGTH;
-
-                    long deltaT = timeStampNs - (System.nanoTime() - timeOnStartUp);
+                    long now = System.nanoTime();
+                    long deltaT = timeStampNs - (now - supplierStartTime);
                     if (deltaT >= 0) {
                         Thread.sleep(deltaT / MILLION);
                     }
-                    messages.add(MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes))));
-                    Message nextMessage = mi.next();
-                    if(nextMessage == null)
-                        break;
-                    return mi.next();
+                    return MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes)));
+                }  catch (InterruptedException e) {
+                    throw new RuntimeException();
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
                 }
-            } catch (InterruptedException | IOException exception) {
-                if (exception instanceof InterruptedException)
-                    throw new RuntimeException("Stoopid");
-                else if (exception instanceof IOException) {
-                    throw new RuntimeException("Stoopider");
-                }
-            }
-            return null;
-        };
-    }
-
-    private static List<RawMessage> readAllMessages(String fileName)
-            throws IOException {
-        List<RawMessage> rawMessages = new ArrayList<>();
-        try (DataInputStream s = new DataInputStream(
-                new BufferedInputStream(
-                        new FileInputStream(fileName)))) {
-            byte[] bytes = new byte[RawMessage.LENGTH];
-            long timeStampNs;
-            while (true) {
-                timeStampNs = s.readLong();
-                int bytesRead = s.readNBytes(bytes, 0, bytes.length);
-                assert bytesRead == RawMessage.LENGTH;
-                rawMessages.add(new RawMessage(timeStampNs, new ByteString(bytes)));
-            }
-        } catch (EOFException exception) {
-
+            };
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
-        return rawMessages;
     }
 }

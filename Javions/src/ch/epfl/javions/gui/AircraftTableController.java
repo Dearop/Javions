@@ -80,7 +80,6 @@ public final class AircraftTableController {
 
     // function that handles selected state changes
     private Consumer<ObservableAircraftState> selectedState;
-    // TODO: 5/7/2023 Need to add Constants for column sizes
 
     // Constants for column sizes, and the formatting of the decimal numbers shown
     private static final int NUMBER_COLUMN_SIZE = 85;
@@ -117,14 +116,18 @@ public final class AircraftTableController {
         // Add listener to table for handling double-click events
         scenegraph.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
-                if(selectedState != null)
+                if(selectedState != null){
                     selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
+                }
+            } else if (event.getClickCount() == 1) {
+                currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
             }
         });
 
         // Add listener to currentSelectedState for scrolling to and selecting the corresponding row in the table
         currentSelectedState.addListener(e -> {
-            if(scenegraph.getColumns().contains(currentSelectedState)){
+            if(knownStates.contains(currentSelectedState.get()) &&
+                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()){
                 scenegraph.scrollTo(currentSelectedState.getValue());
                 scenegraph.getSelectionModel().select(currentSelectedState.getValue());
             }

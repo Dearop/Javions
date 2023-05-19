@@ -50,26 +50,25 @@ public final class AircraftDatabase {
     // TODO: 4/28/2023 Ask about
     public AircraftData get(IcaoAddress address) throws IOException {
         String addressString = address.string();
-
         try (ZipFile zip = new ZipFile(fileName);
              InputStream stream = zip.getInputStream(zip.getEntry(addressString.substring(addressString.length() - 2) + ".csv"));
              Reader reader = new InputStreamReader(stream, UTF_8);
              BufferedReader buffer = new BufferedReader(reader)) {
 
-            String line;
-            while ((line = buffer.readLine()) != null) {
-                if (line.startsWith(addressString)) {
-                    String[] splitData = line.split(SEPARATOR, -1);
-                    return new AircraftData(
+                String line;
+                while ((line = buffer.readLine()) != null) {
+                    if (line.startsWith(addressString)) {
+                        String[] splitData = line.split(SEPARATOR, -1);
+                        return new AircraftData(
                             new AircraftRegistration(splitData[1]),
                             new AircraftTypeDesignator(splitData[2]),
                             splitData[3],
                             new AircraftDescription(splitData[4]),
                             WakeTurbulenceCategory.of(splitData[5])
-                    );
+                        );
+                    }
                 }
             }
-        }
-        return null;
+            return null;
     }
 }
