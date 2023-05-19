@@ -123,9 +123,9 @@ public final class AircraftTableController {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
                 if (selectedState != null) {
                     selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
-                } else if (event.getClickCount() == 1) {
-                    currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
                 }
+            }else {
+                currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
             }
         });
 

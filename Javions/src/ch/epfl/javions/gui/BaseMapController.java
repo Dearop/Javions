@@ -156,7 +156,8 @@ public final class BaseMapController {
     public void centerOn(GeoPos pos) {
         double xTopPositon = WebMercator.x(parameter.getZoom(), pos.longitude());
         double yTopPosition = WebMercator.y(parameter.getZoom(), pos.latitude());
-        parameter.scroll((int) ((xTopPositon + mapPane.getWidth() / 2)), (int) ((yTopPosition + mapPane.getHeight() / 2)));
+        parameter.scroll(-parameter.getMinX(), -parameter.getMinY());
+        parameter.scroll((int) ((xTopPositon - mapPane.getWidth() / 2)), (int) ((yTopPosition - mapPane.getHeight() / 2)));
     }
 
     /**

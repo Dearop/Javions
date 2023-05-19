@@ -30,7 +30,6 @@ public class Main extends Application {
     private long time;
 
     private long MILLION = 1_000_000L;
-
     private long BILLION = 1_000_000_000L;
     public static void main(String[] args) {
         Application.launch(args);
@@ -61,10 +60,12 @@ public class Main extends Application {
         BaseMapController bmc = new BaseMapController(tm, mp);
 
         // Set on DoubleClick
+        // TODO: 5/19/2023 does the set method have to be called 
         Consumer<ObservableAircraftState> stateConsumer = new Consumer<ObservableAircraftState>() {
             @Override
             public void accept(ObservableAircraftState oas) {
                 bmc.centerOn(oas.getPosition());
+                sap.set(oas);
             }
         };
         table.setOnDoubleClick(stateConsumer);
