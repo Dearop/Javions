@@ -108,6 +108,7 @@ public class Main extends Application {
         messageHandler.setDaemon(true);
         messageHandler.start();
 
+        // We create a new instance of an AnimationTimer and define its handle() method.
         new AnimationTimer() {
             /**
              * Redefinition of the handle method from the AnimationTimer Interface.
