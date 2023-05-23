@@ -1,6 +1,8 @@
 package ch.epfl.javions.aircraft;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.zip.ZipFile;
 
@@ -50,11 +52,11 @@ public final class AircraftDatabase {
     // TODO: 4/28/2023 Ask about
     public AircraftData get(IcaoAddress address) throws IOException {
         String addressString = address.string();
+
         try (ZipFile zip = new ZipFile(fileName);
              InputStream stream = zip.getInputStream(zip.getEntry(addressString.substring(addressString.length() - 2) + ".csv"));
              Reader reader = new InputStreamReader(stream, UTF_8);
              BufferedReader buffer = new BufferedReader(reader)) {
-
                 String line;
                 while ((line = buffer.readLine()) != null) {
                     if (line.startsWith(addressString)) {
@@ -69,6 +71,6 @@ public final class AircraftDatabase {
                     }
                 }
             }
-            return null;
+        return null;
     }
 }

@@ -1,15 +1,12 @@
 package ch.epfl.javions.gui;
 
-import ch.epfl.javions.GeoPos;
 import ch.epfl.javions.Units;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.AircraftDescription;
 import ch.epfl.javions.aircraft.AircraftRegistration;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.IcaoAddress;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Node;
@@ -19,9 +16,7 @@ import javafx.scene.input.MouseButton;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -112,7 +107,6 @@ public final class AircraftTableController {
         format.setMinimumFractionDigits(MIN_INTEGER_DECIMAL);
         format.setMaximumFractionDigits(MAX_INTEGER_DECIMAL);
 
-
         // Add listener to knownStates for adding or removing items from the table
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
@@ -172,32 +166,32 @@ public final class AircraftTableController {
 
             // ICAOAddress
             icaoAddress = new TableColumn<>("IcaoAddress");
-            icaoAddress.setPrefWidth(60);
+            icaoAddress.setPrefWidth(WIDTH_ICAOADRESS);
             scenegraph.getColumns().add(icaoAddress);
 
             // CallSign
             callSign = new TableColumn<>("CallSign");
-            callSign.setPrefWidth(70);
+            callSign.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
             scenegraph.getColumns().add(callSign);
 
             // Registration
             registration = new TableColumn<>("Registration");
-            registration.setPrefWidth(90);
+            registration.setPrefWidth(WIDTH_REGISTRATION);
             scenegraph.getColumns().add(registration);
 
             // Model
             model = new TableColumn<>("Model");
-            model.setPrefWidth(230);
+            model.setPrefWidth(WIDTH_MODEL);
             scenegraph.getColumns().add(model);
 
             //Type
             type = new TableColumn<>("Type");
-            type.setPrefWidth(50);
+            type.setPrefWidth(WIDTH_TYPE);
             scenegraph.getColumns().add(type);
 
             // Description
             description = new TableColumn<>("Description");
-            description.setPrefWidth(70);
+            description.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
             scenegraph.getColumns().add(description);
 
             // Longitude
@@ -208,7 +202,6 @@ public final class AircraftTableController {
 
             // Altitude
             altitude = createNumberColumn(numberColumns, altitude, "Altitude (m)");
-
 
             // Velocity
             velocity = createNumberColumn(numberColumns, velocity,"Velocity (km/h)");
@@ -299,7 +292,7 @@ public final class AircraftTableController {
             try {
                 return (s1.isEmpty() || s2.isEmpty())
                         ? s1.compareTo(s2)
-                        :Double.compare(format.parse(s1).doubleValue(), (double) format.parse(s2).doubleValue());
+                        :Double.compare(format.parse(s1).doubleValue(), format.parse(s2).doubleValue());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
