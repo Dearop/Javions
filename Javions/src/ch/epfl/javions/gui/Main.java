@@ -94,8 +94,8 @@ public class Main extends Application {
         primaryStage.setMinHeight(WINDOW_HEIGHT);
         primaryStage.show();
 
-        Supplier<Message> messageSupplier =
-                (parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
+        Supplier<Message> messageSupplier = demodulation(parameters);
+                //(parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
 
         Thread messageHandler = new Thread(() -> {
             while (true) {
@@ -148,11 +148,18 @@ public class Main extends Application {
      *
      * @return A Supplier containing a Message which is then added to the Queue.
      */
-    private Supplier<Message> demodulation() {
+    private Supplier<Message> demodulation(List<String> parameters) {
         return () -> {
+            String f = Path.of(parameters.get(0)).toString();
+            DataInputStream s = null;
+            try {;
+                s = new DataInputStream(new FileInputStream(f));
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             try {
+                AdsbDemodulator demodulator = new AdsbDemodulator(s);
                 while (true) {
-                    AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
                     if (demodulator.nextMessage() != null) {
                         RawMessage message = demodulator.nextMessage();
                         return MessageParser.parse(message);

@@ -18,9 +18,13 @@ public final class AdsbDemodulator {
     private static final int START_OF_BYTE = 80;
     private static final int START_OF_BYTE_CHECK = 85;
     private static final int TIMESTAMP_CONVERTER = 100;
+    private static final int[] sumP_Values = {0, 10, 35, 45};
+    private static final int[] sumV_Values = {5, 15, 20, 25, 30, 40};
+    private static final int[] nextSumP_Values = {1, 11, 36, 46};
+    private static final int BYTE_SIZE_FOR_SHIFTING = 7;
     
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
-        window = new PowerWindow(samplesStream, AdsbDemodulator.WINDOW_SIZE);
+        window = new PowerWindow(samplesStream, WINDOW_SIZE);
     }
 
     /**
@@ -30,18 +34,20 @@ public final class AdsbDemodulator {
     public RawMessage nextMessage() throws IOException {
 
         // 0, 10, 35, 45 are the initial positions in the window for the sum of P
-        int sumP = window.get(0) + window.get(10) + window.get(35) + window.get(45);
+        int sumP = window.get(sumP_Values[0]) +
+                window.get(sumP_Values[1]) + window.get(sumP_Values[2]) + window.get(sumP_Values[3]);
         int sumV;
         int sumPNext;
         int beforeP = 0;
 
         while (window.isFull()) {
             // 1, 11, 36, 46 are the positions in the window for the next sum of P, all the values got shifted by one.
-            sumPNext = window.get(1) + window.get(11) + window.get(36) + window.get(46);
+            sumPNext = window.get(nextSumP_Values[0]) +
+                    window.get(nextSumP_Values[1]) + window.get(nextSumP_Values[2]) + window.get(nextSumP_Values[3]);
 
             // 5, 15, 20, 25, 30, 40 are the positions in the window for the sum of V
-            sumV = window.get(5) + window.get(15) + window.get(20)
-                    + window.get(25) + window.get(30) + window.get(40);
+            sumV = window.get(sumV_Values[0]) + window.get(sumV_Values[1]) + window.get(sumV_Values[2])
+                    + window.get(sumV_Values[3]) + window.get(sumV_Values[4]) + window.get(sumV_Values[5]);
 
             if ((beforeP < sumP) && (sumPNext < sumP) && (sumP >= (2 * sumV))) {
                 byte[] table = new byte[MESSAGE_SIZE];
@@ -53,7 +59,7 @@ public final class AdsbDemodulator {
                         table[0] |= (byte) (1 << (7 - byteIterator));
                     }
                 }
-                // TODO: 4/28/2023 need to change this 
+
                 if (EXPECTED_DF == RawMessage.size(table[0])) {
 
                     for (int byteUsed = 1; 14 > byteUsed; byteUsed++) {
@@ -64,7 +70,7 @@ public final class AdsbDemodulator {
                                     >= this.window.get(START_OF_BYTE_CHECK +
                                     (START_OF_BYTE * byteUsed) + (BIT_TIME_INTERVAL * posInsideByte))) {
 
-                                table[byteUsed] |= (byte) (1 << (7 - posInsideByte));
+                                table[byteUsed] |= (byte) (1 << (BYTE_SIZE_FOR_SHIFTING - posInsideByte));
                             }
                         }
                     }

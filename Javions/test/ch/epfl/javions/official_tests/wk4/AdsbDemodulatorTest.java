@@ -1,5 +1,6 @@
-package ch.epfl.javions.demodulation;
+package ch.epfl.javions.official_tests.wk4;
 
+import ch.epfl.javions.demodulation.AdsbDemodulator;
 import ch.epfl.test.TestRandomizer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -508,7 +509,7 @@ class AdsbDemodulatorTest {
 
     @BeforeAll
     static void preventOutput() {
-        if (null != System.getProperty("ch.epfl.cs108.quiet")) {
+        if (System.getProperty("ch.epfl.cs108.quiet") != null) {
             System.setOut(new PrintStream(OutputStream.nullOutputStream()));
             System.setErr(new PrintStream(OutputStream.nullOutputStream()));
         }
@@ -516,36 +517,36 @@ class AdsbDemodulatorTest {
 
     @Test
     void adsbDemodulatorNextMessageReturnsNullForEmptyStream() throws IOException {
-        final var demodulator = new AdsbDemodulator(InputStream.nullInputStream());
+        var demodulator = new AdsbDemodulator(InputStream.nullInputStream());
         assertNull(demodulator.nextMessage());
     }
 
     @Test
     void adsbDemodulatorNextMessageReturnsNullForRandomSamples() throws IOException {
-        final var samples = new byte[1 << 19];
-        final var rng = TestRandomizer.newRandom();
+        var samples = new byte[1 << 19];
+        var rng = TestRandomizer.newRandom();
         for (int i = 0; i < samples.length; i += 2) {
-            final var sample = rng.nextInt(1 << 12);
-            final var lsbs = sample & 0xFF;
-            final var msbs = (sample >> 8) & 0xFF;
+            var sample = rng.nextInt(1 << 12);
+            var lsbs = sample & 0xFF;
+            var msbs = (sample >> 8) & 0xFF;
             samples[i] = (byte) lsbs;
             samples[i + 1] = (byte) msbs;
         }
 
-        try (final var s = new ByteArrayInputStream(samples)) {
-            final var demodulator = new AdsbDemodulator(s);
+        try (var s = new ByteArrayInputStream(samples)) {
+            var demodulator = new AdsbDemodulator(s);
             assertNull(demodulator.nextMessage());
         }
     }
 
     @Test
     void adsbDemodulatorNextMessageWorksOnGivenSamples() throws IOException {
-        final var expectedIt = AdsbDemodulatorTest.EXPECTED_RAW_MESSAGE_DATA.iterator();
-        try (final var s = new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples_20230304_1442.bin")) {
-            final var demodulator = new AdsbDemodulator(s);
+        var expectedIt = EXPECTED_RAW_MESSAGE_DATA.iterator();
+        try (var s = new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples_20230522_2051.bin")) {
+            var demodulator = new AdsbDemodulator(s);
             while (expectedIt.hasNext()) {
-                final var expected = expectedIt.next();
-                final var actual = demodulator.nextMessage();
+                var expected = expectedIt.next();
+                var actual = demodulator.nextMessage();
                 assertNotNull(actual);
                 assertEquals(expected.timeStampNs(), actual.timeStampNs());
                 assertEquals(expected.bytes(), actual.bytes().toString());
@@ -556,10 +557,10 @@ class AdsbDemodulatorTest {
 
     @Test
     void adsbDemodulatorNextMessageWorksOnTinySamples() throws IOException {
-        final var samples = Base64.getMimeDecoder().decode(AdsbDemodulatorTest.SAMPLES_BASE64);
-        try (final var s = new ByteArrayInputStream(samples)) {
-            final var demodulator = new AdsbDemodulator(s);
-            final var message = demodulator.nextMessage();
+        var samples = Base64.getMimeDecoder().decode(SAMPLES_BASE64);
+        try (var s = new ByteArrayInputStream(samples)) {
+            var demodulator = new AdsbDemodulator(s);
+            var message = demodulator.nextMessage();
             assertNotNull(message);
             assertEquals(14100, message.timeStampNs());
             assertEquals("8D44CE6858A3860B09465B3D3696", message.bytes().toString());

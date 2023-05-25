@@ -4,6 +4,8 @@ import ch.epfl.javions.Preconditions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 /**
  * In this class we compute the values that we get from the SampleDecoder. To do this, we apply a well-defined algorithm
@@ -17,6 +19,7 @@ public final class PowerComputer {
     private final SamplesDecoder decoder;
     private final int[] powerCalculationTable = new int[8];
     private final short[] decodedBatch;
+    private Queue<Integer> powerCalculationQueue = new PriorityQueue<>();
 
     /**
      * Creates a new PowerComputer object that also creates a calls a new SampleDecoder with the parameters stream and

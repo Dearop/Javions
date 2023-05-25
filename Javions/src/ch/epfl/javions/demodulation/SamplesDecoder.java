@@ -23,6 +23,7 @@ public final class SamplesDecoder {
     private final int batchSize;
     private final byte[] bytes;
     private final static int ADJUSTMENT = 2;
+    private final static int SIGN_ADJUSTMENT = 1 << 11;
 
     /**
      * Constructs a SamplesDecoder object with the given input stream and batch size.
@@ -39,7 +40,7 @@ public final class SamplesDecoder {
         this.stream = stream;
         this.batchSize = batchSize;
 
-        this.bytes = new byte[2 * batchSize];
+        this.bytes = new byte[ADJUSTMENT * batchSize];
     }
 
     /**
@@ -60,7 +61,7 @@ public final class SamplesDecoder {
             short higherWeight = this.bytes[ADJUSTMENT * posInBatch + 1];
             higherWeight <<= Byte.SIZE;
 
-            batch[posInBatch] = (short) (((higherWeight & 0xF00) | (bytes[2 * posInBatch] & 0xFF)) - 2048);
+            batch[posInBatch] = (short) (((higherWeight & 0xF00) | (bytes[ADJUSTMENT * posInBatch] & 0xFF)) - SIGN_ADJUSTMENT);
         }
         return bytesRead / ADJUSTMENT;
     }
