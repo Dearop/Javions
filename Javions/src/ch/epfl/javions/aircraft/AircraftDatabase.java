@@ -1,9 +1,8 @@
 package ch.epfl.javions.aircraft;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipFile;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -22,8 +21,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public final class AircraftDatabase {
     private final String fileName;
-
     public static final String SEPARATOR = ",";
+    public static final String FILETYPE = ".csv";
+    private ConcurrentHashMap<String, AircraftData> dataHashMap = new ConcurrentHashMap<>();
     /**
      * Stores the specified file name.
      * Throws a NullPointerException if the file name is null.
@@ -33,44 +33,48 @@ public final class AircraftDatabase {
      * @throws NullPointerException If the file name is null.
      */
     public AircraftDatabase(String fileName) {
-        Objects.requireNonNull(fileName);
-        this.fileName = fileName;
+        this.fileName = Objects.requireNonNull(fileName);
+        makeDataBase();
     }
 
-    // TODO: 4/28/2023 this has to be more efficient
-
     /**
-     * Returns the aircraft data for the specified ICAO address.
-     * Searches the sorted file for the address and returns the corresponding data.
-     * Returns null if no entry exists for that address.
+     * Fills the HashMap attribute of the class with AircraftData Instances that are associated
+     * to their IcaoAddress
      * Throws an IOException if there is an input/output error.
-     *
-     * @param address The ICAO address of the aircraft to retrieve data for.
-     * @return The aircraft data for the specified address, or null if no entry exists.
+     *.
      * @throws IOException If there is an input/output error.
      */
-    // TODO: 4/28/2023 Ask about
-    public AircraftData get(IcaoAddress address) throws IOException {
-        String addressString = address.string();
+    private void makeDataBase(){
+        try (ZipFile zip = new ZipFile(fileName)) {
+            zip.stream().forEach(e -> {
+                String entryName = e.getName();
+                if (entryName.endsWith(FILETYPE)) {
+                    try (InputStream stream = zip.getInputStream(e);
+                         Reader reader = new InputStreamReader(stream, UTF_8);
+                         BufferedReader buffer = new BufferedReader(reader)) {
 
-        try (ZipFile zip = new ZipFile(fileName);
-             InputStream stream = zip.getInputStream(zip.getEntry(addressString.substring(addressString.length() - 2) + ".csv"));
-             Reader reader = new InputStreamReader(stream, UTF_8);
-             BufferedReader buffer = new BufferedReader(reader)) {
-                String line;
-                while ((line = buffer.readLine()) != null) {
-                    if (line.startsWith(addressString)) {
-                        String[] splitData = line.split(SEPARATOR, -1);
-                        return new AircraftData(
-                            new AircraftRegistration(splitData[1]),
-                            new AircraftTypeDesignator(splitData[2]),
-                            splitData[3],
-                            new AircraftDescription(splitData[4]),
-                            WakeTurbulenceCategory.of(splitData[5])
-                        );
+                        buffer.lines().map(l -> l.split(SEPARATOR, -1))
+                                .forEach(s -> {
+                                    try {
+                                        AircraftData d = new AircraftData(
+                                                new AircraftRegistration(s[1]),
+                                                new AircraftTypeDesignator(s[2]),
+                                                s[3],
+                                                new AircraftDescription(s[4]),
+                                                WakeTurbulenceCategory.of(s[5])
+                                        );
+                                        dataHashMap.put(s[0], d);
+                                    } catch (Exception l) {
+                                    }
+                                });
+                    } catch (IOException l) {
                     }
                 }
-            }
-        return null;
+            });
+        }catch (IOException l){}
+    }
+
+    public AircraftData get(IcaoAddress address) {
+        return dataHashMap.get(address.string());
     }
 }
