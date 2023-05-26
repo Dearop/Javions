@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HexFormat;
 import java.util.Objects;
 
+import static java.lang.Byte.toUnsignedInt;
+
 /**
  * This is an immutable class representing a sequence of unsigned bytes. Instances of this class are very similar to
  * a byte[] array, with the two differences being that ByteString is immutable, so it is not possible to change the
@@ -35,8 +37,7 @@ public final class ByteString {
     public static ByteString ofHexadecimalString(String hexString) {
 
         // hexString length is odd then return Exception
-        if (1 == hexString.length() % 2)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(hexString.length() % 2 == 0);
 
         if (!hexString.matches("^[a-fA-F0-9]+$"))
             throw new NumberFormatException();
@@ -66,8 +67,7 @@ public final class ByteString {
         if (0 > index || index > this.bytes.length)
             throw new IndexOutOfBoundsException();
 
-        byte byteAtIndex = this.bytes[index];
-        return byteAtIndex & byteFullOfOnes;
+        return toUnsignedInt(this.bytes[index]);
     }
 
     /**

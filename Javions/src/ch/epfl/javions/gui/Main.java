@@ -43,12 +43,12 @@ public class Main extends Application {
     private static final int START_ZOOM = 8;
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
-    private static DataInputStream s;
     private static RawMessage message;
-    private static AdsbDemodulator demodulator;
+    private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue();
 
     /**
      * The main entry point for the JavaFX application.
+     *
      * @param args The command-line arguments passed to the application.
      */
     public static void main(String[] args) {
@@ -57,13 +57,13 @@ public class Main extends Application {
 
     /**
      * Initializes and starts the JavaFX application. Including the different Panes and combining them into one!
+     *
      * @param primaryStage The primary stage for the JavaFX application.
      * @throws Exception If an exception occurs during application startup.
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
         List<String> parameters = this.getParameters().getRaw();
-        Queue<Message> messages = new ConcurrentLinkedQueue();
 
         URL dbUrl = getClass().getResource("/aircraft.zip");
         assert dbUrl != null;
@@ -105,20 +105,25 @@ public class Main extends Application {
         primaryStage.setMinHeight(WINDOW_HEIGHT);
         primaryStage.show();
 
-        Supplier<Message> messageSupplier = (parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
-
-        Thread messageHandler = new Thread(() -> {
-            while (true) {
-                if (messageSupplier.get() == null) {
-                    break;
-                } else {
-                    messages.add(messageSupplier.get());
+        if (parameters.isEmpty()) {
+            Thread messageHandler = new Thread(() -> demodulation());
+            messageHandler.setDaemon(true);
+            messageHandler.start();
+        } else {
+            Supplier<RawMessage> messageSupplier = messageFromFile(parameters);
+            Thread messageHandler = new Thread(() -> {
+                while (true) {
+                    if (messageSupplier.get() != null) {
+                        messages.add(messageSupplier.get());
+                    } else {
+                        break;
+                    }
                 }
-            }
-        });
+            });
 
-        messageHandler.setDaemon(true);
-        messageHandler.start();
+            messageHandler.setDaemon(true);
+            messageHandler.start();
+        }
 
         // We create a new instance of an AnimationTimer and define its handle() method.
         new AnimationTimer() {
@@ -136,9 +141,12 @@ public class Main extends Application {
                     // Enters a loop while there are messages in the messages queue
                     while (!messages.isEmpty()) {
                         // Removes a message from the queue and passes it to the m variable
-                        Message m = messages.remove();
-                        controller.messageCountProperty().set(controller.messageCountProperty().get() + 1);
-                        asm.updateWithMessage(m);
+                        RawMessage rawM = messages.remove();
+                        Message m;
+                        if ((m = MessageParser.parse(rawM)) != null) {
+                            controller.messageCountProperty().set(controller.messageCountProperty().get() + 1);
+                            asm.updateWithMessage(m);
+                        }
                         // Checks if elapsed time is greater than 1 second
                         if (elapsedTime > 1) {
                             // Purges the AircraftStateManager of any unnecessary data
@@ -160,21 +168,18 @@ public class Main extends Application {
      *
      * @return A Supplier containing a Message which is then added to the Queue.
      */
-    private Supplier<Message> demodulation() {
-        return () -> {
-            try {
-                AdsbDemodulator demodulator = new AdsbDemodulator(System.in);   
-
-                while (true) {
-                    if (demodulator.nextMessage() != null) {
-                        message = demodulator.nextMessage();
-                        return MessageParser.parse(message);
-                    }
+    private void demodulation() {
+        try {
+            AdsbDemodulator demodulator = new AdsbDemodulator(System.in);
+            while (true) {
+                RawMessage message = demodulator.nextMessage();
+                if (message != null) {
+                    this.messages.add(message);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException();
             }
-        };
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 
     /**
@@ -186,7 +191,7 @@ public class Main extends Application {
      * @param parameters List of Strings that contain the startup parameter applications
      * @return A Supplier containing a Message which is then added to the Queue.
      */
-    private Supplier<Message> messageFromFile(List<String> parameters) {
+    private Supplier<RawMessage> messageFromFile(List<String> parameters) {
         String f = Path.of(parameters.get(0)).toString();
         long supplierStartTime = System.nanoTime();
         try {
@@ -202,7 +207,7 @@ public class Main extends Application {
                     if (deltaT >= 0) {
                         Thread.sleep(deltaT / MILLION);
                     }
-                    return MessageParser.parse(new RawMessage(timeStampNs, new ByteString(bytes)));
+                    return new RawMessage(timeStampNs, new ByteString(bytes));
                 } catch (InterruptedException e) {
                     throw new RuntimeException();
                 } catch (IOException e) {

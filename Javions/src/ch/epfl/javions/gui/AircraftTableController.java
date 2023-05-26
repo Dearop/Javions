@@ -7,12 +7,14 @@ import ch.epfl.javions.aircraft.AircraftRegistration;
 import ch.epfl.javions.aircraft.AircraftTypeDesignator;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
+import javafx.util.Callback;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -41,36 +43,6 @@ public final class AircraftTableController {
 
     // table view that displays aircraft state information
     private static TableView<ObservableAircraftState> scenegraph = new TableView<>();
-
-    // table column that displays ICAO address
-    private static TableColumn<ObservableAircraftState, String> icaoAddress;
-
-    // table column that displays call sign
-    private static TableColumn<ObservableAircraftState, String> callSign;
-
-    // table column that displays registration
-    private static TableColumn<ObservableAircraftState, String> registration;
-
-    // table column that displays model
-    private static TableColumn<ObservableAircraftState, String> model;
-
-    // table column that displays type
-    private static TableColumn<ObservableAircraftState, String> type;
-
-    // table column that displays description
-    private static TableColumn<ObservableAircraftState, String> description;
-
-    // table column that displays longitude
-    private static TableColumn<ObservableAircraftState, String> longitude;
-
-    // table column that displays latitude
-    private static TableColumn<ObservableAircraftState, String> latitude;
-
-    // table column that displays altitude
-    private static TableColumn<ObservableAircraftState, String> altitude;
-
-    // table column that displays velocity
-    private static TableColumn<ObservableAircraftState, String> velocity;
 
     // number formatter for altitude and velocity
     private static NumberFormat format;
@@ -110,6 +82,8 @@ public final class AircraftTableController {
         this.format = NumberFormat.getInstance();
         format.setMinimumFractionDigits(MIN_INTEGER_DECIMAL);
         format.setMaximumFractionDigits(MAX_INTEGER_DECIMAL);
+        scenegraph.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        scenegraph.setTableMenuButtonVisible(true);
 
         // Add listener to knownStates for adding or removing items from the table
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
@@ -140,6 +114,8 @@ public final class AircraftTableController {
                 scenegraph.getSelectionModel().select(currentSelectedState.getValue());
             }
         });
+
+        createColumns();
     }
 
     /**
@@ -161,65 +137,23 @@ public final class AircraftTableController {
      * @return a JavaFX Node representing the aircraft table
      */
     public static Node pane() {
-        scenegraph.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        scenegraph.setTableMenuButtonVisible(true);
+        return scenegraph;
+    }
 
-        Set<TableColumn<ObservableAircraftState, String>> numberColumns = new HashSet<>();
-
-        if (scenegraph.getColumns().size() == 0) {
-
-            // ICAOAddress
-            icaoAddress = new TableColumn<>("IcaoAddress");
-            icaoAddress.setPrefWidth(WIDTH_ICAOADRESS);
-            scenegraph.getColumns().add(icaoAddress);
-
-            // CallSign
-            callSign = new TableColumn<>("CallSign");
-            callSign.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
-            scenegraph.getColumns().add(callSign);
-
-            // Registration
-            registration = new TableColumn<>("Registration");
-            registration.setPrefWidth(WIDTH_REGISTRATION);
-            scenegraph.getColumns().add(registration);
-
-            // Model
-            model = new TableColumn<>("Model");
-            model.setPrefWidth(WIDTH_MODEL);
-            scenegraph.getColumns().add(model);
-
-            //Type
-            type = new TableColumn<>("Type");
-            type.setPrefWidth(WIDTH_TYPE);
-            scenegraph.getColumns().add(type);
-
-            // Description
-            description = new TableColumn<>("Description");
-            description.setPrefWidth(WIDTH_CALLSIGN_AND_DESCRIPTION);
-            scenegraph.getColumns().add(description);
-
-            // Longitude
-            longitude = createNumberColumn(numberColumns, longitude, "Longitude (°)");
-
-            // Latitude
-            latitude = createNumberColumn(numberColumns, latitude, "Latitude (°)");
-
-            // Altitude
-            altitude = createNumberColumn(numberColumns, altitude, "Altitude (m)");
-
-            // Velocity
-            velocity = createNumberColumn(numberColumns, velocity, "Velocity (km/h)");
-        }
-
-        icaoAddress.setCellValueFactory(f -> {
+    private void createColumns() {
+        // ICAOAddress
+        createColumn("IcaoAddress", false, WIDTH_ICAOADRESS, f -> {
             ReadOnlyObjectWrapper<IcaoAddress> icaoAddressWrapper =
                     new ReadOnlyObjectWrapper<>(f.getValue().icaoAddress());
             return icaoAddressWrapper.map(IcaoAddress::string);
         });
 
-        callSign.setCellValueFactory(f -> f.getValue().callSignProperty().map(CallSign::string));
+        // CallSign
+        createColumn("CallSign", false, WIDTH_CALLSIGN_AND_DESCRIPTION, f ->
+                f.getValue().callSignProperty().map(CallSign::string));
 
-        registration.setCellValueFactory(f -> {
+        // Registration
+        createColumn("Registration", false, WIDTH_REGISTRATION, f -> {
             if (f.getValue().getData() != null) {
                 ReadOnlyObjectWrapper<AircraftRegistration> registrationWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().registration());
@@ -227,22 +161,27 @@ public final class AircraftTableController {
             } else return null;
         });
 
-        model.setCellValueFactory(f -> {
+        // Model
+        createColumn("Model", false, WIDTH_MODEL, f -> {
             if (f.getValue().getData() != null) {
                 ReadOnlyObjectWrapper<String> modelWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().model());
                 return modelWrapper.map(String::toString);
             } else return null;
         });
-        type.setCellValueFactory(f -> {
+
+        //Type
+        createColumn("Type", false, WIDTH_TYPE, f -> {
             if (f.getValue().getData() != null) {
                 ReadOnlyObjectWrapper<AircraftTypeDesignator> typeWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().typeDesignator());
                 return typeWrapper.map(AircraftTypeDesignator::string);
-            }
-            return null;
+            } else
+                return null;
         });
-        description.setCellValueFactory(f -> {
+
+        // Description
+        createColumn("Description",false, WIDTH_CALLSIGN_AND_DESCRIPTION , f -> {
             if (f.getValue().getData() != null) {
                 ReadOnlyObjectWrapper<AircraftDescription> descriptionWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().description());
@@ -250,20 +189,26 @@ public final class AircraftTableController {
             } else return null;
         });
 
-        longitude.setCellValueFactory(f ->
+        // Longitude
+        createColumn("Longitude (°)", true, NUMBER_COLUMN_SIZE, f ->
                 f.getValue().positionProperty().map(m ->
                         format.format(Units.convertTo(m.longitude(), Units.Angle.DEGREE))));
-        latitude.setCellValueFactory(f ->
+
+        // Latitude
+        createColumn("Latitude (°)", true, NUMBER_COLUMN_SIZE, f ->
                 f.getValue().positionProperty().map(m ->
                         format.format(Units.convertTo(m.latitude(), Units.Angle.DEGREE))));
-        altitude.setCellValueFactory(f ->
+
+        // Altitude
+        createColumn("Altitude (m)", true, NUMBER_COLUMN_SIZE, f ->
                 f.getValue().altitudeProperty().map(m ->
                         format.format(m.doubleValue())));
-        velocity.setCellValueFactory(f ->
+
+        // Velocity
+        createColumn("Velocity (km/h)", true, NUMBER_COLUMN_SIZE, f ->
                 f.getValue().velocityProperty().map(m ->
                         format.format(Units.convertTo(m.doubleValue(), Units.Speed.KILOMETER_PER_HOUR))));
 
-        return scenegraph;
     }
 
     /*
@@ -273,14 +218,16 @@ public final class AircraftTableController {
         this.selectedState = selectedState;
     }
 
-    private static void settingNumberCells(Set<TableColumn<ObservableAircraftState, String>> numberColumns,
-                                     TableColumn<ObservableAircraftState, String> column, double desiredUnit) {
+    private static void settingNumberCells
+            (Set<TableColumn<ObservableAircraftState, String>> numberColumns,
+             TableColumn<ObservableAircraftState, String> column, double desiredUnit) {
         if (numberColumns.contains(column)) {
             column.setCellValueFactory(f ->
                     f.getValue().positionProperty().map(m ->
                             format.format(Units.convertTo(m.longitude(), desiredUnit))));
         }
     }
+
 
     /**
      * The createNumberColumn method creates a new TableColumn for numerical data and adds it to the scenegraph.
@@ -290,28 +237,26 @@ public final class AircraftTableController {
      * and sets the alignment style to right-justified. The method returns the new TableColumn object.
      *
      * @param numberColumns a Set of existing TableColumn objects.
-     * @param column        a TableColumn object.
      * @param columnName    the name of the column as a String.
      * @return the new TableColumn object.
      */
-    public static TableColumn<ObservableAircraftState, String> createNumberColumn(
-            Set<TableColumn<ObservableAircraftState, String>> numberColumns,
-            TableColumn<ObservableAircraftState, String> column, String columnName) {
-        column = new TableColumn<>(columnName);
-        column.setPrefWidth(NUMBER_COLUMN_SIZE);
+    public static void createColumn(String columnName, boolean numberColumns, int columnWidth,
+                                    Callback<TableColumn.CellDataFeatures<ObservableAircraftState, String>, ObservableValue<String>> cellFunction) {
+        TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
+        if (numberColumns) {
+            column.setComparator((s1, s2) -> {
+                try {
+                    return (s1.isEmpty() || s2.isEmpty())
+                            ? s1.compareTo(s2)
+                            : Double.compare(format.parse(s1).doubleValue(), format.parse(s2).doubleValue());
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+            column.setStyle("-fx-alignment: baseline-right");
+        }
+        column.setPrefWidth(columnWidth);
+        column.setCellValueFactory(cellFunction);
         scenegraph.getColumns().add(column);
-        numberColumns.add(column);
-
-        column.setComparator((s1, s2) -> {
-            try {
-                return (s1.isEmpty() || s2.isEmpty())
-                        ? s1.compareTo(s2)
-                        : Double.compare(format.parse(s1).doubleValue(), format.parse(s2).doubleValue());
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        column.setStyle("-fx-alignment: baseline-right");
-        return column;
     }
 }

@@ -541,7 +541,7 @@ class AdsbDemodulatorTest {
     @Test
     void adsbDemodulatorNextMessageWorksOnGivenSamples() throws IOException {
         final var expectedIt = AdsbDemodulatorTest.EXPECTED_RAW_MESSAGE_DATA.iterator();
-        try (final var s = new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples_20230304_1442.bin")) {
+        try (final var s = new FileInputStream("C:\\\\Users\\\\Paul\\\\Dropbox\\\\PC\\\\Documents\\\\EPFL\\\\BA-2\\\\POOP\\\\Javions\\\\Javions\\\\Javions\\\\test-resources\\\\samples_20230304_1442.bin")) {
             final var demodulator = new AdsbDemodulator(s);
             while (expectedIt.hasNext()) {
                 final var expected = expectedIt.next();
@@ -564,6 +564,25 @@ class AdsbDemodulatorTest {
             assertEquals(14100, message.timeStampNs());
             assertEquals("8D44CE6858A3860B09465B3D3696", message.bytes().toString());
             assertNull(demodulator.nextMessage());
+        }
+    }
+
+    @Test
+    void NumberOfMessagesInTheFile(){
+        String fileName = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples_20230522_2051.bin";
+        try {
+            InputStream stream = new FileInputStream(fileName);
+            AdsbDemodulator demodulator = new AdsbDemodulator(stream);
+            int i = 0;
+            while(stream.available() > 1<<16){
+                if(demodulator.nextMessage() != null)
+                    ++i;
+            }
+            System.out.println(i);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

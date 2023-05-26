@@ -22,7 +22,7 @@ public final class Math2 {
      * @throws IllegalArgumentException if min is bigger than max
      */
     public static int clamp(int min, int v, int max) {
-        Preconditions.checkArgument(min < max);
+        Preconditions.checkArgument(min <= max);
         return Math.min(Math.max(min, v), max);
     }
 

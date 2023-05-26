@@ -23,7 +23,7 @@ public final class SamplesDecoder {
     private final int batchSize;
     private final byte[] bytes;
     private final static int ADJUSTMENT = 2;
-    private final static int SIGN_ADJUSTMENT = 1 << 11;
+    private final static int SIGN_ADJUSTMENT = 2048;
 
     /**
      * Constructs a SamplesDecoder object with the given input stream and batch size.

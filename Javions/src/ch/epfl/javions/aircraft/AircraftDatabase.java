@@ -64,11 +64,9 @@ public final class AircraftDatabase {
                                                 WakeTurbulenceCategory.of(s[5])
                                         );
                                         dataHashMap.put(s[0], d);
-                                    } catch (Exception l) {
-                                    }
+                                    } catch (Exception l) {}
                                 });
-                    } catch (IOException l) {
-                    }
+                    } catch (IOException l) {}
                 }
             });
         }catch (IOException l){}
