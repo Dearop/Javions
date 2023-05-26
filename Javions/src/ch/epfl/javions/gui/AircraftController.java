@@ -25,6 +25,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 
+import java.util.Objects;
+
 import static javafx.scene.paint.CycleMethod.NO_CYCLE;
 
 /**
@@ -71,8 +73,8 @@ public final class AircraftController {
      */
     public AircraftController(MapParameters parameters, ObservableSet<ObservableAircraftState> knownStates,
                               ObjectProperty<ObservableAircraftState> currentSelectedState) {
-        this.parameters = parameters;
-        this.currentSelectedState = currentSelectedState;
+        this.parameters = Objects.requireNonNull(parameters);
+        this.currentSelectedState = Objects.requireNonNull(currentSelectedState);
 
         this.aircraftPane = new Pane();
         this.aircraftPane.setPickOnBounds(false);

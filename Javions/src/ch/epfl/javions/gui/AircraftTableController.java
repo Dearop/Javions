@@ -18,13 +18,10 @@ import javafx.util.Callback;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static javafx.beans.binding.Bindings.when;
 
 /**
  * The AircraftTableController class is the controller for the aircraft table view in the JavaFX user interface. It provides
@@ -98,7 +95,7 @@ public final class AircraftTableController {
         // Add listener to table for handling double-click events
         scenegraph.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
-                if (selectedState != null) {
+                if (selectedState != null && scenegraph.getSelectionModel().getSelectedItem() != null) {
                     selectedState.accept(scenegraph.getSelectionModel().getSelectedItem());
                 }
             } else {
@@ -241,7 +238,7 @@ public final class AircraftTableController {
      * @return the new TableColumn object.
      */
     public static void createColumn(String columnName, boolean numberColumns, int columnWidth,
-                                    Callback<TableColumn.CellDataFeatures<ObservableAircraftState, String>, ObservableValue<String>> cellFunction) {
+                                    Function<TableColumn.CellDataFeatures<ObservableAircraftState, String>, ObservableValue<String>> cellFunction) {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
         if (numberColumns) {
             column.setComparator((s1, s2) -> {
@@ -256,7 +253,7 @@ public final class AircraftTableController {
             column.setStyle("-fx-alignment: baseline-right");
         }
         column.setPrefWidth(columnWidth);
-        column.setCellValueFactory(cellFunction);
+        column.setCellValueFactory(cellFunction::apply);
         scenegraph.getColumns().add(column);
     }
 }
