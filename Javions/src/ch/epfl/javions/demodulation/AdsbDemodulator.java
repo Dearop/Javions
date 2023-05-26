@@ -22,7 +22,9 @@ public final class AdsbDemodulator {
     private static final int[] sumV_Values = {5, 15, 20, 25, 30, 40};
     private static final int[] nextSumP_Values = {1, 11, 36, 46};
     private static final int BYTE_SIZE_FOR_SHIFTING = 7;
-    
+    private static byte[] table;
+    private static final int BYTE_SIZE = 8;
+
     public AdsbDemodulator(InputStream samplesStream) throws IOException {
         window = new PowerWindow(samplesStream, WINDOW_SIZE);
     }
@@ -50,29 +52,14 @@ public final class AdsbDemodulator {
                     + window.get(sumV_Values[3]) + window.get(sumV_Values[4]) + window.get(sumV_Values[5]);
 
             if ((beforeP < sumP) && (sumPNext < sumP) && (sumP >= (2 * sumV))) {
-                byte[] table = new byte[MESSAGE_SIZE];
+                table = new byte[MESSAGE_SIZE];
 
-                for (int byteIterator = 0; 8 > byteIterator; byteIterator++) {
-                    if (window.get(START_OF_BYTE + (BIT_TIME_INTERVAL * byteIterator))
-                            >= window.get(START_OF_BYTE_CHECK + (BIT_TIME_INTERVAL * byteIterator))) {
-
-                        table[0] |= (byte) (1 << (7 - byteIterator));
-                    }
-                }
+                fillTable(window, 0);
 
                 if (EXPECTED_DF == RawMessage.size(table[0])) {
 
-                    for (int byteUsed = 1; 14 > byteUsed; byteUsed++) {
-                        for (int posInsideByte = 0; 8 > posInsideByte; posInsideByte++) {
-
-                            if (this.window.get(START_OF_BYTE +
-                                    (START_OF_BYTE * byteUsed) + (BIT_TIME_INTERVAL * posInsideByte))
-                                    >= this.window.get(START_OF_BYTE_CHECK +
-                                    (START_OF_BYTE * byteUsed) + (BIT_TIME_INTERVAL * posInsideByte))) {
-
-                                table[byteUsed] |= (byte) (1 << (BYTE_SIZE_FOR_SHIFTING - posInsideByte));
-                            }
-                        }
+                    for (int byteUsed = 1; MESSAGE_SIZE > byteUsed; byteUsed++) {
+                        fillTable(window, byteUsed);
                     }
 
                     RawMessage checker = RawMessage.of(window.position() * TIMESTAMP_CONVERTER, table);
@@ -89,6 +76,17 @@ public final class AdsbDemodulator {
             window.advance();
         }
         return null;
+    }
+
+    public static void fillTable(PowerWindow window, int pos) {
+
+        for (int byteIterator = 0; BYTE_SIZE > byteIterator; byteIterator++) {
+            if (window.get(START_OF_BYTE + (BIT_TIME_INTERVAL * byteIterator))
+                    >= window.get(START_OF_BYTE_CHECK + (BIT_TIME_INTERVAL * byteIterator))) {
+
+                table[pos] |= (byte) (1 << (BYTE_SIZE_FOR_SHIFTING - byteIterator));
+            }
+        }
     }
 
 }

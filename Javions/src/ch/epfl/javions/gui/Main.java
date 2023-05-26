@@ -43,6 +43,9 @@ public class Main extends Application {
     private static final int START_ZOOM = 8;
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
+    private static DataInputStream s;
+    private static RawMessage message;
+    private static AdsbDemodulator demodulator;
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -67,7 +70,6 @@ public class Main extends Application {
         AircraftController ac = new AircraftController(mp, asm.states(), sap);
         AircraftTableController table = new AircraftTableController(asm.states(), sap);
         StatusLineController controller = new StatusLineController();
-
         controller.airCraftCountProperty().bind(Bindings.size(asm.states()));
 
         BaseMapController bmc = new BaseMapController(tm, mp);
@@ -94,14 +96,19 @@ public class Main extends Application {
         primaryStage.setMinHeight(WINDOW_HEIGHT);
         primaryStage.show();
 
-        Supplier<Message> messageSupplier = demodulation(parameters);
-                //(parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
+
+        Supplier<Message> messageSupplier = (parameters.isEmpty()) ? demodulation() : messageFromFile(parameters);
 
         Thread messageHandler = new Thread(() -> {
             while (true) {
-                if (messageSupplier.get() == null)
+                if (messageSupplier.get() == null) {
                     break;
-                else messages.add(messageSupplier.get());
+                }
+
+                else {
+                    messages.add(messageSupplier.get());
+                    System.out.println(messageSupplier.get());
+                }
             }
         });
 
@@ -148,20 +155,19 @@ public class Main extends Application {
      *
      * @return A Supplier containing a Message which is then added to the Queue.
      */
-    private Supplier<Message> demodulation(List<String> parameters) {
+    private Supplier<Message> demodulation() {
         return () -> {
-            String f = Path.of(parameters.get(0)).toString();
-            DataInputStream s = null;
+            /*String f = Path.of(parameters.get(0)).toString();
             try {;
                 s = new DataInputStream(new FileInputStream(f));
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
             try {
-                AdsbDemodulator demodulator = new AdsbDemodulator(s);
+                demodulator = new AdsbDemodulator(s);
                 while (true) {
                     if (demodulator.nextMessage() != null) {
-                        RawMessage message = demodulator.nextMessage();
+                        message = demodulator.nextMessage();
                         return MessageParser.parse(message);
                     }
                 }
