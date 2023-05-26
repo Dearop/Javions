@@ -6,7 +6,6 @@ import ch.epfl.javions.adsb.AircraftStateSetter;
 import ch.epfl.javions.adsb.CallSign;
 import ch.epfl.javions.aircraft.*;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -23,17 +22,16 @@ import java.util.*;
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
     private AircraftStateAccumulator accumulator;
     private AircraftData data;
-    private ObservableList<AirbornePos> trajectories;
-    private ObservableList<AirbornePos> trajectoryProperty;
-    private LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
-    private IntegerProperty category = new SimpleIntegerProperty();
-    private ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
-    private ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
-    private DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
-    private DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
-    private DoubleProperty trackOrHeading = new SimpleDoubleProperty();
-    IcaoAddress icaoAddress;
-    private long previousMessageTimeStampNs;
+    private final ObservableList<AirbornePos> trajectories;
+    private final ObservableList<AirbornePos> trajectoryProperty;
+    private final LongProperty lastMessageTimeStampNs = new SimpleLongProperty();
+    private final IntegerProperty category = new SimpleIntegerProperty();
+    private final ObjectProperty<CallSign> callSign = new SimpleObjectProperty<>();
+    private final ObjectProperty<GeoPos> position = new SimpleObjectProperty<>();
+    private final DoubleProperty altitude = new SimpleDoubleProperty(Double.NaN);
+    private final DoubleProperty velocity = new SimpleDoubleProperty(Double.NaN);
+    private final DoubleProperty trackOrHeading = new SimpleDoubleProperty();
+    private final IcaoAddress icaoAddress;
 
     /**
      * Creates an ObservableAircraftState object with the given IcaoAddress and AircraftData.
@@ -86,7 +84,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     @Override
     public void setPosition(GeoPos position) {
         this.position.set(position);
-        if(!Double.isNaN(altitude.get()))
+        if (!Double.isNaN(altitude.get()))
             trajectories.add(new AirbornePos(position, altitude.get()));
     }
 
@@ -101,7 +99,7 @@ public final class ObservableAircraftState extends Observable implements Aircraf
         if (position.get() != null) {
             if (trajectories.isEmpty())
                 trajectories.add(new AirbornePos(position.get(), altitude));
-            else if (previousMessageTimeStampNs == lastMessageTimeStampNs.get())
+            else
                 trajectories.set(trajectories.size() - 1, new AirbornePos(position.get(), altitude));
         }
     }

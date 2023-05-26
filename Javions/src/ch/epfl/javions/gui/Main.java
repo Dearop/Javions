@@ -47,10 +47,19 @@ public class Main extends Application {
     private static RawMessage message;
     private static AdsbDemodulator demodulator;
 
+    /**
+     * The main entry point for the JavaFX application.
+     * @param args The command-line arguments passed to the application.
+     */
     public static void main(String[] args) {
         Application.launch(args);
     }
 
+    /**
+     * Initializes and starts the JavaFX application. Including the different Panes and combining them into one!
+     * @param primaryStage The primary stage for the JavaFX application.
+     * @throws Exception If an exception occurs during application startup.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         List<String> parameters = this.getParameters().getRaw();
@@ -102,11 +111,8 @@ public class Main extends Application {
             while (true) {
                 if (messageSupplier.get() == null) {
                     break;
-                }
-
-                else {
+                } else {
                     messages.add(messageSupplier.get());
-                    System.out.println(messageSupplier.get());
                 }
             }
         });

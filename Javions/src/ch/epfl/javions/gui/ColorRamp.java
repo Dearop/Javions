@@ -1,5 +1,6 @@
 package ch.epfl.javions.gui;
 
+import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
 import java.util.Arrays;
@@ -44,8 +45,7 @@ public final class ColorRamp {
      * @throws IllegalArgumentException if the number of colors is less than 2.
      */
     public ColorRamp(Color ...colors){
-        if(colors.length < 2)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(colors.length >= 2);
         this.colors = colors;
         this.maxIndex = colors.length - 1;
     }
@@ -57,8 +57,7 @@ public final class ColorRamp {
      * @throws IllegalArgumentException if the number of colors is less than 2.
      */
     public ColorRamp(List<Color> colors){
-        if(colors.size() < 2)
-            throw new IllegalArgumentException();
+        Preconditions.checkArgument(colors.size() >= 2);
         this.colors = colors.toArray(new Color[0]);
         this.maxIndex = colors.size() - 1;
     }

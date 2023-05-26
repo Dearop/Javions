@@ -143,7 +143,6 @@ public final class BaseMapController {
 
 
     /**
-     *
      * @return the pane containing the canvas on which the whole map is drawn
      */
     public Pane pane() {
@@ -151,20 +150,28 @@ public final class BaseMapController {
     }
 
     /**
-     * @param pos
+     * Centers the map on the specified geographical position.
+     * This method is called when a aircraft is double clicked on the aircraft table
+     *
+     * @param pos The geographical position to center the map on.
      */
     public void centerOn(GeoPos pos) {
         double xTopPositon = WebMercator.x(parameter.getZoom(), pos.longitude());
         double yTopPosition = WebMercator.y(parameter.getZoom(), pos.latitude());
+
+        // Scroll to the top-left corner of the map
         parameter.scroll(-parameter.getMinX(), -parameter.getMinY());
-        parameter.scroll((int) ((xTopPositon - mapPane.getWidth() / 2)), (int) ((yTopPosition - mapPane.getHeight() / 2)));
+
+        // Scroll to the center of the specified position
+        parameter.scroll((int) ((xTopPositon - mapPane.getWidth() / 2)),
+                (int) ((yTopPosition - mapPane.getHeight() / 2)));
     }
 
     /**
      * This method calculates the necessary tiles to cover the visible area of the map and draws them on the canvas.
-     * It first calculates the minimum and maximum tiles in the x and y directions that are inside the visible area of the map.
-     * Then, for each of these tiles, it obtains the corresponding image from the tile manager
-     * and draws it on the canvas at the appropriate position.
+     * It first calculates the minimum and maximum tiles in the x and y directions that are
+     * inside the visible area of the map. Then, for each of these tiles, it obtains the corresponding
+     * image from the tile manager and draws it on the canvas at the appropriate position.
      */
     private void redrawIfNeeded() {
         if (!redrawNeeded) return;
@@ -195,7 +202,8 @@ public final class BaseMapController {
                     graphics.drawImage(tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y))
                             , xCoordinateShiftedTile, yCoordinateShiftedTile);
                 } catch (IOException ignored) {
-                    // If an exception is thrown while obtaining the image for the tile, ignore it and continue to the next tile
+                    // If an exception is thrown while obtaining the image for the tile,
+                    // ignore it and continue to the next tile
                 }
                 // Update the x position on the canvas for the next tile to be drawn in the current row
                 xCoordinateShiftedTile += TILE_SIZE;
@@ -208,12 +216,14 @@ public final class BaseMapController {
     /**
      * This method calculates the position of a tile on the map given its position on the screen.
      * It simply divides the screen position by the size of a tile to obtain the corresponding tile position.
+     *
      * @param screenPosition the position of the tile on the screen
      * @return the position of the tile on the map
      */
     private double tilePositionCalculator(double screenPosition) {
         return screenPosition / TILE_SIZE;
     }
+
     /**
      * This method sets the redrawNeeded flag to true and requests
      * a redraw of the canvas on the next pulse of the JavaFX application thread.

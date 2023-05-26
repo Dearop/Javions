@@ -54,18 +54,14 @@ public final class PowerComputer {
         int counter = 0;
 
         for (int i = 0; i < bytesRead; i += 2) {
-            for (int j = 5; j >= 0; j--)
-                powerCalculationTable[2+j] = powerCalculationTable[j];
+            powerCalculationTable[(i + 1) & 7] = decodedBatch[i + 1];
+            powerCalculationTable[i & 7] = decodedBatch[i];
 
-            powerCalculationTable[0] = decodedBatch[i + 1];
-            powerCalculationTable[1] = decodedBatch[i];
-
-
-            batch[i / 2] = (int) (Math.pow(powerCalculationTable[1] - powerCalculationTable[3] +
-                    powerCalculationTable[5] - powerCalculationTable[7], 2) //even
+            batch[i / 2] = (int) (Math.pow(powerCalculationTable[(1 + (2 * i)) & 7] - powerCalculationTable[(3 + (2 * i)) & 7] +
+                    powerCalculationTable[(5 + (2 * i)) & 7] - powerCalculationTable[(7 + (2 * i)) & 7], 2) //even
                     +
-                    Math.pow(powerCalculationTable[0] - powerCalculationTable[2] + powerCalculationTable[4] -
-                            powerCalculationTable[6], 2)); //odd
+                    Math.pow(powerCalculationTable[(0 + (2 * i)) & 7] - powerCalculationTable[(2 + (2 * i)) & 7] +
+                            powerCalculationTable[(4 + (2 * i)) & 7] - powerCalculationTable[(6 + (2 * i)) & 7], 2)); //odd
             counter++;
         }
         return counter;

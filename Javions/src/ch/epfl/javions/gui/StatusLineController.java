@@ -21,6 +21,8 @@ public final class StatusLineController {
     private BorderPane scenegraph;
     private IntegerProperty airCraftCountProperty = new SimpleIntegerProperty();
     private LongProperty messageCountProperty = new SimpleLongProperty();
+    private static final String CSS_STATUS_FILE = "status.css";
+    private static final String FORMATTING = "%s";
 
     /**
      * Constructs a new StatusLineController object.
@@ -32,15 +34,16 @@ public final class StatusLineController {
 
         Text numberOfAircraft = new Text();
         numberOfAircraft.textProperty().bind(Bindings.createStringBinding(() ->
-                String.format("%s", "Aéronefs visibles : " + airCraftCountProperty.get()), airCraftCountProperty));
+                String.format(FORMATTING, "Aéronefs visibles : "
+                        + airCraftCountProperty.get()), airCraftCountProperty));
 
         Text numberOfMessages = new Text();
         numberOfMessages.textProperty().bind(Bindings.createStringBinding(() ->
-                String.format("%s", "Messages reçus : " + messageCountProperty.get()), messageCountProperty));
+                String.format(FORMATTING, "Messages reçus : " + messageCountProperty.get()), messageCountProperty));
 
         this.scenegraph = new BorderPane(null, null,numberOfAircraft , null, numberOfMessages);
         scenegraph.setPickOnBounds(false);
-        scenegraph.getStylesheets().add("status.css");
+        scenegraph.getStylesheets().add(CSS_STATUS_FILE);
 
     }
 

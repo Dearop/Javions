@@ -52,12 +52,18 @@ public final class AircraftController {
 
     // a constant integer value that represents the maximum altitude of the color scheme for the aircraft.
     private static final int ALTITUDE_CEILING = 12000;
+    private static final int SPACE_FOR_HEIGHT = 4;
+    private static final String FORMATTING = "%s \n%s km/h %s m";
+    private static final int OFFSET_FOR_S1 = 0;
+    private static final int OFFSET_FOR_S2 = 1;
+    private static final String CSS_STYLESHEET_AIRCRAFT = "aircraft.css";
+    private static final int ZOOM_LEVEL_BARRIER = 11;
 
     /**
-     * Constructor for AircraftController class that initializes the private variables parameters and currentSelectedState
-     * then it creates a new Pane that uses the aircraft.css for styling purposes. The constructor also adds a listener
-     * on the ObservableSet of the ObservableAircraftState called knownStates. The listener adds and removes the aircraft
-     * from the pane.
+     * Constructor for AircraftController class that initializes the private variables parameters
+     * and currentSelectedStatethen it creates a new Pane that uses the aircraft.css for styling purposes.
+     * The constructor also adds a listener on the ObservableSet of the ObservableAircraftState called knownStates.
+     * The listener adds and removes the aircraft from the pane.
      *
      * @param parameters           - a map of parameters for aircraft control
      * @param knownStates          - an ObservableSet of ObservableAircraftState representing the known aircraft states
@@ -70,7 +76,7 @@ public final class AircraftController {
 
         this.aircraftPane = new Pane();
         this.aircraftPane.setPickOnBounds(false);
-        this.aircraftPane.getStylesheets().add("aircraft.css");
+        this.aircraftPane.getStylesheets().add(CSS_STYLESHEET_AIRCRAFT);
         this.currentZoom = new SimpleIntegerProperty();
 
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) c -> {
@@ -79,7 +85,8 @@ public final class AircraftController {
                 addedAircraft.viewOrderProperty().bind(c.getElementAdded().altitudeProperty().negate());
                 aircraftPane.getChildren().add(addedAircraft);
             } else if (c.wasRemoved()) {
-                aircraftPane.getChildren().removeIf(p -> p.getId().equals(c.getElementRemoved().icaoAddress().string()));
+                aircraftPane.getChildren().removeIf(p -> p.getId()
+                        .equals(c.getElementRemoved().icaoAddress().string()));
             }
         });
         currentZoom = parameters.zoomProperty();
@@ -182,8 +189,8 @@ public final class AircraftController {
                 if (oasTrajectory.get(i - 1).altitude() == oasTrajectory.get(i).altitude())
                     line.setStroke(altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
                 else {
-                    Stop s1 = new Stop(0, altitudeToPlasmaColourIndex(oasTrajectory.get(i - 1).altitude()));
-                    Stop s2 = new Stop(1, altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
+                    Stop s1 = new Stop(OFFSET_FOR_S1, altitudeToPlasmaColourIndex(oasTrajectory.get(i - 1).altitude()));
+                    Stop s2 = new Stop(OFFSET_FOR_S2, altitudeToPlasmaColourIndex(oasTrajectory.get(i).altitude()));
                     line.setStroke(new LinearGradient(startX, startY, endX, endY, true, NO_CYCLE, s1, s2));
                 }
                 trajectory.getChildren().add(line);
@@ -246,22 +253,26 @@ public final class AircraftController {
 
         // bind the Text object's text property to the aircraft's registration, velocity and altitude
         text.textProperty().bind(
-                Bindings.createStringBinding(() -> String.format("%s \n%s km/h %s m"
+                Bindings.createStringBinding(() -> String.format(FORMATTING
                                 , (oas.getData() != null) ? oas.getData().registration().string() : "Unknown"
-                                , (Double.isNaN(oas.getVelocity())) ? "?" : (int) Math.rint(Units.convertTo(oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
-                                , (Double.isNaN(oas.getAltitude())) ? "?" : (int) Math.rint(oas.getAltitude()))
+                                , (Double.isNaN(oas.getVelocity())) ? "?"
+                                        : (int) Math.rint(Units.convertTo(
+                                                oas.getVelocity(), Units.Speed.KILOMETER_PER_HOUR))
+                                , (Double.isNaN(oas.getAltitude())) ? "?"
+                                        : (int) Math.rint(oas.getAltitude()))
                         , oas.velocityProperty(), oas.altitudeProperty()));
 
         // bind the Rectangle object's height and width properties to the Text object's layoutBounds property
         rectangle.heightProperty().bind(
-                text.layoutBoundsProperty().map(b -> b.getHeight() + 4));
+                text.layoutBoundsProperty().map(b -> b.getHeight() + SPACE_FOR_HEIGHT));
         rectangle.widthProperty().bind(
-                text.layoutBoundsProperty().map(b -> b.getWidth() + 4));
+                text.layoutBoundsProperty().map(b -> b.getWidth() + SPACE_FOR_HEIGHT));
 
         // create the Group object containing the Rectangle and Text objects
         Group label = new Group(rectangle, text);
 
-        // bind the visibility property of the Group object to whether the corresponding aircraft's state label is selected
+        // bind the visibility property of the Group object to whether
+        // the corresponding aircraft's state label is selected
         label.visibleProperty().bind(
                 Bindings.createBooleanBinding(() -> selectedStateLabelListener(oas)));
         label.getStyleClass().add("label");
@@ -300,7 +311,7 @@ public final class AircraftController {
 
         // create the SVGPath for the aircraft icon
         SVGPath aircraftIcon = new SVGPath();
-        aircraftIcon.getStyleClass().add("aircraft");
+        aircraftIcon.getStyleClass().add(CSS_STYLESHEET_AIRCRAFT);
 
         // set up a click listener to select the aircraft when the icon is clicked
         aircraftIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -380,17 +391,17 @@ public final class AircraftController {
     }
 
     /**
-     * Returns true if the given aircraft state label should be visible based on the current zoom level and selected state.
-     * If no aircraft state is currently selected, the label is visible only when the zoom level is greater than or equal to 11.
-     * If an aircraft state is selected, the label is visible when the zoom level is greater than or equal to 11 or the given
-     * aircraft state is equal to the selected state.
+     * Returns true if the given aircraft state label should be visible based on the current zoom level and
+     * selected state.If no aircraft state is currently selected, the label is visible only when the zoom level
+     * is greater than or equal to 11.If an aircraft state is selected, the label is visible when the zoom level
+     * is greater than or equal to 11 or the given aircraft state is equal to the selected state.
      *
      * @param oas the observable aircraft state corresponding to the label
      * @return true if the label should be visible, false otherwise
      */
     private boolean selectedStateLabelListener(ObservableAircraftState oas) {
         return (currentSelectedState.getValue() == null)
-                ? currentZoom.get() >= 11
-                : currentZoom.get() >= 11 || currentSelectedState.getValue().equals(oas);
+                ? currentZoom.get() >= ZOOM_LEVEL_BARRIER
+                : currentZoom.get() >= ZOOM_LEVEL_BARRIER || currentSelectedState.getValue().equals(oas);
     }
 }

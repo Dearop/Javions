@@ -1,6 +1,7 @@
 package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Math2;
+import ch.epfl.javions.Preconditions;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
 
@@ -25,13 +26,14 @@ public final class MapParameters {
 
     /**
      * Constructs a MapParameters object with the specified zoom level and minimum X and Y coordinates.
+     *
      * @param zoomLevel The zoom level of the map, must be between MIN_ZOOM and MAX_ZOOM inclusive.
-     * @param minX The minimum X coordinate of the map.
-     * @param minY The minimum Y coordinate of the map.
+     * @param minX      The minimum X coordinate of the map.
+     * @param minY      The minimum Y coordinate of the map.
      * @throws IllegalArgumentException If the zoom level is not between MIN_ZOOM and MAX_ZOOM.
      */
     public MapParameters(int zoomLevel, double minX, double minY) {
-        if (zoomLevel < MIN_ZOOM || zoomLevel > MAX_ZOOM) throw new IllegalArgumentException();
+        Preconditions.checkArgument(zoomLevel >= MIN_ZOOM && zoomLevel <= MAX_ZOOM);
         this.zoom.set(zoomLevel);
         this.minX.set(minX);
         this.minY.set(minY);
@@ -81,6 +83,7 @@ public final class MapParameters {
 
     /**
      * Scrolls the map by the specified amount in the X and Y directions.
+     *
      * @param x The amount to scroll in the X direction.
      * @param y The amount to scroll in the Y direction.
      */
@@ -91,6 +94,7 @@ public final class MapParameters {
 
     /**
      * Changes the zoom level of the map by the specified amount.
+     *
      * @param zoomDifference The amount to change the zoom level by, can be positive or negative.
      */
     public void changeZoomLevel(int zoomDifference) {
