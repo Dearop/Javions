@@ -72,7 +72,7 @@ public final class PowerWindow {
      */
     // TODO: 4/28/2023 Go ask
     public boolean isFull() {
-        return this.availableStream / 4 >= this.positionCounter + this.windowSize;
+        return this.availableStream/4 >= this.positionCounter + this.windowSize;
     }
 
     /**
