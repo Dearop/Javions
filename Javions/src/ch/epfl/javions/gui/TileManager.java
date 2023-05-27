@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * The TileManager class is responsible for managing the tiles needed for the map visualization.
@@ -44,8 +45,8 @@ public final class TileManager {
      * @param serverAddress the URL of the tile server.
      */
     public TileManager(Path path, String serverAddress) {
-        this.path = path;
-        this.serverAddress = serverAddress;
+        this.path = Objects.requireNonNull(path);
+        this.serverAddress = Objects.requireNonNull(serverAddress);
         this.memoryCache = new LinkedHashMap<>(MEMORY_SIZE, MEMORY_LOAD_FACTOR, true);
     }
 

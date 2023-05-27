@@ -18,7 +18,7 @@ public class AircraftStateManagerTest {
     public void PrintingOutValues() {
         try (DataInputStream s = new DataInputStream(
                                     new BufferedInputStream(
-                                    new FileInputStream("/home/henri/Henri/EPFL/CS108/Javions/Javions/test-resources/messages_20230318_0915.bin")))){
+                                    new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin")))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             int i = 0;
             while (i < 4) {
@@ -39,14 +39,14 @@ public class AircraftStateManagerTest {
 
     @Test
     public void AircraftStateManagerTestWindow(){
-        AircraftDatabase database = new AircraftDatabase("/home/henri/Henri/EPFL/CS108/Javions/Javions/resources/aircraft.zip");
+        AircraftDatabase database = new AircraftDatabase("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\resources\\aircraft.zip");
         AircraftStateManager aircraftStateManager = new AircraftStateManager(database);
         List<ObservableAircraftState> goatManager = new ArrayList<>();
         long startTime = 0;
 
         try (DataInputStream s = new DataInputStream(
                                         new BufferedInputStream(
-                                            new FileInputStream("/home/henri/Henri/EPFL/CS108/Javions/Javions/test-resources/messages_20230318_0915.bin")))){
+                                            new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin")))){
             byte[] bytes = new byte[RawMessage.LENGTH];
             int i = 0;
             while (i < 1e5) {

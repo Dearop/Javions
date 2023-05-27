@@ -69,20 +69,15 @@ public final class ColorRamp {
      * @return The color at the given index within the color ramp.
      */
     public Color at(double index){
-        if(index <= 0){
+        if(index <= 0)
             return colors[0];
-        }
+
         if(index >= 1)
             return colors[maxIndex];
 
-        int lowerIndex;
-        if (index >= 1) {
-            lowerIndex = maxIndex;
-        } else {
-            lowerIndex = (int) (index * maxIndex);
-        }
-
+        int lowerIndex = (int) (index * maxIndex);
         Color lowerColor = colors[lowerIndex];
+
         if (index == 1 || lowerIndex == maxIndex) {
             return lowerColor;
         }

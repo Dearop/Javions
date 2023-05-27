@@ -14,16 +14,14 @@ public class MyPowerWindowTest {
 
     @Test
     public void PowerWindowConstructorTest() throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final PowerWindow window = new PowerWindow(stream, 16);
     }
 
     @Test
     public void PowerWindowAdvanceMethodWorks() throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
 
         final PowerWindow window = new PowerWindow(stream, 16);
@@ -39,8 +37,7 @@ public class MyPowerWindowTest {
 
     @Test
     public void PowerWindowAdvanceByTest() throws IOException{
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
 
         final PowerWindow window = new PowerWindow(stream, 8);
@@ -51,8 +48,7 @@ public class MyPowerWindowTest {
     // Should return true because we fill the window at the beginning
     @Test
     void isFullReturnsTrueAtTheBeginning() throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
 
         final PowerWindow window = new PowerWindow(stream, 16);
@@ -61,8 +57,7 @@ public class MyPowerWindowTest {
 
     @Test
     void getMethodReturnsRightIndex() throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
 
         final PowerWindow window = new PowerWindow(stream, 40);
@@ -84,8 +79,7 @@ public class MyPowerWindowTest {
 
     @Test
     void sizeMethodReturnsRightValue() throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
 
         final PowerWindow window = new PowerWindow(stream, 16);
@@ -94,8 +88,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfGetWorksForTriviain1stWindow() throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final InputStream f = new FileInputStream(samples);
         final PowerWindow powerWindow=new PowerWindow(stream,60);
@@ -109,8 +102,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfGetWorksIfCanSwitchTable() throws IOException { //with small batchsize
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final InputStream f = new FileInputStream(samples);
         final PowerWindow powerWindow=new PowerWindow(stream,8);
@@ -125,8 +117,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfAdvanceby1Worksfor1TableCases() throws IOException{
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final InputStream f=new FileInputStream(samples);
 
@@ -142,8 +133,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfAdvancebyOffsetWorksfor1TableCases() throws IOException{
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final InputStream f=new FileInputStream(samples);
         final PowerWindow powerWindow=new PowerWindow(stream,60);
@@ -158,8 +148,7 @@ public class MyPowerWindowTest {
 
     @Test
     void testIfIsFullforSmallFile()throws IOException {
-        String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final PowerWindow powerWindow = new PowerWindow(stream, 8);
         assertTrue(powerWindow.isFull());
@@ -170,8 +159,8 @@ public class MyPowerWindowTest {
     }
 
     @Test
-    void testTable() throws IOException{    String samples = this.getClass().getResource("/Javions/test-resources/samples.bin").getFile();
-        samples = URLDecoder.decode(samples, StandardCharsets.UTF_8);
+    void testTable() throws IOException{
+        String samples = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\samples.bin";
         final InputStream stream = new FileInputStream(samples);
         final PowerWindow window = new PowerWindow(stream, 4);
 

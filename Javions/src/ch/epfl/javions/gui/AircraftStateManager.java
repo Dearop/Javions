@@ -24,14 +24,14 @@ import static javafx.collections.FXCollections.unmodifiableObservableSet;
 public final class AircraftStateManager {
 
     // A map that maps each aircraft's IcaoAddress to its current AircraftStateAccumulator.
-    private Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> accumulatorMap;
+    private final Map<IcaoAddress, AircraftStateAccumulator<ObservableAircraftState>> accumulatorMap;
 
     // An ObservableSet that stores the known aircraft positions.
-    private ObservableSet<ObservableAircraftState> knownPositionStates;
+    private final ObservableSet<ObservableAircraftState> knownPositionStates;
 
     // An AircraftDatabase has all the information about the aircrafts available.
     private AircraftDatabase database;
-    private ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
+    private final ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
     private long lastTimeStampNs;
     private IcaoAddress lastIcaoAddress;
     private static final double MAX_TIME = 6e10;
@@ -80,8 +80,7 @@ public final class AircraftStateManager {
             accumulatorMap.put(lastIcaoAddress, new AircraftStateAccumulator<>(state));
         }
 
-        AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator =
-                accumulatorMap.get(lastIcaoAddress);
+        AircraftStateAccumulator<ObservableAircraftState> desiredAccumulator = accumulatorMap.get(lastIcaoAddress);
         desiredAccumulator.update(message);
 
         if (desiredAccumulator.stateSetter().getPosition() != null)

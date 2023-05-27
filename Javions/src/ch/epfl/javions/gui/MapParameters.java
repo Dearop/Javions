@@ -34,6 +34,8 @@ public final class MapParameters {
      */
     public MapParameters(int zoomLevel, double minX, double minY) {
         Preconditions.checkArgument(zoomLevel >= MIN_ZOOM && zoomLevel <= MAX_ZOOM);
+        Preconditions.checkArgument(minX >= 0);
+        Preconditions.checkArgument(minY >= 0);
         this.zoom.set(zoomLevel);
         this.minX.set(minX);
         this.minY.set(minY);

@@ -43,7 +43,6 @@ public class Main extends Application {
     private static final int START_ZOOM = 8;
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
-    private static RawMessage message;
     private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue();
 
     /**

@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.input.MouseButton;
-import javafx.util.Callback;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -61,7 +60,6 @@ public final class AircraftTableController {
     private static final int WIDTH_REGISTRATION = 90;
     private static final int WIDTH_MODEL = 230;
     private static final int WIDTH_TYPE = 50;
-    private TableColumn<ObservableAircraftState, String> column;
 
     /**
      * This constructor is responsible for creating an instance of the AircraftTableController class
@@ -122,11 +120,11 @@ public final class AircraftTableController {
      * all columns according to available space. The table includes a menu button that can be used to show/hide columns.
      * The data displayed in the table is obtained from an ObservableSet<ObservableAircraftState> object passed
      * in when constructing an instance of AircraftTableController.
-     * <p>
+     *
      * The data in each column is populated using a cell value factory, which maps the data in an
      * ObservableAircraftState object to the appropriate value for the corresponding column. For example,
      * the ICAO address column is populated using the ICAO address property of the aircraft state object.
-     * <p>
+     *
      * The longitude, latitude, altitude, and velocity columns display numeric data and are created using a private
      * helper method that creates a number column with a set preferred width and cell value factory that formats the
      * numeric data according to the appropriate units and precision.
@@ -137,6 +135,11 @@ public final class AircraftTableController {
         return scenegraph;
     }
 
+    /**
+     * Creates and adds columns to the table.
+     *
+     * Each column represents a specific property of the aircraft state.
+     */
     private void createColumns() {
         // ICAOAddress
         createColumn("IcaoAddress", false, WIDTH_ICAOADRESS, f -> {
@@ -215,27 +218,17 @@ public final class AircraftTableController {
         this.selectedState = selectedState;
     }
 
-    private static void settingNumberCells
-            (Set<TableColumn<ObservableAircraftState, String>> numberColumns,
-             TableColumn<ObservableAircraftState, String> column, double desiredUnit) {
-        if (numberColumns.contains(column)) {
-            column.setCellValueFactory(f ->
-                    f.getValue().positionProperty().map(m ->
-                            format.format(Units.convertTo(m.longitude(), desiredUnit))));
-        }
-    }
-
 
     /**
-     * The createNumberColumn method creates a new TableColumn for numerical data and adds it to the scenegraph.
-     * It takes as input a Set of existing TableColumn objects, a TableColumn object, and the name of the column as a String.
-     * The method adds the new TableColumn to the scenegraph, sets its width to NUMBER_COLUMN_SIZE, and adds it to the Set of
-     * existing TableColumn objects. It also sets the TableColumn's comparator to sort based on numerical values,
-     * and sets the alignment style to right-justified. The method returns the new TableColumn object.
+     * Creates a TableColumn with the specified properties and adds it to the scenegraph.
      *
-     * @param numberColumns a Set of existing TableColumn objects.
-     * @param columnName    the name of the column as a String.
-     * @return the new TableColumn object.
+     * @param columnName The name of the column.
+     *
+     * @param numberColumns A boolean indicating whether the column should support numeric comparisons.
+     *
+     * @param columnWidth The preferred width of the column.
+     *
+     * @param cellFunction A function that provides the cell value for each row in the column.
      */
     public static void createColumn(String columnName, boolean numberColumns, int columnWidth,
                                     Function<TableColumn.CellDataFeatures<ObservableAircraftState, String>, ObservableValue<String>> cellFunction) {

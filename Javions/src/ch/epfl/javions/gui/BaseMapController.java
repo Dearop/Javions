@@ -32,7 +32,6 @@ public final class BaseMapController {
     private static final int SCROLL_TIME = 200;
     private final ObjectProperty<Point2D> scroller;
 
-
     /**
      * Constructor for BaseMapController.
      *
@@ -151,7 +150,7 @@ public final class BaseMapController {
 
     /**
      * Centers the map on the specified geographical position.
-     * This method is called when a aircraft is double clicked on the aircraft table
+     * This method is called when a aircraft is double-clicked on the aircraft table
      *
      * @param pos The geographical position to center the map on.
      */
@@ -204,8 +203,7 @@ public final class BaseMapController {
                 } catch (IOException ignored) {
                     // If an exception is thrown while obtaining the image for the tile,
                     // ignore it and continue to the next tile
-                }
-                // Update the x position on the canvas for the next tile to be drawn in the current row
+                }                // Update the x position on the canvas for the next tile to be drawn in the current row
                 xCoordinateShiftedTile += TILE_SIZE;
             }
             // Update the y position on the canvas for the first tile to be drawn in the next row

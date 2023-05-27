@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
 public class MyRawMessageTest {
-    private final String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\samples_20230304_1442.bin";
+    private final String f = "C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test\\ch\\epfl\\javions\\adsb\\MyRawMessageTest.java";
         @Test
         public void RawMessagesTest1() throws IOException{
 
@@ -30,9 +30,9 @@ public class MyRawMessageTest {
         }
         @Test
         public void RawMessageTest2() throws IOException{
-            try (final InputStream s = new FileInputStream(this.f)) {
-                final AdsbDemodulator d = new AdsbDemodulator(s);
-                final RawMessage m;
+            try (InputStream s = new FileInputStream(this.f)) {
+                AdsbDemodulator d = new AdsbDemodulator(s);
+                RawMessage m;
                 m = d.nextMessage();
                 System.out.println(m);
                 assert null != m;

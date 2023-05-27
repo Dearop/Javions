@@ -30,7 +30,7 @@ public final class FriendTestAircraftController extends Application {
 
     @Test
     void readMessages() throws IOException {
-        for(RawMessage message :readAllMessages("/home/henri/Henri/EPFL/CS108/Javions/Javions/test-resources/messages_20230318_0915.bin")) {
+        for(RawMessage message :readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin")) {
             System.out.println(message.toString());
         }
 
