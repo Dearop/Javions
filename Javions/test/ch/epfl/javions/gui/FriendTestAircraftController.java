@@ -85,7 +85,7 @@ public final class FriendTestAircraftController extends Application {
         primaryStage.show();
         //URL messageURL = getClass().getResource("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin");
         //String message = Path.of(messageURL.toURI()).toString();
-        var mi = readAllMessages("/home/henri/Henri/EPFL/CS108/Javions/Javions/test-resources/messages_20230318_0915.bin").iterator();
+        var mi = readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin").iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {

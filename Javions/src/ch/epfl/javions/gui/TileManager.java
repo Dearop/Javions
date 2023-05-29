@@ -106,16 +106,19 @@ public final class TileManager {
      */
     public Image imageForTileAt(TileId id) throws IOException {
 
-        // getting the image straight from the memory
+        // getting the image straight from the memory cache
         if (memoryCache.containsKey(id)) return memoryCache.get(id);
 
-        // creating the path string
+        // else creating the path string to the appropriate file
         Path directoryPath = directoryPath(id);
         Path imagePath = directoryPath.resolve(id.y() + ".png");
 
+        /* Checking if the path to the image that we're looking for exists,
+           if they do we return the image from the disk */
         if (Files.exists(imagePath)) {
             return getImageFromDisk(id, imagePath);
         } else {
+            // we look for it in the server online
             URL u = new URL("https://" + serverAddress + "/" + id.zoom + "/" + id.x + "/" + id.y + ".png");
             URLConnection c = u.openConnection();
             c.setRequestProperty("User-Agent", "Javions");

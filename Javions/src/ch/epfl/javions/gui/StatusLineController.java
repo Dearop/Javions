@@ -1,10 +1,7 @@
 package ch.epfl.javions.gui;
 
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -39,7 +36,8 @@ public final class StatusLineController {
 
         Text numberOfMessages = new Text();
         numberOfMessages.textProperty().bind(Bindings.createStringBinding(() ->
-                String.format(FORMATTING, "Messages reçus : " + messageCountProperty.get()), messageCountProperty));
+                String.format(FORMATTING, "Messages reçus : "
+                        + messageCountProperty.get()), messageCountProperty));
 
         this.scenegraph = new BorderPane(null, null,numberOfMessages , null,numberOfAircraft );
         scenegraph.setPickOnBounds(false);

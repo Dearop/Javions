@@ -29,7 +29,7 @@ public final class AircraftStateManager {
     // An ObservableSet that stores the known aircraft positions.
     private final ObservableSet<ObservableAircraftState> knownPositionStates;
 
-    // An AircraftDatabase has all the information about the aircrafts available.
+    // An AircraftDatabase has all the information about the aircraft available.
     private AircraftDatabase database;
     private final ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
     private long lastTimeStampNs;
@@ -42,7 +42,7 @@ public final class AircraftStateManager {
      * @param database the AircraftDatabase to use
      */
     public AircraftStateManager(AircraftDatabase database) {
-        this.database = database;
+        this.database = Objects.requireNonNull(database);
         this.knownPositionStates = observableSet();
         this.accumulatorMap = new HashMap<>();
         this.unmodifiableKnownPositionStates = unmodifiableObservableSet(knownPositionStates);
@@ -96,8 +96,8 @@ public final class AircraftStateManager {
                 lastTimeStampNs - oas.getLastMessageTimeStampNs() > MAX_TIME);
 
         if (accumulatorMap.get(lastIcaoAddress) != null) {
-            if (lastTimeStampNs -
-                    accumulatorMap.get(lastIcaoAddress).stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
+            if (lastTimeStampNs - accumulatorMap.get(lastIcaoAddress)
+                    .stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
                 accumulatorMap.remove(lastIcaoAddress);
         }
     }

@@ -27,7 +27,7 @@ public final class TestAircraftController extends Application {
         Path path = Path.of(fileName);
         DataInputStream s = new DataInputStream(
                 new BufferedInputStream(
-                        new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA 2\\POOP\\Javions\\Javions\\Javions\\resources\\messages_20230318_0915.bin")));
+                        new FileInputStream("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin")));
         byte[] bytes = new byte[RawMessage.LENGTH];
         int i = 0;
             while (i < 1e3) {
@@ -68,7 +68,7 @@ public final class TestAircraftController extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.show();
 
-        var mi = readAllMessages("Javions/messages_20230318_0915.bin").iterator();
+        var mi = readAllMessages("C:\\Users\\Paul\\Dropbox\\PC\\Documents\\EPFL\\BA-2\\POOP\\Javions\\Javions\\Javions\\test-resources\\messages_20230318_0915.bin").iterator();
 
         // Animation des aéronefs
         new AnimationTimer() {

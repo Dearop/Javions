@@ -26,10 +26,11 @@ public final class MapParameters {
 
     /**
      * Constructs a MapParameters object with the specified zoom level and minimum X and Y coordinates.
+     * It's parameters tell us precisely where the user will start.
      *
-     * @param zoomLevel The zoom level of the map, must be between MIN_ZOOM and MAX_ZOOM inclusive.
-     * @param minX      The minimum X coordinate of the map.
-     * @param minY      The minimum Y coordinate of the map.
+     * @param zoomLevel The zoom level of the map on start, must be between MIN_ZOOM and MAX_ZOOM inclusive.
+     * @param minX      The minimum X coordinate of the map on start.
+     * @param minY      The minimum Y coordinate of the map on start.
      * @throws IllegalArgumentException If the zoom level is not between MIN_ZOOM and MAX_ZOOM.
      */
     public MapParameters(int zoomLevel, double minX, double minY) {
@@ -45,7 +46,7 @@ public final class MapParameters {
      * @return A read-only IntegerProperty representing the zoom level of the map.
      */
     public ReadOnlyIntegerProperty zoomProperty() {
-        return zoom;
+        return this.zoom;
     }
 
     /**

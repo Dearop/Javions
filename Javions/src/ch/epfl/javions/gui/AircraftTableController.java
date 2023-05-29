@@ -17,6 +17,7 @@ import javafx.scene.input.MouseButton;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -31,8 +32,7 @@ import java.util.function.Function;
  */
 public final class AircraftTableController {
 
-    // set of all known aircraft states
-    private static ObservableSet<ObservableAircraftState> knownStates;
+    private final ObservableSet<ObservableAircraftState> knownStates;
 
     // currently selected aircraft state
     private static ObjectProperty<ObservableAircraftState> currentSelectedState;
@@ -63,23 +63,40 @@ public final class AircraftTableController {
 
     /**
      * This constructor is responsible for creating an instance of the AircraftTableController class
-     * which controls the table of aircraft states displayed in the user interface.
+     * which controls the table of aircraft states displayed in the user interface. It also creates
+     * the actual TableView and adds the columns using a helper method.
+     *
+     * It also calls the addListeners and addEvent methods.
      *
      * @param knownStates          contains a set of all the known aircraft states that will be displayed in the table.
      * @param currentSelectedState is used to keep track of the currently selected state in the table.
      */
     public AircraftTableController(ObservableSet<ObservableAircraftState> knownStates,
                                    ObjectProperty<ObservableAircraftState> currentSelectedState) {
-
         // Initialize variables
-        this.knownStates = knownStates;
-        this.currentSelectedState = currentSelectedState;
+        this.knownStates = Objects.requireNonNull(knownStates);
+        this.currentSelectedState = Objects.requireNonNull(currentSelectedState);
         this.format = NumberFormat.getInstance();
         format.setMinimumFractionDigits(MIN_INTEGER_DECIMAL);
         format.setMaximumFractionDigits(MAX_INTEGER_DECIMAL);
         scenegraph.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
         scenegraph.setTableMenuButtonVisible(true);
 
+        addListeners();
+        createColumns();
+    }
+
+    /**
+     * Adds the appropriate Listeners to enable us to :
+     *
+     *  - Add a row with the data of from instance of an ObservableAircraftState whenever one gets added
+     *  to the Set of ObservableAircraftStates of which we know the position.
+     *  - Select an aircraft on the map and have the corresponding selected state be selected in the table
+     *
+     *  - Call the accept method from the selectedState Consumer, which then enables us to center the
+     *  map around the state on which we have clicked.
+     */
+    private void addListeners(){
         // Add listener to knownStates for adding or removing items from the table
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
@@ -90,7 +107,17 @@ public final class AircraftTableController {
             scenegraph.sort();
         });
 
-        // Add listener to table for handling double-click events
+        // Add listener to currentSelectedState for scrolling to and
+        // selecting the corresponding row in the table.
+        currentSelectedState.addListener(e -> {
+            if (knownStates.contains(currentSelectedState.get()) &&
+                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()) {
+                scenegraph.scrollTo(currentSelectedState.getValue());
+                scenegraph.getSelectionModel().select(currentSelectedState.getValue());
+            }
+        });
+
+        // Add listener to table for handling double-click events.
         scenegraph.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
                 if (selectedState != null && scenegraph.getSelectionModel().getSelectedItem() != null) {
@@ -100,17 +127,6 @@ public final class AircraftTableController {
                 currentSelectedState.set(scenegraph.getSelectionModel().getSelectedItem());
             }
         });
-
-        // Add listener to currentSelectedState for scrolling to and selecting the corresponding row in the table
-        currentSelectedState.addListener(e -> {
-            if (knownStates.contains(currentSelectedState.get()) &&
-                    scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()) {
-                scenegraph.scrollTo(currentSelectedState.getValue());
-                scenegraph.getSelectionModel().select(currentSelectedState.getValue());
-            }
-        });
-
-        createColumns();
     }
 
     /**
@@ -120,14 +136,6 @@ public final class AircraftTableController {
      * all columns according to available space. The table includes a menu button that can be used to show/hide columns.
      * The data displayed in the table is obtained from an ObservableSet<ObservableAircraftState> object passed
      * in when constructing an instance of AircraftTableController.
-     *
-     * The data in each column is populated using a cell value factory, which maps the data in an
-     * ObservableAircraftState object to the appropriate value for the corresponding column. For example,
-     * the ICAO address column is populated using the ICAO address property of the aircraft state object.
-     *
-     * The longitude, latitude, altitude, and velocity columns display numeric data and are created using a private
-     * helper method that creates a number column with a set preferred width and cell value factory that formats the
-     * numeric data according to the appropriate units and precision.
      *
      * @return a JavaFX Node representing the aircraft table
      */
@@ -139,9 +147,14 @@ public final class AircraftTableController {
      * Creates and adds columns to the table.
      *
      * Each column represents a specific property of the aircraft state.
+     *
+     * The data in each column is populated using a helper method, which creates the columns and
+     * maps the data of an ObservableAircraftState instance to the appropriate value for the corresponding
+     * column. For example, the ICAO address column is populated by creating an ObjectWrapper
+     * containing the IcaoAddress of each aircraft state instance.
      */
     private void createColumns() {
-        // ICAOAddress
+        // IcaoAddress
         createColumn("IcaoAddress", false, WIDTH_ICAOADRESS, f -> {
             ReadOnlyObjectWrapper<IcaoAddress> icaoAddressWrapper =
                     new ReadOnlyObjectWrapper<>(f.getValue().icaoAddress());
@@ -176,8 +189,7 @@ public final class AircraftTableController {
                 ReadOnlyObjectWrapper<AircraftTypeDesignator> typeWrapper =
                         new ReadOnlyObjectWrapper<>(f.getValue().getData().typeDesignator());
                 return typeWrapper.map(AircraftTypeDesignator::string);
-            } else
-                return null;
+            } else return null;
         });
 
         // Description

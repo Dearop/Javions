@@ -20,7 +20,6 @@ import java.util.*;
  * @author Paul Quesnot (347572)
  */
 public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
-    private AircraftStateAccumulator accumulator;
     private AircraftData data;
     private final ObservableList<AirbornePos> trajectories;
     private final ObservableList<AirbornePos> trajectoryProperty;
@@ -255,6 +254,5 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      * Represents the position and altitude of an aircraft at a specific point in time.
      * This record is used internally to track an aircraft's trajectory.
      */
-    public record AirbornePos(GeoPos position, double altitude) {
-    }
+    public record AirbornePos(GeoPos position, double altitude) {}
 }

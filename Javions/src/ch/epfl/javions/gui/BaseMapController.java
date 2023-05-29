@@ -16,7 +16,7 @@ import java.io.IOException;
 
 /**
  * The BaseMapController class is responsible for managing the display of the map on the screen.
- * It uses a TileManager from which it receives the map tiles and afterwards displays them.
+ * It uses a TileManager from which it receives the map tiles and displays them afterwards.
  * It listens for changes in the map parameters and updates the map display accordingly.
  *
  * @author Henri Antal (339444)
@@ -102,8 +102,8 @@ public final class BaseMapController {
             minScrollTime.set(currentTime + SCROLL_TIME);
 
             /**
-             * Update the map parameters to zoom in/out. Because the method changeZoomLevel only works in the top left
-             * corner of the canvas, we need to change the top left corner
+             * Update the map parameters to zoom in/out. Because the method changeZoomLevel
+             * only works in the top left corner of the canvas, we need to change the top left corner
              * to be the position of the mouse with the scroll method.
              * Once the zoomLevel has been changed we then need to revert the scroll from before
              * so that there is no shift of the map.
@@ -150,19 +150,19 @@ public final class BaseMapController {
 
     /**
      * Centers the map on the specified geographical position.
-     * This method is called when a aircraft is double-clicked on the aircraft table
+     * This method is called when an aircraft is double-clicked on the aircraft table
      *
      * @param pos The geographical position to center the map on.
      */
     public void centerOn(GeoPos pos) {
-        double xTopPositon = WebMercator.x(parameter.getZoom(), pos.longitude());
+        double xTopPosition = WebMercator.x(parameter.getZoom(), pos.longitude());
         double yTopPosition = WebMercator.y(parameter.getZoom(), pos.latitude());
 
         // Scroll to the top-left corner of the map
         parameter.scroll(-parameter.getMinX(), -parameter.getMinY());
 
         // Scroll to the center of the specified position
-        parameter.scroll((int) ((xTopPositon - mapPane.getWidth() / 2)),
+        parameter.scroll((int) ((xTopPosition - mapPane.getWidth() / 2)),
                 (int) ((yTopPosition - mapPane.getHeight() / 2)));
     }
 
@@ -203,7 +203,7 @@ public final class BaseMapController {
                 } catch (IOException ignored) {
                     // If an exception is thrown while obtaining the image for the tile,
                     // ignore it and continue to the next tile
-                }                // Update the x position on the canvas for the next tile to be drawn in the current row
+                }   // Update the x position on the canvas for the next tile to be drawn in the current row
                 xCoordinateShiftedTile += TILE_SIZE;
             }
             // Update the y position on the canvas for the first tile to be drawn in the next row

@@ -41,6 +41,8 @@ public class Main extends Application {
     private static final int WINDOW_HEIGHT = 600;
     private static final int WINDOW_WIDTH = 800;
     private static final int START_ZOOM = 8;
+    private static final String AIRCRAFT_DATABASE_FILE = "/aircraft.zip";
+    private static final String SERVER_ADDRESS = "tile.openstreetmap.org";
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
     private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue();
@@ -64,14 +66,14 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         List<String> parameters = this.getParameters().getRaw();
 
-        URL dbUrl = getClass().getResource("/aircraft.zip");
+        URL dbUrl = getClass().getResource(AIRCRAFT_DATABASE_FILE);
         assert dbUrl != null;
         String f = Path.of(dbUrl.toURI()).toString();
         var dataBase = new AircraftDatabase(f);
         AircraftStateManager asm = new AircraftStateManager(dataBase);
 
         Path tileCache = Path.of("tile-cache");
-        TileManager tm = new TileManager(tileCache, "tile.openstreetmap.org");
+        TileManager tm = new TileManager(tileCache, SERVER_ADDRESS);
         MapParameters mp = new MapParameters(START_ZOOM, START_TOP_TILE_X, START_TOP_TILE_Y);
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
 
@@ -103,14 +105,12 @@ public class Main extends Application {
         primaryStage.setMinWidth(WINDOW_WIDTH);
         primaryStage.setMinHeight(WINDOW_HEIGHT);
         primaryStage.show();
-
+        Thread messageHandler;
         if (parameters.isEmpty()) {
-            Thread messageHandler = new Thread(() -> demodulation());
-            messageHandler.setDaemon(true);
-            messageHandler.start();
+            messageHandler = new Thread(() -> demodulation());
         } else {
-            Supplier<RawMessage> messageSupplier = messageFromFile(parameters);
-            Thread messageHandler = new Thread(() -> {
+            messageHandler = new Thread(() -> {
+                Supplier<RawMessage> messageSupplier = messageFromFile(parameters);
                 while (true) {
                     if (messageSupplier.get() != null) {
                         messages.add(messageSupplier.get());
@@ -119,10 +119,9 @@ public class Main extends Application {
                     }
                 }
             });
-
-            messageHandler.setDaemon(true);
-            messageHandler.start();
         }
+        messageHandler.setDaemon(true);
+        messageHandler.start();
 
         // We create a new instance of an AnimationTimer and define its handle() method.
         new AnimationTimer() {
