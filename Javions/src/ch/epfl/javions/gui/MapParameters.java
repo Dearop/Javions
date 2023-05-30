@@ -2,6 +2,7 @@ package ch.epfl.javions.gui;
 
 import ch.epfl.javions.Math2;
 import ch.epfl.javions.Preconditions;
+import ch.epfl.javions.WebMercator;
 import javafx.beans.property.*;
 import javafx.geometry.Point2D;
 
@@ -24,6 +25,7 @@ public final class MapParameters {
     private static final int MIN_ZOOM = 6; // The minimum zoom level allowed
     private static final int MAX_ZOOM = 19; // The maximum zoom level allowed
 
+    private static final int ALLOWED_ZOOM_CHANGE = 1;
     /**
      * Constructs a MapParameters object with the specified zoom level and minimum X and Y coordinates.
      * It's parameters tell us precisely where the user will start.
@@ -102,7 +104,7 @@ public final class MapParameters {
      */
     public void changeZoomLevel(int zoomDifference) {
 
-        zoomDifference = (zoomDifference > 0) ? 1 : -1;
+        zoomDifference = (zoomDifference > 0) ? ALLOWED_ZOOM_CHANGE : -ALLOWED_ZOOM_CHANGE;
 
         int zoomBoundary = Math2.clamp(MIN_ZOOM, zoom.get() + zoomDifference, MAX_ZOOM);
 

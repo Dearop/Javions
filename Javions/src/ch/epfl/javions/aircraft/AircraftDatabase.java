@@ -34,17 +34,17 @@ public final class AircraftDatabase {
      */
     public AircraftDatabase(String fileName) {
         this.fileName = Objects.requireNonNull(fileName);
-        makeDataBase();
+        createMapFromAddressToAircraftData();
     }
 
     /**
      * Fills the HashMap attribute of the class with AircraftData Instances that are associated
-     * to their IcaoAddress
+     * to their IcaoAddress. This was done to improve efficiency.
      * Throws an IOException if there is an input/output error.
      *.
      * @throws IOException If there is an input/output error.
      */
-    private void makeDataBase(){
+    private void createMapFromAddressToAircraftData(){
         try (ZipFile zip = new ZipFile(fileName)) {
             zip.stream().forEach(e -> {
                 String entryName = e.getName();
@@ -72,6 +72,13 @@ public final class AircraftDatabase {
         }catch (IOException l){}
     }
 
+    /**
+     * Gets AircraftData associated to the IcaoAddress from the Map which is filled out in the method seen above.
+     * This method was changed from the original method for efficiency reasons.
+     *
+     * @param address IcaoAddress of the AircraftData we are trying to fetch from the file.
+     * @return AircraftData which is associated to the IcaoAddress of the file.
+     */
     public AircraftData get(IcaoAddress address) {
         return dataHashMap.get(address.string());
     }

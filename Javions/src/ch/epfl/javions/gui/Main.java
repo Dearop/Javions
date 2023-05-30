@@ -6,6 +6,7 @@ import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
+import ch.epfl.javions.gui.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -34,7 +35,7 @@ import java.util.function.Supplier;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public class Main extends Application {
+public final class Main extends Application {
     private long time;
     private static final long MILLION = 1_000_000L;
     private static final long BILLION = 1_000_000_000L;
@@ -42,7 +43,9 @@ public class Main extends Application {
     private static final int WINDOW_WIDTH = 800;
     private static final int START_ZOOM = 8;
     private static final String AIRCRAFT_DATABASE_FILE = "/aircraft.zip";
+    private static final String TILE_CACHE_FILENAME = "tile-cache";
     private static final String SERVER_ADDRESS = "tile.openstreetmap.org";
+    private static final String APPLICATION_NAME = "Javions";
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
     private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue();
@@ -72,7 +75,7 @@ public class Main extends Application {
         var dataBase = new AircraftDatabase(f);
         AircraftStateManager asm = new AircraftStateManager(dataBase);
 
-        Path tileCache = Path.of("tile-cache");
+        Path tileCache = Path.of(TILE_CACHE_FILENAME);
         TileManager tm = new TileManager(tileCache, SERVER_ADDRESS);
         MapParameters mp = new MapParameters(START_ZOOM, START_TOP_TILE_X, START_TOP_TILE_Y);
         ObjectProperty<ObservableAircraftState> sap = new SimpleObjectProperty<>();
@@ -100,7 +103,7 @@ public class Main extends Application {
         StackPane aircraftAndMapPane = new StackPane(bmc.pane(), ac.pane());
         SplitPane mainPane = new SplitPane(aircraftAndMapPane, tableAndLinePane);
         mainPane.setOrientation(Orientation.VERTICAL);
-        primaryStage.setTitle("Javions");
+        primaryStage.setTitle(APPLICATION_NAME);
         primaryStage.setScene(new Scene(mainPane));
         primaryStage.setMinWidth(WINDOW_WIDTH);
         primaryStage.setMinHeight(WINDOW_HEIGHT);

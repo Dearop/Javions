@@ -24,8 +24,8 @@ import java.util.function.Function;
 
 
 /**
- * The AircraftTableController class is the controller for the aircraft table view in the JavaFX user interface. It provides
- * functionalities to display the aircraft data in a table view.
+ * The AircraftTableController class is the controller for the aircraft table view in the JavaFX user interface.
+ * It provides functionalities to display the aircraft data in a table view.
  *
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
@@ -43,13 +43,8 @@ public final class AircraftTableController {
     // number formatter for altitude and velocity
     private static NumberFormat format;
 
-    // function that handles selected state changes
-    private Consumer<ObservableAircraftState> selectedState = new Consumer<ObservableAircraftState>() {
-        @Override
-        public void accept(ObservableAircraftState oas) {
-            currentSelectedState.set(oas);
-        }
-    };
+    // lambda function redefining the accept method of the anonymous Consumer class that handles selected state changes.
+    private Consumer<ObservableAircraftState> selectedState = oas -> currentSelectedState.set(oas);
 
     // Constants for column sizes, and the formatting of the decimal numbers shown
     private static final int NUMBER_COLUMN_SIZE = 85;
@@ -60,6 +55,7 @@ public final class AircraftTableController {
     private static final int WIDTH_REGISTRATION = 90;
     private static final int WIDTH_MODEL = 230;
     private static final int WIDTH_TYPE = 50;
+    private static final String NUMERIC_COLUMN_STYLING = "-fx-alignment: baseline-right";
 
     /**
      * This constructor is responsible for creating an instance of the AircraftTableController class
@@ -97,7 +93,7 @@ public final class AircraftTableController {
      *  map around the state on which we have clicked.
      */
     private void addListeners(){
-        // Add listener to knownStates for adding or removing items from the table
+        // Adds listener to knownStates for adding or removing items from the table
         knownStates.addListener((SetChangeListener<ObservableAircraftState>) change -> {
             if (change.wasAdded()) {
                 scenegraph.getItems().addAll(change.getElementAdded());
@@ -107,8 +103,7 @@ public final class AircraftTableController {
             scenegraph.sort();
         });
 
-        // Add listener to currentSelectedState for scrolling to and
-        // selecting the corresponding row in the table.
+        // Adds listener to currentSelectedState for scrolling to and selecting the corresponding row in the table.
         currentSelectedState.addListener(e -> {
             if (knownStates.contains(currentSelectedState.get()) &&
                     scenegraph.getSelectionModel().getSelectedItem() != currentSelectedState.get()) {
@@ -117,7 +112,7 @@ public final class AircraftTableController {
             }
         });
 
-        // Add listener to table for handling double-click events.
+        // Adds listener to table for handling double-click events.
         scenegraph.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && MouseButton.PRIMARY == event.getButton()) {
                 if (selectedState != null && scenegraph.getSelectionModel().getSelectedItem() != null) {
@@ -223,7 +218,8 @@ public final class AircraftTableController {
 
     }
 
-    /*
+
+    /**
      * @param selectedState the Consumer to be set as the double-clicked state
      */
     public void setOnDoubleClick(Consumer<ObservableAircraftState> selectedState) {
@@ -236,16 +232,17 @@ public final class AircraftTableController {
      *
      * @param columnName The name of the column.
      *
-     * @param numberColumns A boolean indicating whether the column should support numeric comparisons.
+     * @param isANumberColumn A boolean indicating whether the column should support numeric comparisons.
      *
      * @param columnWidth The preferred width of the column.
      *
      * @param cellFunction A function that provides the cell value for each row in the column.
      */
-    public static void createColumn(String columnName, boolean numberColumns, int columnWidth,
-                                    Function<TableColumn.CellDataFeatures<ObservableAircraftState, String>, ObservableValue<String>> cellFunction) {
+    public static void createColumn(String columnName, boolean isANumberColumn, int columnWidth,
+            Function<TableColumn.CellDataFeatures
+                    <ObservableAircraftState, String>, ObservableValue<String>> cellFunction) {
         TableColumn<ObservableAircraftState, String> column = new TableColumn<>(columnName);
-        if (numberColumns) {
+        if (isANumberColumn) {
             column.setComparator((s1, s2) -> {
                 try {
                     return (s1.isEmpty() || s2.isEmpty())
@@ -255,7 +252,7 @@ public final class AircraftTableController {
                     throw new RuntimeException(e);
                 }
             });
-            column.setStyle("-fx-alignment: baseline-right");
+            column.setStyle(NUMERIC_COLUMN_STYLING);
         }
         column.setPrefWidth(columnWidth);
         column.setCellValueFactory(cellFunction::apply);

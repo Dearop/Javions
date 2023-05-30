@@ -185,6 +185,15 @@ public final class ObservableAircraftState extends Observable implements Aircraf
     }
 
     /**
+     * Returns the aircraft data associated with this observable state.
+     *
+     * @return the aircraft data
+     */
+    public AircraftData getData() {
+        return data;
+    }
+
+    /**
      * @return a read-only property representing the timestamp of the last received message for the aircraft state,
      * in nanoseconds
      */
@@ -239,15 +248,6 @@ public final class ObservableAircraftState extends Observable implements Aircraf
      */
     public ReadOnlyObjectProperty<GeoPos> positionProperty() {
         return position;
-    }
-
-    /**
-     * Returns the aircraft data associated with this observable state.
-     *
-     * @return the aircraft data
-     */
-    public AircraftData getData() {
-        return this.data;
     }
 
     /**

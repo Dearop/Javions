@@ -33,9 +33,9 @@ public class Submit {
     // CONFIGURATIONpackage ch.epfl.cs108;
     // -------------
     // Jeton du premier membre du groupe
-    private static final String TOKEN_1 = "Eitaef9e";
+    private static final String TOKEN_1 = "uu7aiTho";
     // Jeton du second membre (identique au premier pour les personnes travaillant seules)
-    private static final String TOKEN_2 = "goo2Dohz";
+    private static final String TOKEN_2 = "MohFi2oh";
     // -------------
 
     private static final String ZIP_ENTRY_NAME_PREFIX = "Javions/";

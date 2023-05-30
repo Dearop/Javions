@@ -13,6 +13,8 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
+import java.util.Objects;
+
 
 /**
  * The BaseMapController class is responsible for managing the display of the map on the screen.
@@ -39,8 +41,8 @@ public final class BaseMapController {
      * @param parameter   MapParameters object to store and update map parameters.
      */
     public BaseMapController(TileManager tileManager, MapParameters parameter) {
-        this.tileManager = tileManager;
-        this.parameter = parameter;
+        this.tileManager = Objects.requireNonNull(tileManager);
+        this.parameter = Objects.requireNonNull(parameter);
         this.canvas = new Canvas();
         this.mapPane = new Pane(canvas);
         this.scroller = new SimpleObjectProperty<>(new Point2D(0, 0));
@@ -195,10 +197,12 @@ public final class BaseMapController {
 
                 try {
                     /**
-                     * Obtain the image for the current tile from the tile manager
-                     * and draw it on the canvas at the appropriate position
+                     * Obtain the image for the current tile from the tile manager and draw it on the
+                     * canvas at the appropriate position while checking if the tiles we are drawing are valid
                      */
-                    graphics.drawImage(tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y))
+                    if(TileManager.TileId.isValid(parameter.getZoom(), x, y) && //stops program from crashing
+                            TileManager.TileId.isValid(parameter.getZoom(), x + 2, y + 2))
+                        graphics.drawImage(tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y))
                             , xCoordinateShiftedTile, yCoordinateShiftedTile);
                 } catch (IOException ignored) {
                     // If an exception is thrown while obtaining the image for the tile,
