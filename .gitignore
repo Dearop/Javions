@@ -1,9 +1,9 @@
 
-Javions/test-resources/samples_20230304_1442.bin
+test-resources/samples_20230304_1442.bin
 out/production/Javions/samples_20230304_1442.bin
-Javions/test-resources/samples_20230304_1442.bin
-Javions/test-resources/samples_20230522_2051.bin
-Javions/test-resources/messages_20230520_1725.bin
+test-resources/samples_20230304_1442.bin
+test-resources/samples_20230522_2051.bin
+test-resources/messages_20230520_1725.bin
 /tile-cache/
 out/production/Javions/ch/epfl/javions/gui/AircraftTableController$1.class
 out/production/Javions/ch/epfl/javions/gui/Main$2.class

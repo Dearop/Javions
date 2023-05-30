@@ -1,7 +1,8 @@
-package ch.epfl.javions.adsb;
+package ch.epfl.javions.official_tests.wk5;
 
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ class AircraftIdentificationMessageTest {
             assertNotNull(rawMessage);
             var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
             assertNotNull(aircraftIdentificationMessage);
-            assertEquals(category, aircraftIdentificationMessage.category());
+            Assertions.assertEquals(category, aircraftIdentificationMessage.category());
         }
     }
 
@@ -89,7 +90,7 @@ class AircraftIdentificationMessageTest {
             assertNotNull(rawMessage);
             var aircraftIdentificationMessage = AircraftIdentificationMessage.of(rawMessage);
             assertNotNull(aircraftIdentificationMessage);
-            assertEquals(callSign, aircraftIdentificationMessage.callSign().string());
+            Assertions.assertEquals(callSign, aircraftIdentificationMessage.callSign().string());
         }
     }
 

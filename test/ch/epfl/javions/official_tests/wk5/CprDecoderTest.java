@@ -1,4 +1,4 @@
-package ch.epfl.javions.adsb;
+package ch.epfl.javions.official_tests.wk5;
 
 import ch.epfl.javions.adsb.CprDecoder;
 import org.junit.jupiter.api.Test;

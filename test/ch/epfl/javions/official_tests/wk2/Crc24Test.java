@@ -1,6 +1,7 @@
-package ch.epfl.javions;
+package ch.epfl.javions.official_tests.wk2;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -33,14 +34,14 @@ class Crc24Test {
         // Pass full messages with valid CRCs, then check that result is 0.
         for (final var m : Crc24Test.ADSB_MESSAGES) {
             final var bs = Crc24Test.HEX_FORMAT.parseHex(m);
-            assertEquals(0, crc24.crc(bs));
+            Assertions.assertEquals(0, crc24.crc(bs));
         }
 
         // Pass messages without CRC, then check for equality.
         for (final var m : Crc24Test.ADSB_MESSAGES) {
             final var actualCrc = crc24.crc(Crc24Test.HEX_FORMAT.parseHex(m.substring(0, m.length() - 6)));
             final var expectedCrc = HexFormat.fromHexDigits(m.substring(m.length() - 6));
-            assertEquals(expectedCrc, actualCrc);
+            Assertions.assertEquals(expectedCrc, actualCrc);
         }
     }
 
@@ -49,12 +50,12 @@ class Crc24Test {
         final var crc24_FACE51 = new Crc24(0xFACE51);
         final var actual_FACE51 = crc24_FACE51.crc(Crc24Test.HEX_FORMAT.parseHex(Crc24Test.ADSB_MESSAGES.get(0)));
         final var expected_FACE51 = 3677528;
-        assertEquals(expected_FACE51, actual_FACE51);
+        Assertions.assertEquals(expected_FACE51, actual_FACE51);
 
         final var crc24_F00DAB = new Crc24(0xF00DAB);
         final var actual_F00DAB = crc24_F00DAB.crc(Crc24Test.HEX_FORMAT.parseHex(Crc24Test.ADSB_MESSAGES.get(0)));
         final var expected_F00DAB = 16093840;
-        assertEquals(expected_F00DAB, actual_F00DAB);
+        Assertions.assertEquals(expected_F00DAB, actual_F00DAB);
     }
 
     @Test
@@ -62,7 +63,7 @@ class Crc24Test {
         final var crc24 = new Crc24(Crc24.GENERATOR);
         for (int i = 0; 10 > i; i += 1) {
             final var m = new byte[i];
-            assertEquals(0, crc24.crc(m));
+            Assertions.assertEquals(0, crc24.crc(m));
         }
     }
 }

@@ -1,4 +1,4 @@
-package ch.epfl.javions.adsb;
+package ch.epfl.javions.official_tests.wk6;
 
 import ch.epfl.javions.Crc24;
 import org.junit.jupiter.api.Test;

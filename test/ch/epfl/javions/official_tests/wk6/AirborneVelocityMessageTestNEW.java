@@ -1,7 +1,8 @@
-package ch.epfl.javions.adsb;
+package ch.epfl.javions.official_tests.wk6;
 
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HexFormat;
@@ -138,7 +139,7 @@ class AirborneVelocityMessageTestN {
         var rawMessageA = RawMessage.of(0L, messageBytesA);
         assertNotNull(rawMessageA);
         var messageA = AirborneVelocityMessage.of(rawMessageA);
-        assertEquals(159.20 * KNOT, messageA.speed(), 0.005);
+        Assertions.assertEquals(159.20 * KNOT, messageA.speed(), 0.005);
         assertEquals(182.88, Math.toDegrees(messageA.trackOrHeading()), 0.005);
 
         // Messages received from actual planes
@@ -159,8 +160,8 @@ class AirborneVelocityMessageTestN {
             var rawMessage = RawMessage.of(0L, messageBytes);
             assertNotNull(rawMessage);
             var message = AirborneVelocityMessage.of(rawMessage);
-            assertEquals(messageAndSpeedAndTrack.speed(), message.speed(), 1e-5);
-            assertEquals(messageAndSpeedAndTrack.track(), message.trackOrHeading(), 1e-5);
+            Assertions.assertEquals(messageAndSpeedAndTrack.speed(), message.speed(), 1e-5);
+            Assertions.assertEquals(messageAndSpeedAndTrack.track(), message.trackOrHeading(), 1e-5);
         }
 
         // Fake message with supersonic speed
@@ -169,8 +170,8 @@ class AirborneVelocityMessageTestN {
         var supersonicRawMessage = RawMessage.of(0L, supersonicMessageBytes);
         assertNotNull(supersonicRawMessage);
         var supersonicAVM = AirborneVelocityMessage.of(supersonicRawMessage);
-        assertEquals(4d * 86.654498, supersonicAVM.speed(), 1e-5);
-        assertEquals(4.581407, supersonicAVM.trackOrHeading(), 1e-5);
+        Assertions.assertEquals(4d * 86.654498, supersonicAVM.speed(), 1e-5);
+        Assertions.assertEquals(4.581407, supersonicAVM.trackOrHeading(), 1e-5);
     }
 
     @Test
@@ -181,7 +182,7 @@ class AirborneVelocityMessageTestN {
         var rawMessageB = RawMessage.of(0L, messageBytesB);
         assertNotNull(rawMessageB);
         var messageB = AirborneVelocityMessage.of(rawMessageB);
-        assertEquals(375 * KNOT, messageB.speed(), 0.005);
+        Assertions.assertEquals(375 * KNOT, messageB.speed(), 0.005);
         assertEquals(243.98, Math.toDegrees(messageB.trackOrHeading()), 0.005);
 
         // Fake message with supersonic speed
@@ -190,7 +191,7 @@ class AirborneVelocityMessageTestN {
         var supersonicRawMessage = RawMessage.of(0L, supersonicMessageBytes);
         assertNotNull(supersonicRawMessage);
         var supersonicAVM = AirborneVelocityMessage.of(supersonicRawMessage);
-        assertEquals(4d * 375 * KNOT, supersonicAVM.speed(), 1e-5);
+        Assertions.assertEquals(4d * 375 * KNOT, supersonicAVM.speed(), 1e-5);
         assertEquals(243.98, Math.toDegrees(messageB.trackOrHeading()), 0.005);
     }
 }

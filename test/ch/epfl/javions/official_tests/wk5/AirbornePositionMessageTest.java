@@ -1,7 +1,8 @@
-package ch.epfl.javions.adsb;
+package ch.epfl.javions.official_tests.wk5;
 
 import ch.epfl.javions.Crc24;
 import ch.epfl.javions.aircraft.IcaoAddress;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ class AirbornePositionMessageTest {
             assertNotNull(message);
             var airbornePositionMessage = AirbornePositionMessage.of(message);
             assertNotNull(airbornePositionMessage);
-            assertEquals(testValue.altitude, airbornePositionMessage.altitude(), 0.005);
+            Assertions.assertEquals(testValue.altitude, airbornePositionMessage.altitude(), 0.005);
         }
     }
 
@@ -106,7 +107,7 @@ class AirbornePositionMessageTest {
             assertNotNull(message);
             var airbornePositionMessage = AirbornePositionMessage.of(message);
             assertNotNull(airbornePositionMessage);
-            assertEquals(testValue.altitude, airbornePositionMessage.altitude(), 0.005);
+            Assertions.assertEquals(testValue.altitude, airbornePositionMessage.altitude(), 0.005);
         }
     }
 
