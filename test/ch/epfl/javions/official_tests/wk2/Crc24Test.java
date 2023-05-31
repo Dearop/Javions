@@ -1,8 +1,7 @@
 package ch.epfl.javions.official_tests.wk2;
 
-import org.junit.jupiter.api.AfterAll;
+import ch.epfl.javions.Crc24;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

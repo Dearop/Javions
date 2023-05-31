@@ -1,6 +1,8 @@
 package ch.epfl.javions.official_tests.wk5;
 
 import ch.epfl.javions.Crc24;
+import ch.epfl.javions.adsb.AirbornePositionMessage;
+import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.IcaoAddress;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

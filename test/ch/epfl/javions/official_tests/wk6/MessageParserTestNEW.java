@@ -1,6 +1,7 @@
 package ch.epfl.javions.official_tests.wk6;
 
 import ch.epfl.javions.Crc24;
+import ch.epfl.javions.adsb.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

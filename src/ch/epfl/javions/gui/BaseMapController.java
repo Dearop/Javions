@@ -33,6 +33,7 @@ public final class BaseMapController {
     private static final int TILE_SIZE = 256;
     private static final int SCROLL_TIME = 200;
     private final ObjectProperty<Point2D> scroller;
+    private static final int TILE_TO_PIXEL = 8; // We use this constant while shifting because 2^8 = 256
 
     /**
      * Constructor for BaseMapController.
@@ -128,7 +129,7 @@ public final class BaseMapController {
         mapPane.setOnMouseDragged(e -> {
 
             // Scroll the map based on the distance dragged
-            parameter.scroll((int) (scroller.get().getX() - e.getX()), (int) (scroller.get().getY()) - e.getY());
+            parameter.scroll(scroller.get().getX() - e.getX(), scroller.get().getY() - e.getY());
 
             // Set the scroller property to the current mouse position
             scroller.set(new Point2D(e.getX(), e.getY()));
@@ -181,18 +182,26 @@ public final class BaseMapController {
         GraphicsContext graphics = canvas.getGraphicsContext2D();
 
         // Calculate the minimum and maximum tiles in the x and y directions that intersect the visible area of the map
-        double minTileX = tilePositionCalculator(parameter.getMinX());
-        double maxTileX = tilePositionCalculator(parameter.getMinX() + mapPane.getWidth());
+        double paneHeight = mapPane.getHeight();
+        double paneWidth = mapPane.getWidth();
+        double minX = parameter.getMinX();
+        double minY = parameter.getMinY();
+        int currentZoom = parameter.getZoom();
 
-        double minTileY = tilePositionCalculator(parameter.getMinY());
-        double maxTileY = tilePositionCalculator(parameter.getMinY() + mapPane.getWidth());
+        double minTileX = tilePositionCalculator(minX);
+        double maxTileX = tilePositionCalculator(minX + paneWidth);
+
+        double minTileY = tilePositionCalculator(minY);
+        double maxTileY = tilePositionCalculator(minY + paneHeight);
+
+
 
         // Determine the initial y position on the canvas for the first tile to be drawn
-        int yCoordinateShiftedTile = (int) -parameter.getMinY() % TILE_SIZE;
+        int yCoordinateShiftedTile = (int) -minY % TILE_SIZE;
         for (int y = (int) minTileY; y < (int) maxTileY + 1; y++) {
 
             // Determine the initial x position on the canvas for the first tile to be drawn in the current row
-            int xCoordinateShiftedTile = (int) -parameter.getMinX() % TILE_SIZE;
+            int xCoordinateShiftedTile = (int) -minX % TILE_SIZE;
             for (int x = (int) minTileX; x < (int) maxTileX + 1; x++) {
 
                 try {
@@ -200,16 +209,34 @@ public final class BaseMapController {
                      * Obtain the image for the current tile from the tile manager and draw it on the
                      * canvas at the appropriate position while checking if the tiles we are drawing are valid
                      */
-                    if(TileManager.TileId.isValid(parameter.getZoom(), x, y) && //stops program from crashing
-                            TileManager.TileId.isValid(parameter.getZoom(), x + 2, y + 2))
-                        graphics.drawImage(tileManager.imageForTileAt(new TileManager.TileId(parameter.getZoom(), x, y))
+                    graphics.drawImage(tileManager.imageForTileAt(new TileManager.TileId(currentZoom, x, y))
                             , xCoordinateShiftedTile, yCoordinateShiftedTile);
+                    // if the position of the user is out of Bounds, we create "empty space"
+                    if (minX < 0) {
+                        graphics.clearRect(0, 0, -minX, paneHeight);
+                    }
+                    if (minY < 0) {
+                        graphics.clearRect(0, 0, paneWidth, -minY);
+                    }
+                    int max_coords = 1 << (currentZoom + TILE_TO_PIXEL);
+
+                    if (minX + paneWidth > max_coords) {
+                        graphics.clearRect(max_coords - minX, 0, paneWidth, paneHeight);
+                    }
+                    if (minY + paneHeight > max_coords) {
+                        graphics.clearRect(0, max_coords - minY, paneWidth, paneHeight);
+                    }
+
                 } catch (IOException ignored) {
                     // If an exception is thrown while obtaining the image for the tile,
                     // ignore it and continue to the next tile
                 }   // Update the x position on the canvas for the next tile to be drawn in the current row
+                catch (IllegalArgumentException e) {
+                    // ignored
+                }
                 xCoordinateShiftedTile += TILE_SIZE;
             }
+
             // Update the y position on the canvas for the first tile to be drawn in the next row
             yCoordinateShiftedTile += TILE_SIZE;
         }

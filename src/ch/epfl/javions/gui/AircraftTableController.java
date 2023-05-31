@@ -134,7 +134,7 @@ public final class AircraftTableController {
      *
      * @return a JavaFX Node representing the aircraft table
      */
-    public static Node pane() {
+    public Node pane() {
         return scenegraph;
     }
 
@@ -197,12 +197,12 @@ public final class AircraftTableController {
         });
 
         // Longitude
-        createColumn("Longitude (°)", true, NUMBER_COLUMN_SIZE, f ->
+        createColumn("Longitude (Â°)", true, NUMBER_COLUMN_SIZE, f ->
                 f.getValue().positionProperty().map(m ->
                         format.format(Units.convertTo(m.longitude(), Units.Angle.DEGREE))));
 
         // Latitude
-        createColumn("Latitude (°)", true, NUMBER_COLUMN_SIZE, f ->
+        createColumn("Latitude (Â°)", true, NUMBER_COLUMN_SIZE, f ->
                 f.getValue().positionProperty().map(m ->
                         format.format(Units.convertTo(m.latitude(), Units.Angle.DEGREE))));
 

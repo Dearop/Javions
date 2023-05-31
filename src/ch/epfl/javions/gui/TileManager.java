@@ -37,7 +37,7 @@ public final class TileManager {
     private LinkedHashMap<TileId, Image> memoryCache;
     private static final String WEB_ADDRESS = "https://";
     private static final String IMAGE_FORMAT = ".png";
-    private static final String PATH_SEPERATOR = "/";
+    private static final String PATH_SEPARATOR = "/";
     private static final String PROJECT_NAME = "Javions";
     private static final String SERVER_KEY = "User-Agent";
 
@@ -64,9 +64,6 @@ public final class TileManager {
         private static final int MAX_ZOOM_LEVEL = 19;
         private static final int MIN_ZOOM_LEVEL = 6;
         private static final int MIN_COORDS = 0;
-        private static final int BASE_ZOOM_LEVEL = 8;
-        private static final int SCALB_FACTOR = 1;
-        private static final int TILE_SIZE = 256;
 
         /**
          * Here we check if the ID of the searched Tile is valid, for this check we need to use the function isValid
@@ -76,7 +73,9 @@ public final class TileManager {
          * @param x    the x value the tile has
          * @param y    the y value the tile has
          */
-        public TileId {}
+        public TileId {
+            Preconditions.checkArgument(isValid(zoom,x,y));
+        }
 
         /**
          * Checks if a TileId object is valid.
@@ -88,11 +87,10 @@ public final class TileManager {
          * @param zoom the zoom level of the tile represented by the current instance of the TileId class
          * @return true if the TileId object is valid, false otherwise.
          */
-        // TODO: 5/29/2023 ask
         public static boolean isValid(int zoom, int x, int y) {
-            int max_coords = (int) Math.scalb(SCALB_FACTOR, BASE_ZOOM_LEVEL + zoom) / TILE_SIZE;
+            int max_coords = 1 << zoom;
             return (x >= MIN_COORDS && y >= MIN_COORDS) &&
-                    (x <= max_coords && y <= max_coords) &&
+                    (x < max_coords && y < max_coords) &&
                     (MIN_ZOOM_LEVEL <= zoom && zoom <= MAX_ZOOM_LEVEL);
 
         }
@@ -124,8 +122,8 @@ public final class TileManager {
         } else {
 
             // we look for it in the server online
-            URL u = new URL( WEB_ADDRESS + serverAddress + PATH_SEPERATOR + id.zoom + PATH_SEPERATOR
-                    + id.x + PATH_SEPERATOR + id.y + IMAGE_FORMAT);
+            URL u = new URL(WEB_ADDRESS + serverAddress + PATH_SEPARATOR + id.zoom + PATH_SEPARATOR
+                    + id.x + PATH_SEPARATOR + id.y + IMAGE_FORMAT);
             URLConnection c = u.openConnection();
             c.setRequestProperty(SERVER_KEY, PROJECT_NAME);
             InputStream i = c.getInputStream();
@@ -179,6 +177,6 @@ public final class TileManager {
      * @return the path of the directory where the image file for the given TileId object should be stored.
      */
     private Path directoryPath(TileId id) {
-        return path.resolve(Paths.get(id.zoom + PATH_SEPERATOR + id.x));
+        return path.resolve(Paths.get(id.zoom + PATH_SEPARATOR + id.x));
     }
 }

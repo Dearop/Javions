@@ -6,7 +6,6 @@ import ch.epfl.javions.adsb.MessageParser;
 import ch.epfl.javions.adsb.RawMessage;
 import ch.epfl.javions.aircraft.AircraftDatabase;
 import ch.epfl.javions.demodulation.AdsbDemodulator;
-import ch.epfl.javions.gui.*;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -36,7 +35,7 @@ import java.util.function.Supplier;
  * @author Paul Quesnot (347572)
  */
 public final class Main extends Application {
-    private long time;
+    private double time;
     private static final long MILLION = 1_000_000L;
     private static final long BILLION = 1_000_000_000L;
     private static final int WINDOW_HEIGHT = 600;
@@ -48,7 +47,7 @@ public final class Main extends Application {
     private static final String APPLICATION_NAME = "Javions";
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
-    private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue();
+    private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue<>();
 
     /**
      * The main entry point for the JavaFX application.
@@ -87,12 +86,9 @@ public final class Main extends Application {
 
         BaseMapController bmc = new BaseMapController(tm, mp);
 
-        Consumer<ObservableAircraftState> stateConsumer = new Consumer<ObservableAircraftState>() {
-            @Override
-            public void accept(ObservableAircraftState oas) {
-                bmc.centerOn(oas.getPosition());
-                sap.set(oas);
-            }
+        Consumer<ObservableAircraftState> stateConsumer = oas -> {
+            bmc.centerOn(oas.getPosition());
+            sap.set(oas);
         };
 
         table.setOnDoubleClick(stateConsumer);
