@@ -3,7 +3,6 @@ package ch.epfl.javions.gui;
 import ch.epfl.javions.Preconditions;
 import javafx.scene.paint.Color;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -84,6 +83,7 @@ public final class ColorRamp {
 
         int upperIndex = lowerIndex + 1;
         Color upperColor = colors[upperIndex];
-        return lowerColor.interpolate(upperColor, index * maxIndex - lowerIndex);
+        Color c = lowerColor.interpolate(upperColor, index * maxIndex - lowerIndex);
+        return c;
     }
 }

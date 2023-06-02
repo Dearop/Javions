@@ -25,11 +25,11 @@ import java.util.Objects;
  * @author Paul Quesnot (347572)
  */
 public final class BaseMapController {
-    private TileManager tileManager;
-    private MapParameters parameter;
+    private final TileManager tileManager;
+    private final MapParameters parameter;
     private boolean redrawNeeded;
-    private Canvas canvas;
-    private Pane mapPane;
+    private final Canvas canvas;
+    private final Pane mapPane;
     private static final int TILE_SIZE = 256;
     private static final int SCROLL_TIME = 200;
     private final ObjectProperty<Point2D> scroller;

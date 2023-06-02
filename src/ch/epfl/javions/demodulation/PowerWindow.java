@@ -70,9 +70,8 @@ public final class PowerWindow {
      * This statement is true as long as all the inputs are coming from within the stream size.
      * Once the positionCounter + windowSize is bigger than the stream/4 then it return false.
      */
-    // TODO: 4/28/2023 Go ask
     public boolean isFull() {
-        return this.availableStream/4 >= this.positionCounter + this.windowSize;
+        return this.availableStream/4d >= this.positionCounter + this.windowSize;
     }
 
     /**

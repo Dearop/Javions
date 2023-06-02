@@ -15,9 +15,9 @@ import javafx.scene.text.Text;
  */
 public final class StatusLineController {
 
-    private BorderPane scenegraph;
-    private IntegerProperty airCraftCountProperty = new SimpleIntegerProperty();
-    private LongProperty messageCountProperty = new SimpleLongProperty();
+    private final BorderPane scenegraph;
+    private final IntegerProperty airCraftCountProperty = new SimpleIntegerProperty();
+    private final LongProperty messageCountProperty = new SimpleLongProperty();
     private static final String CSS_STATUS_FILE = "status.css";
     private static final String FORMATTING = "%s";
 

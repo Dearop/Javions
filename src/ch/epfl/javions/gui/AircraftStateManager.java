@@ -30,7 +30,7 @@ public final class AircraftStateManager {
     private final ObservableSet<ObservableAircraftState> knownPositionStates;
 
     // An AircraftDatabase has all the information about the aircraft available.
-    private AircraftDatabase database;
+    private final AircraftDatabase database;
     private final ObservableSet<ObservableAircraftState> unmodifiableKnownPositionStates;
     private long lastTimeStampNs;
     private IcaoAddress lastIcaoAddress;
@@ -95,11 +95,10 @@ public final class AircraftStateManager {
         knownPositionStates.removeIf(oas ->
                 lastTimeStampNs - oas.getLastMessageTimeStampNs() > MAX_TIME);
 
-        if (accumulatorMap.get(lastIcaoAddress) != null) {
-            if (lastTimeStampNs - accumulatorMap.get(lastIcaoAddress)
-                    .stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
-                accumulatorMap.remove(lastIcaoAddress);
-        }
+        if (accumulatorMap.get(lastIcaoAddress) != null
+                && lastTimeStampNs - accumulatorMap.get(lastIcaoAddress)
+                        .stateSetter().getLastMessageTimeStampNs() > MAX_TIME)
+            accumulatorMap.remove(lastIcaoAddress);
     }
 
     /**

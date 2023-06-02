@@ -38,8 +38,8 @@ public final class Main extends Application {
     private double time;
     private static final long MILLION = 1_000_000L;
     private static final long BILLION = 1_000_000_000L;
-    private static final int WINDOW_HEIGHT = 600;
-    private static final int WINDOW_WIDTH = 800;
+    private static final int WINDOW_START_HEIGHT = 600;
+    private static final int WINDOW_START_WIDTH = 800;
     private static final int START_ZOOM = 8;
     private static final String AIRCRAFT_DATABASE_FILE = "/aircraft.zip";
     private static final String TILE_CACHE_FILENAME = "tile-cache";
@@ -47,7 +47,7 @@ public final class Main extends Application {
     private static final String APPLICATION_NAME = "Javions";
     private static final int START_TOP_TILE_X = 33_530;
     private static final int START_TOP_TILE_Y = 23_070;
-    private ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue<>();
+    private final ConcurrentLinkedQueue<RawMessage> messages = new ConcurrentLinkedQueue<>();
 
     /**
      * The main entry point for the JavaFX application.
@@ -101,8 +101,8 @@ public final class Main extends Application {
         mainPane.setOrientation(Orientation.VERTICAL);
         primaryStage.setTitle(APPLICATION_NAME);
         primaryStage.setScene(new Scene(mainPane));
-        primaryStage.setMinWidth(WINDOW_WIDTH);
-        primaryStage.setMinHeight(WINDOW_HEIGHT);
+        primaryStage.setMinWidth(WINDOW_START_WIDTH);
+        primaryStage.setMinHeight(WINDOW_START_HEIGHT);
         primaryStage.show();
         Thread messageHandler;
         if (parameters.isEmpty()) {
@@ -161,9 +161,8 @@ public final class Main extends Application {
 
     /**
      * Demodulates the messages coming from the AirSpy Radio supposedly connected
-     * to an IO port of the computer running this application.
+     * to an IO port of the computer running this application and adds it to the queue of messages.
      *
-     * @return A Supplier containing a Message which is then added to the Queue.
      */
     private void demodulation() {
         try {

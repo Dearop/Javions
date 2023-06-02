@@ -34,7 +34,7 @@ public final class TileManager {
     private final String serverAddress;
     private final static int MEMORY_SIZE = 100;
     private final static float MEMORY_LOAD_FACTOR = 0.75f;
-    private LinkedHashMap<TileId, Image> memoryCache;
+    private final LinkedHashMap<TileId, Image> memoryCache;
     private static final String WEB_ADDRESS = "https://";
     private static final String IMAGE_FORMAT = ".png";
     private static final String PATH_SEPARATOR = "/";

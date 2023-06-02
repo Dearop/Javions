@@ -19,8 +19,8 @@ import java.util.*;
  * @author Henri Antal (339444)
  * @author Paul Quesnot (347572)
  */
-public final class ObservableAircraftState extends Observable implements AircraftStateSetter {
-    private AircraftData data;
+public final class ObservableAircraftState implements AircraftStateSetter {
+    private final AircraftData data;
     private final ObservableList<AirbornePos> trajectories;
     private final ObservableList<AirbornePos> trajectoryProperty;
     private final LongProperty lastMessageTimeStampNs = new SimpleLongProperty();

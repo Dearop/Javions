@@ -41,13 +41,13 @@ import static javafx.scene.paint.CycleMethod.NO_CYCLE;
  */
 public final class AircraftController {
     // stores the parameters used to render the map.
-    private MapParameters parameters;
+    private final MapParameters parameters;
 
     // This property is used to remember the selected aircraft
-    private ObjectProperty<ObservableAircraftState> currentSelectedState;
+    private final ObjectProperty<ObservableAircraftState> currentSelectedState;
 
     // a Pane that contains all the aircraft icons and labels. This is the pane that is displayed on the map.
-    private Pane aircraftPane;
+    private final Pane aircraftPane;
 
     // represents the current zoom level of the map.
     private ReadOnlyIntegerProperty currentZoom;
@@ -63,7 +63,7 @@ public final class AircraftController {
 
     /**
      * Constructor for AircraftController class that initializes the private variables parameters
-     * and currentSelectedStatethen it creates a new Pane that uses the aircraft.css for styling purposes.
+     * and currentSelectedState then it creates a new Pane that uses the aircraft.css for styling purposes.
      * The constructor also adds a listener on the ObservableSet of the ObservableAircraftState called knownStates.
      * The listener adds and removes the aircraft from the pane.
      *
@@ -145,8 +145,7 @@ public final class AircraftController {
         });
 
         parameters.zoomProperty().addListener(e -> {
-            if (currentSelectedState.get() != null &&
-                    currentSelectedState.getValue().equals(oas))
+            if (currentSelectedState.get() != null && currentSelectedState.getValue().equals(oas))
                 buildTrajectory(trajectory, oas);
         });
 
@@ -316,12 +315,7 @@ public final class AircraftController {
         aircraftIcon.getStyleClass().add(CSS_STYLESHEET_AIRCRAFT);
 
         // set up a click listener to select the aircraft when the icon is clicked
-        aircraftIcon.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                currentSelectedState.set(oas);
-            }
-        });
+        aircraftIcon.setOnMouseClicked(e -> currentSelectedState.set(oas));
 
         // get the icon for the aircraft based on its type and category
         AircraftData data = oas.getData();

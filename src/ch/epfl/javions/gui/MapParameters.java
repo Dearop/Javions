@@ -15,13 +15,13 @@ import javafx.geometry.Point2D;
 public final class MapParameters {
 
     // The zoom level of the map
-    private IntegerProperty zoom = new SimpleIntegerProperty();
+    private final IntegerProperty zoom = new SimpleIntegerProperty();
 
     // The minimum X coordinate of the map, which is on the left side of the canvas
-    private DoubleProperty minX = new SimpleDoubleProperty();
+    private final DoubleProperty minX = new SimpleDoubleProperty();
 
     // The minimum Y coordinate of the map, which is located at the top of the canvas
-    private DoubleProperty minY = new SimpleDoubleProperty();
+    private final DoubleProperty minY = new SimpleDoubleProperty();
     private static final int MIN_ZOOM = 6; // The minimum zoom level allowed
     private static final int MAX_ZOOM = 19; // The maximum zoom level allowed
 
